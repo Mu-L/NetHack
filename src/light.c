@@ -1,9 +1,11 @@
-/* NetHack 3.6	light.c	$NHDT-Date: 1446191876 2015/10/30 07:57:56 $  $NHDT-Branch: master $:$NHDT-Revision: 1.28 $ */
+/* NetHack 3.6	light.c	$NHDT-Date: 1559994625 2019/06/08 11:50:25 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.30 $ */
 /* Copyright (c) Dean Luick, 1994                                       */
 /* NetHack may be freely redistributed.  See license for details.       */
 
 #include "hack.h"
 #include "lev.h" /* for checking save modes */
+#include "sfproto.h"
+
 
 /*
  * Mobile light sources.
@@ -42,28 +44,29 @@
 #define LSF_SHOW 0x1        /* display the light source */
 #define LSF_NEEDS_FIXUP 0x2 /* need oid fixup */
 
-STATIC_DCL void FDECL(write_ls, (int, light_source *));
-STATIC_DCL int FDECL(maybe_write_ls, (int, int, BOOLEAN_P));
+static void FDECL(write_ls, (NHFILE *, light_source *));
+static int FDECL(maybe_write_ls, (NHFILE *, int, BOOLEAN_P));
 
 /* imported from vision.c, for small circles */
 extern char circle_data[];
 extern char circle_start[];
 
+
 /* Create a new light source.  */
 void
 new_light_source(x, y, range, type, id)
-xchar x, y;
-int range, type;
-anything *id;
+    xchar x, y;
+    int range, type;
+    anything *id;
 {
     light_source *ls;
 
     if (range > MAX_RADIUS || range < 1) {
-        impossible("new_light_source:  illegal range %d", range);
-        return;
+	impossible("new_light_source:  illegal range %d", range);
+	return;
     }
 
-    ls = (light_source *) alloc(sizeof(light_source));
+    ls = (light_source *) alloc(sizeof *ls);
 
     ls->next = g.light_base;
     ls->x = x;
@@ -152,8 +155,8 @@ char **cs_rows;
                 ls->flags |= LSF_SHOW;
         }
 
-        /* minor optimization: don't bother with duplicate light sources */
-        /* at hero */
+        /* minor optimization: don't bother with duplicate light sources
+           at hero */
         if (ls->x == u.ux && ls->y == u.uy) {
             if (at_hero_range >= ls->range)
                 ls->flags &= ~LSF_SHOW;
@@ -190,7 +193,7 @@ char **cs_rows;
                      * this optimization, is that it allows the vision
                      * system to correct problems with clear_path().
                      * The function clear_path() is a simple LOS
-                     * path checker that doesn't go out of its way
+                     * path checker that doesn't go out of its way to
                      * make things look "correct".  The vision system
                      * does this.
                      */
@@ -205,6 +208,80 @@ char **cs_rows;
                 }
             }
         }
+    }
+}
+
+/* lit 'obj' has been thrown or kicked and is passing through x,y on the
+   way to its destination; show its light so that hero has a chance to
+   remember terrain, objects, and monsters being revealed */
+void
+show_transient_light(obj, x, y)
+struct obj *obj;
+int x, y;
+{
+    light_source *ls;
+    struct monst *mon;
+    int radius_squared;
+
+    /* caller has verified obj->lamplit and that hero is not Blind;
+       validate light source and obtain its radius (for monster sightings) */
+    for (ls = g.light_base; ls; ls = ls->next) {
+        if (ls->type != LS_OBJECT)
+            continue;
+        if (ls->id.a_obj == obj)
+            break;
+    }
+    if (!ls || obj->where != OBJ_FREE) {
+        impossible("transient light %s %s is not %s?",
+                   obj->lamplit ? "lit" : "unlit", xname(obj),
+                   !ls ? "a light source" : "free");
+    } else {
+        /* "expensive" but rare */
+        place_object(obj, g.bhitpos.x, g.bhitpos.y); /* temporarily put on map */
+        vision_recalc(0);
+        flush_screen(0);
+        delay_output();
+        remove_object(obj); /* take back off of map */
+
+        radius_squared = ls->range * ls->range;
+        for (mon = fmon; mon; mon = mon->nmon) {
+            if (DEADMONSTER(mon))
+                continue;
+            /* light range is the radius of a circle and we're limiting
+               canseemon() to a square exclosing that circle, but setting
+               mtemplit 'erroneously' for a seen monster is not a problem;
+               it just flags monsters for another canseemon() check when
+               'obj' has reached its destination after missile traversal */
+            if (dist2(mon->mx, mon->my, x, y) <= radius_squared
+                && canseemon(mon))
+                mon->mtemplit = 1;
+            /* [what about worm tails?] */
+        }
+    }
+}
+
+/* draw "remembered, unseen monster" glyph at locations where a monster
+   was flagged for being visible during transient light movement but can't
+   be seen now */
+void
+transient_light_cleanup()
+{
+    struct monst *mon;
+    int mtempcount = 0;
+
+    for (mon = fmon; mon; mon = mon->nmon) {
+        if (DEADMONSTER(mon))
+            continue;
+        if (mon->mtemplit) {
+            mon->mtemplit = 0;
+            ++mtempcount;
+            if (!canseemon(mon))
+                map_invisible(mon->mx, mon->my);
+        }
+    }
+    if (mtempcount) {
+        vision_recalc(0);
+        flush_screen(0);
     }
 }
 
@@ -237,22 +314,28 @@ unsigned fmflags;
 
 /* Save all light sources of the given range. */
 void
-save_light_sources(fd, mode, range)
-int fd, mode, range;
+save_light_sources(nhfp, range)
+NHFILE *nhfp;
+int range;
 {
     int count, actual, is_global;
     light_source **prev, *curr;
 
-    if (perform_bwrite(mode)) {
-        count = maybe_write_ls(fd, range, FALSE);
-        bwrite(fd, (genericptr_t) &count, sizeof count);
-        actual = maybe_write_ls(fd, range, TRUE);
+    if (perform_bwrite(nhfp)) {
+        count = maybe_write_ls(nhfp, range, FALSE);
+        if (nhfp->structlevel) {
+            bwrite(nhfp->fd, (genericptr_t) &count, sizeof count);
+        }
+        if (nhfp->fieldlevel) {
+            sfo_int(nhfp, &count, "lightsources", "lightsource_count", 1);
+        }
+        actual = maybe_write_ls(nhfp, range, TRUE);
         if (actual != count)
             panic("counted %d light sources, wrote %d! [range=%d]", count,
                   actual, range);
     }
-
-    if (release_data(mode)) {
+    
+     if (release_data(nhfp)) {
         for (prev = &g.light_base; (curr = *prev) != 0;) {
             if (!curr->id.a_monst) {
                 impossible("save_light_sources: no id! [range=%d]", range);
@@ -287,18 +370,24 @@ int fd, mode, range;
  * pointers.
  */
 void
-restore_light_sources(fd)
-int fd;
+restore_light_sources(nhfp)
+NHFILE *nhfp;
 {
     int count;
     light_source *ls;
 
     /* restore elements */
-    mread(fd, (genericptr_t) &count, sizeof count);
+    if (nhfp->structlevel)
+        mread(nhfp->fd, (genericptr_t) &count, sizeof count);
+    if (nhfp->fieldlevel)
+        sfi_int(nhfp, &count, "lightsources", "lightsource_count", 1);
 
     while (count-- > 0) {
         ls = (light_source *) alloc(sizeof(light_source));
-        mread(fd, (genericptr_t) ls, sizeof(light_source));
+        if (nhfp->structlevel)
+            mread(nhfp->fd, (genericptr_t) ls, sizeof(light_source));
+        if (nhfp->fieldlevel)
+            sfi_ls_t(nhfp, ls, "lightsources", "lightsource", 1);
         ls->next = g.light_base;
         g.light_base = ls;
     }
@@ -361,9 +450,10 @@ boolean ghostly;
  * sources that would be written.  If write_it is true, actually write
  * the light source out.
  */
-STATIC_OVL int
-maybe_write_ls(fd, range, write_it)
-int fd, range;
+static int
+maybe_write_ls(nhfp, range, write_it)
+NHFILE *nhfp;
+int range;
 boolean write_it;
 {
     int count = 0, is_global;
@@ -391,7 +481,7 @@ boolean write_it;
         if (is_global ^ (range == RANGE_LEVEL)) {
             count++;
             if (write_it)
-                write_ls(fd, ls);
+                write_ls(nhfp, ls);
         }
     }
 
@@ -426,9 +516,9 @@ light_sources_sanity_check()
 }
 
 /* Write a light source structure to disk. */
-STATIC_OVL void
-write_ls(fd, ls)
-int fd;
+static void
+write_ls(nhfp, ls)
+NHFILE *nhfp;
 light_source *ls;
 {
     anything arg_save;
@@ -437,7 +527,10 @@ light_source *ls;
 
     if (ls->type == LS_OBJECT || ls->type == LS_MONSTER) {
         if (ls->flags & LSF_NEEDS_FIXUP) {
-            bwrite(fd, (genericptr_t) ls, sizeof(light_source));
+            if (nhfp->structlevel)
+                bwrite(nhfp->fd, (genericptr_t) ls, sizeof(light_source));
+            if (nhfp->fieldlevel)
+                sfo_ls_t(nhfp, ls, "lightsources", "lightsource", 1);
         } else {
             /* replace object pointer with id for write, then put back */
             arg_save = ls->id;
@@ -457,7 +550,10 @@ light_source *ls;
                                ls->id.a_uint);
             }
             ls->flags |= LSF_NEEDS_FIXUP;
-            bwrite(fd, (genericptr_t) ls, sizeof(light_source));
+            if (nhfp->structlevel)
+                bwrite(nhfp->fd, (genericptr_t) ls, sizeof(light_source));
+            if (nhfp->fieldlevel)
+                sfo_ls_t(nhfp, ls, "lightsources", "lightsource", 1);
             ls->id = arg_save;
             ls->flags &= ~LSF_NEEDS_FIXUP;
         }

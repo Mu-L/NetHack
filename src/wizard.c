@@ -1,4 +1,4 @@
-/* NetHack 3.6	wizard.c	$NHDT-Date: 1539804905 2018/10/17 19:35:05 $  $NHDT-Branch: keni-makedefsm $:$NHDT-Revision: 1.53 $ */
+/* NetHack 3.6	wizard.c	$NHDT-Date: 1561336025 2019/06/24 00:27:05 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.56 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2016. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -11,13 +11,13 @@
 #include "hack.h"
 #include "qtext.h"
 
-STATIC_DCL short FDECL(which_arti, (int));
-STATIC_DCL boolean FDECL(mon_has_arti, (struct monst *, SHORT_P));
-STATIC_DCL struct monst *FDECL(other_mon_has_arti, (struct monst *, SHORT_P));
-STATIC_DCL struct obj *FDECL(on_ground, (SHORT_P));
-STATIC_DCL boolean FDECL(you_have, (int));
-STATIC_DCL unsigned long FDECL(target_on, (int, struct monst *));
-STATIC_DCL unsigned long FDECL(strategy, (struct monst *));
+static short FDECL(which_arti, (int));
+static boolean FDECL(mon_has_arti, (struct monst *, SHORT_P));
+static struct monst *FDECL(other_mon_has_arti, (struct monst *, SHORT_P));
+static struct obj *FDECL(on_ground, (SHORT_P));
+static boolean FDECL(you_have, (int));
+static unsigned long FDECL(target_on, (int, struct monst *));
+static unsigned long FDECL(strategy, (struct monst *));
 
 /* adding more neutral creatures will tend to reduce the number of monsters
    summoned by nasty(); adding more lawful creatures will reduce the number
@@ -140,7 +140,7 @@ register struct monst *mtmp;
 
 #define M_Wants(mask) (mtmp->data->mflags3 & (mask))
 
-STATIC_OVL short
+static short
 which_arti(mask)
 register int mask;
 {
@@ -164,7 +164,7 @@ register int mask;
  *      since bell, book, candle, and amulet are all objects, not really
  *      artifacts right now.  [MRS]
  */
-STATIC_OVL boolean
+static boolean
 mon_has_arti(mtmp, otyp)
 register struct monst *mtmp;
 register short otyp;
@@ -181,7 +181,7 @@ register short otyp;
     return 0;
 }
 
-STATIC_OVL struct monst *
+static struct monst *
 other_mon_has_arti(mtmp, otyp)
 register struct monst *mtmp;
 register short otyp;
@@ -197,7 +197,7 @@ register short otyp;
     return (struct monst *) 0;
 }
 
-STATIC_OVL struct obj *
+static struct obj *
 on_ground(otyp)
 register short otyp;
 {
@@ -212,7 +212,7 @@ register short otyp;
     return (struct obj *) 0;
 }
 
-STATIC_OVL boolean
+static boolean
 you_have(mask)
 register int mask;
 {
@@ -233,7 +233,7 @@ register int mask;
     return 0;
 }
 
-STATIC_OVL unsigned long
+static unsigned long
 target_on(mask, mtmp)
 register int mask;
 register struct monst *mtmp;
@@ -261,7 +261,7 @@ register struct monst *mtmp;
     return (unsigned long) STRAT_NONE;
 }
 
-STATIC_OVL unsigned long
+static unsigned long
 strategy(mtmp)
 register struct monst *mtmp;
 {
@@ -356,7 +356,6 @@ xchar *sy;
         *sx = x;
         *sy = y;
     }
-
 }
 
 int
@@ -364,28 +363,33 @@ tactics(mtmp)
 register struct monst *mtmp;
 {
     unsigned long strat = strategy(mtmp);
-    xchar sx = 0, sy = 0;
+    xchar sx = 0, sy = 0, mx, my;
 
     mtmp->mstrategy =
         (mtmp->mstrategy & (STRAT_WAITMASK | STRAT_APPEARMSG)) | strat;
 
     switch (strat) {
     case STRAT_HEAL: /* hide and recover */
+        mx = mtmp->mx, my = mtmp->my;
         /* if wounded, hole up on or near the stairs (to block them) */
         choose_stairs(&sx, &sy);
         mtmp->mavenge = 1; /* covetous monsters attack while fleeing */
-        if (In_W_tower(mtmp->mx, mtmp->my, &u.uz)
+        if (In_W_tower(mx, my, &u.uz)
             || (mtmp->iswiz && !sx && !mon_has_amulet(mtmp))) {
             if (!rn2(3 + mtmp->mhp / 10))
                 (void) rloc(mtmp, TRUE);
-        } else if (sx && (mtmp->mx != sx || mtmp->my != sy)) {
+        } else if (sx && (mx != sx || my != sy)) {
             if (!mnearto(mtmp, sx, sy, TRUE)) {
-                m_into_limbo(mtmp);
+                /* couldn't move to the target spot for some reason,
+                   so stay where we are (don't actually need rloc_to()
+                   because mtmp is still on the map at <mx,my>... */
+                rloc_to(mtmp, mx, my);
                 return 0;
             }
+            mx = mtmp->mx, my = mtmp->my; /* update cached location */
         }
         /* if you're not around, cast healing spells */
-        if (distu(mtmp->mx, mtmp->my) > (BOLT_LIM * BOLT_LIM))
+        if (distu(mx, my) > (BOLT_LIM * BOLT_LIM))
             if (mtmp->mhp <= mtmp->mhpmax - 8) {
                 mtmp->mhp += rnd(8);
                 return 1;
@@ -435,12 +439,13 @@ register struct monst *mtmp;
                 return 0;
             }
         } else { /* a monster has it - 'port beside it. */
+            mx = mtmp->mx, my = mtmp->my;
             if (!mnearto(mtmp, tx, ty, FALSE))
-                m_into_limbo(mtmp);
+                rloc_to(mtmp, mx, my); /* no room? stay put */
             return 0;
         }
-    }
-    }
+    } /* default case */
+    } /* switch */
     /*NOTREACHED*/
     return 0;
 }

@@ -1,4 +1,4 @@
-/* NetHack 3.6	artifact.c	$NHDT-Date: 1545597414 2018/12/23 20:36:54 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.128 $ */
+/* NetHack 3.6	artifact.c	$NHDT-Date: 1553363416 2019/03/23 17:50:16 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.129 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2013. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -6,6 +6,8 @@
 #include "hack.h"
 #include "artifact.h"
 #include "artilist.h"
+#include "sfproto.h"
+
 
 /*
  * Note:  both artilist[] and artiexist[] have a dummy element #0,
@@ -17,17 +19,17 @@
 #define get_artifact(o) \
     (((o) && (o)->oartifact) ? &artilist[(int) (o)->oartifact] : 0)
 
-STATIC_DCL boolean FDECL(bane_applies, (const struct artifact *,
+static boolean FDECL(bane_applies, (const struct artifact *,
                                         struct monst *));
-STATIC_DCL int FDECL(spec_applies, (const struct artifact *, struct monst *));
-STATIC_DCL int FDECL(arti_invoke, (struct obj *));
-STATIC_DCL boolean FDECL(Mb_hit, (struct monst * magr, struct monst *mdef,
+static int FDECL(spec_applies, (const struct artifact *, struct monst *));
+static int FDECL(arti_invoke, (struct obj *));
+static boolean FDECL(Mb_hit, (struct monst * magr, struct monst *mdef,
                                 struct obj *, int *, int, BOOLEAN_P, char *));
-STATIC_DCL unsigned long FDECL(abil_to_spfx, (long *));
-STATIC_DCL uchar FDECL(abil_to_adtyp, (long *));
-STATIC_DCL int FDECL(glow_strength, (int));
-STATIC_DCL boolean FDECL(untouchable, (struct obj *, BOOLEAN_P));
-STATIC_DCL int FDECL(count_surround_traps, (int, int));
+static unsigned long FDECL(abil_to_spfx, (long *));
+static uchar FDECL(abil_to_adtyp, (long *));
+static int FDECL(glow_strength, (int));
+static boolean FDECL(untouchable, (struct obj *, BOOLEAN_P));
+static int FDECL(count_surround_traps, (int, int));
 
 /* The amount added to the victim's total hit points to insure that the
    victim will be killed even after damage bonus/penalty adjustments.
@@ -39,11 +41,11 @@ STATIC_DCL int FDECL(count_surround_traps, (int, int));
    of hit points that will fit in a 15 bit integer. */
 #define FATAL_DAMAGE_MODIFIER 200
 
-STATIC_DCL void NDECL(hack_artifacts);
-STATIC_DCL boolean FDECL(attacks, (int, struct obj *));
+static void NDECL(hack_artifacts);
+static boolean FDECL(attacks, (int, struct obj *));
 
 /* handle some special cases; must be called after u_init() */
-STATIC_OVL void
+static void
 hack_artifacts()
 {
     struct artifact *art;
@@ -76,20 +78,42 @@ init_artifacts()
 }
 
 void
-save_artifacts(fd)
-int fd;
+save_artifacts(nhfp)
+NHFILE *nhfp;
 {
-    bwrite(fd, (genericptr_t) g.artiexist, sizeof g.artiexist);
-    bwrite(fd, (genericptr_t) g.artidisco, sizeof g.artidisco);
+    if (nhfp->structlevel) {
+        bwrite(nhfp->fd, (genericptr_t) g.artiexist, sizeof g.artiexist);
+        bwrite(nhfp->fd, (genericptr_t) g.artidisco, sizeof g.artidisco);
+    }
+    if (nhfp->fieldlevel) {
+        int i;
+
+        for (i = 0; i < (1 + NROFARTIFACTS + 1); ++i)
+            sfo_boolean(nhfp, &g.artiexist[i], "artifacts", "g.artiexist", 1);
+
+        for (i = 0; i < NROFARTIFACTS; ++i)
+            sfo_xchar(nhfp, &g.artidisco[i], "artifacts", "g.artidisco", 1);
+    }
 }
 
 void
-restore_artifacts(fd)
-int fd;
+restore_artifacts(nhfp)
+NHFILE *nhfp;
 {
-    mread(fd, (genericptr_t) g.artiexist, sizeof g.artiexist);
-    mread(fd, (genericptr_t) g.artidisco, sizeof g.artidisco);
-    hack_artifacts(); /* redo non-saved special cases */
+    if (nhfp->structlevel) {
+        mread(nhfp->fd, (genericptr_t) g.artiexist, sizeof g.artiexist);
+        mread(nhfp->fd, (genericptr_t) g.artidisco, sizeof g.artidisco);
+    }
+    if (nhfp->fieldlevel) {
+        int i;
+
+        for (i = 0; i < (1 + NROFARTIFACTS + 1); ++i)
+            sfi_boolean(nhfp, &g.artiexist[i], "artifacts", "g.artiexist", 1);
+
+        for (i = 0; i < NROFARTIFACTS; ++i)
+            sfi_xchar(nhfp, &g.artidisco[i], "artifacts", "g.artidisco", 1);
+    }
+    hack_artifacts();	/* redo non-saved special cases */
 }
 
 const char *
@@ -394,7 +418,7 @@ const char *name;
     return FALSE;
 }
 
-STATIC_OVL boolean
+static boolean
 attacks(adtyp, otmp)
 int adtyp;
 struct obj *otmp;
@@ -625,7 +649,7 @@ long wp_mask;
 /* touch_artifact()'s return value isn't sufficient to tell whether it
    dished out damage, and tracking changes to u.uhp, u.mh, Lifesaved
    when trying to avoid second wounding is too cumbersome */
-STATIC_VAR boolean touch_blasted; /* for retouch_object() */
+static boolean touch_blasted; /* for retouch_object() */
 
 /*
  * creature (usually hero) tries to touch (pick up or wield) an artifact obj.
@@ -723,7 +747,7 @@ int dtyp;
                       || weap->cary.adtyp == dtyp);
 }
 
-STATIC_OVL boolean
+static boolean
 bane_applies(oart, mon)
 const struct artifact *oart;
 struct monst *mon;
@@ -740,7 +764,7 @@ struct monst *mon;
 }
 
 /* decide whether an artifact's special attacks apply against mtmp */
-STATIC_OVL int
+static int
 spec_applies(weap, mtmp)
 register const struct artifact *weap;
 struct monst *mtmp;
@@ -949,7 +973,7 @@ static const char *const mb_verb[2][NUM_MB_INDICES] = {
 };
 
 /* called when someone is being hit by Magicbane */
-STATIC_OVL boolean
+static boolean
 Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee)
 struct monst *magr, *mdef; /* attacker and defender */
 struct obj *mb;            /* Magicbane */
@@ -959,10 +983,10 @@ boolean vis;               /* whether the action can be seen */
 char *hittee;              /* target's name: "you" or mon_nam(mdef) */
 {
     struct permonst *old_uasmon;
-    const char *verb, *fakename;
+    const char *verb;
     boolean youattack = (magr == &g.youmonst), youdefend = (mdef == &g.youmonst),
             resisted = FALSE, do_stun, do_confuse, result;
-    int attack_indx, scare_dieroll = MB_MAX_DIEROLL / 2;
+    int attack_indx, fakeidx, scare_dieroll = MB_MAX_DIEROLL / 2;
 
     result = FALSE; /* no message given yet */
     /* the most severe effects are less likely at higher enchantment */
@@ -1029,20 +1053,20 @@ char *hittee;              /* target's name: "you" or mon_nam(mdef) */
                 if (g.youmonst.data != old_uasmon)
                     *dmgptr = 0; /* rehumanized, so no more damage */
                 if (u.uenmax > 0) {
-                    You("lose magical energy!");
                     u.uenmax--;
                     if (u.uen > 0)
                         u.uen--;
-                    g.context.botl = 1;
+                    g.context.botl = TRUE;
+                    You("lose magical energy!");
                 }
             } else {
                 if (mdef->data == &mons[PM_CLAY_GOLEM])
                     mdef->mhp = 1; /* cancelled clay golems will die */
                 if (youattack && attacktype(mdef->data, AT_MAGC)) {
-                    You("absorb magical energy!");
                     u.uenmax++;
                     u.uen++;
-                    g.context.botl = 1;
+                    g.context.botl = TRUE;
+                    You("absorb magical energy!");
                 }
             }
         }
@@ -1102,13 +1126,13 @@ char *hittee;              /* target's name: "you" or mon_nam(mdef) */
             mdef->mconf = 1;
     }
 
-    /* now give message(s) describing side-effects;
-       don't let vtense() be fooled by assigned name ending in 's' */
-    fakename = youdefend ? "you" : "mon";
+    /* now give message(s) describing side-effects; Use fakename
+       so vtense() won't be fooled by assigned name ending in 's' */
+    fakeidx = youdefend ? 1 : 0;
     if (youattack || youdefend || vis) {
         (void) upstart(hittee); /* capitalize */
         if (resisted) {
-            pline("%s %s!", hittee, vtense(fakename, "resist"));
+            pline("%s %s!", hittee, vtense(fakename[fakeidx], "resist"));
             shieldeff(youdefend ? u.ux : mdef->mx,
                       youdefend ? u.uy : mdef->my);
         }
@@ -1122,7 +1146,7 @@ char *hittee;              /* target's name: "you" or mon_nam(mdef) */
                 Strcat(buf, " and ");
             if (do_confuse)
                 Strcat(buf, "confused");
-            pline("%s %s %s%c", hittee, vtense(fakename, "are"), buf,
+            pline("%s %s %s%c", hittee, vtense(fakename[fakeidx], "are"), buf,
                   (do_stun && do_confuse) ? '!' : '.');
         }
     }
@@ -1403,7 +1427,7 @@ doinvoke()
     return arti_invoke(obj);
 }
 
-STATIC_OVL int
+static int
 arti_invoke(obj)
 struct obj *obj;
 {
@@ -1464,7 +1488,7 @@ struct obj *obj;
                 make_slimed(0L, (char *) 0);
             if (Blinded > creamed)
                 make_blinded(creamed, FALSE);
-            g.context.botl = 1;
+            g.context.botl = TRUE;
             break;
         }
         case ENERGY_BOOST: {
@@ -1475,9 +1499,9 @@ struct obj *obj;
             else if (epboost < 12)
                 epboost = u.uenmax - u.uen;
             if (epboost) {
-                You_feel("re-energized.");
                 u.uen += epboost;
-                g.context.botl = 1;
+                g.context.botl = TRUE;
+                You_feel("re-energized.");
             } else
                 goto nothing_special;
             break;
@@ -1728,7 +1752,7 @@ struct obj *otmp;
         return (100L * (long) objects[otmp->otyp].oc_cost);
 }
 
-STATIC_OVL uchar
+static uchar
 abil_to_adtyp(abil)
 long *abil;
 {
@@ -1753,7 +1777,7 @@ long *abil;
     return 0;
 }
 
-STATIC_OVL unsigned long
+static unsigned long
 abil_to_spfx(abil)
 long *abil;
 {
@@ -1850,7 +1874,7 @@ static const char *glow_verbs[] = {
 };
 
 /* relative strength that Sting is glowing (0..3), to select verb */
-STATIC_OVL int
+static int
 glow_strength(count)
 int count;
 {
@@ -1983,7 +2007,7 @@ boolean loseit;    /* whether to drop it if hero can longer touch it */
    something via being carried or which has an #invoke effect
    currently in operation undergoes a touch test; if it fails,
    it will be unworn/unwielded and revoked but not dropped */
-STATIC_OVL boolean
+static boolean
 untouchable(obj, drop_untouchable)
 struct obj *obj;
 boolean drop_untouchable;
@@ -2090,7 +2114,7 @@ int dropflag; /* 0==don't drop, 1==drop all, 2==drop weapon */
         clear_bypasses(); /* reset upon final exit */
 }
 
-STATIC_OVL int
+static int
 count_surround_traps(x, y)
 int x, y;
 {

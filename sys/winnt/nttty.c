@@ -1,4 +1,4 @@
-/* NetHack 3.6	nttty.c	$NHDT-Date: 1524931557 2018/04/28 16:05:57 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.71 $ */
+/* NetHack 3.6	nttty.c	$NHDT-Date: 1554215932 2019/04/02 14:38:52 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.99 $ */
 /* Copyright (c) NetHack PC Development Team 1993    */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -465,8 +465,15 @@ int *x, *y, *mod;
     coord cc;
     DWORD count;
     really_move_cursor();
-    if (iflags.debug_fuzzer)
-        return randomkey();
+    if (iflags.debug_fuzzer) {
+        int poskey = randomkey();
+
+        if (poskey == 0) {
+            *x = rn2(console.width);
+            *y = rn2(console.height);
+        }
+        return poskey;
+    }
     ch = (g.program_state.done_hup)
              ? '\033'
              : keyboard_handler.pCheckInput(
@@ -530,12 +537,14 @@ int x, y;
     set_console_cursor(x, y);
 }
 
-void
+/* same signature as 'putchar()' with potential failure result ignored */
+int
 xputc(ch)
-char ch;
+int ch;
 {
     set_console_cursor(ttyDisplay->curx, ttyDisplay->cury);
-    xputc_core(ch);
+    xputc_core((char) ch);
+    return 0;
 }
 
 void
@@ -543,7 +552,7 @@ xputs(s)
 const char *s;
 {
     int k;
-    int slen = strlen(s);
+    int slen = (int) strlen(s);
 
     if (ttyDisplay)
         set_console_cursor(ttyDisplay->curx, ttyDisplay->cury);
@@ -800,6 +809,12 @@ has_color(int color)
 #endif
     else
         return 0;
+}
+
+int
+term_attr_fixup(int attrmask)
+{
+    return attrmask;
 }
 
 void
@@ -1591,8 +1606,8 @@ check_font_widths()
     boolean used[256];
     memset(used, 0, sizeof(used));
     for (int i = 0; i < SYM_MAX; i++) {
-        used[g.l_syms[i]] = TRUE;
-        used[g.r_syms[i]] = TRUE;
+        used[g.primary_syms[i]] = TRUE;
+        used[g.rogue_syms[i]] = TRUE;
     }
 
     int wcUsedCount = 0;

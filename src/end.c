@@ -1,4 +1,4 @@
-/* NetHack 3.6	end.c	$NHDT-Date: 1545786454 2018/12/26 01:07:34 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.162 $ */
+/* NetHack 3.6	end.c	$NHDT-Date: 1562532734 2019/07/07 20:52:14 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.179 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -15,35 +15,38 @@
 #include <limits.h>
 #endif
 #include "dlb.h"
+#include "sfproto.h"
+
 
 /* add b to long a, convert wraparound to max value */
 #define nowrap_add(a, b) (a = ((a + b) < 0 ? LONG_MAX : (a + b)))
 
 #ifndef NO_SIGNAL
-STATIC_PTR void FDECL(done_intr, (int));
+static void FDECL(done_intr, (int));
 #if defined(UNIX) || defined(VMS) || defined(__EMX__)
 static void FDECL(done_hangup, (int));
 #endif
 #endif
-STATIC_DCL void FDECL(disclose, (int, BOOLEAN_P));
-STATIC_DCL void FDECL(get_valuables, (struct obj *));
-STATIC_DCL void FDECL(sort_valuables, (struct valuable_data *, int));
-STATIC_DCL void FDECL(artifact_score, (struct obj *, BOOLEAN_P, winid));
-STATIC_DCL void FDECL(really_done, (int)) NORETURN;
-STATIC_DCL void FDECL(savelife, (int));
-STATIC_PTR int FDECL(CFDECLSPEC vanqsort_cmp, (const genericptr,
+static void FDECL(disclose, (int, BOOLEAN_P));
+static void FDECL(get_valuables, (struct obj *));
+static void FDECL(sort_valuables, (struct valuable_data *, int));
+static void NDECL(done_object_cleanup);
+static void FDECL(artifact_score, (struct obj *, BOOLEAN_P, winid));
+static void FDECL(really_done, (int)) NORETURN;
+static void FDECL(savelife, (int));
+static int FDECL(CFDECLSPEC vanqsort_cmp, (const genericptr,
                                                const genericptr));
-STATIC_DCL int NDECL(set_vanq_order);
-STATIC_DCL void FDECL(list_vanquished, (CHAR_P, BOOLEAN_P));
-STATIC_DCL void FDECL(list_genocided, (CHAR_P, BOOLEAN_P));
-STATIC_DCL boolean FDECL(should_query_disclose_option, (int, char *));
+static int NDECL(set_vanq_order);
+static void FDECL(list_vanquished, (CHAR_P, BOOLEAN_P));
+static void FDECL(list_genocided, (CHAR_P, BOOLEAN_P));
+static boolean FDECL(should_query_disclose_option, (int, char *));
 #ifdef DUMPLOG
-STATIC_DCL void NDECL(dump_plines);
+static void NDECL(dump_plines);
 #endif
-STATIC_DCL void FDECL(dump_everything, (int, time_t));
-STATIC_DCL int NDECL(num_extinct);
+static void FDECL(dump_everything, (int, time_t));
+static int NDECL(num_extinct);
 
-#if defined(__BEOS__) || defined(MICRO) || defined(WIN32) || defined(OS2)
+#if defined(__BEOS__) || defined(MICRO) || defined(OS2) || defined(WIN32)
 extern void FDECL(nethack_exit, (int));
 #else
 #define nethack_exit exit
@@ -114,8 +117,9 @@ panictrace_handler(sig_unused)
 int sig_unused UNUSED;
 {
 #define SIG_MSG "\nSignal received.\n"
-    int f2 = (int) write(2, SIG_MSG, sizeof SIG_MSG - 1);
-
+    int f2;
+    
+    f2 = (int) write(2, SIG_MSG, sizeof SIG_MSG - 1);
     nhUse(f2);  /* what could we do if write to fd#2 (stderr) fails  */
     NH_abort(); /* ... and we're already in the process of quitting? */
 }
@@ -362,7 +366,7 @@ done2()
 
 #ifndef NO_SIGNAL
 /*ARGSUSED*/
-STATIC_PTR void
+static void
 done_intr(sig_unused) /* called as signal() handler, so sent at least 1 arg */
 int sig_unused UNUSED;
 {
@@ -399,7 +403,7 @@ int how;
                                    ? &mons[mtmp->cham]
                                    : mptr);
     boolean distorted = (boolean) (Hallucination && canspotmon(mtmp)),
-            mimicker = (mtmp->m_ap_type == M_AP_MONSTER),
+            mimicker = (M_AP_TYPE(mtmp) == M_AP_MONSTER),
             imitator = (mptr != champtr || mimicker);
 
     You((how == STONING) ? "turn to stone..." : "die...");
@@ -478,6 +482,15 @@ int how;
     }
 
     Strcpy(g.killer.name, buf);
+    /*
+     * Chicken and egg issue:
+     *  Ordinarily Unchanging ought to override something like this,
+     *  but the transformation occurs at death.  With the current code,
+     *  the effectiveness of Unchanging stops first, but a case could
+     *  be made that it should last long enough to prevent undead
+     *  transformation.  (Turning to slime isn't an issue here because
+     *  Unchanging prevents that from happening.)
+     */
     if (mptr->mlet == S_WRAITH)
         u.ugrave_arise = PM_WRAITH;
     else if (mptr->mlet == S_MUMMY && g.urace.mummynum != NON_PM)
@@ -513,7 +526,7 @@ static const struct {
 
 /* clear away while-helpless when the cause of death caused that
    helplessness (ie, "petrified by <foo> while getting stoned") */
-STATIC_DCL void
+static void
 fixup_death(how)
 int how;
 {
@@ -614,7 +627,7 @@ VA_DECL(const char *, str)
     really_done(PANICKED);
 }
 
-STATIC_OVL boolean
+static boolean
 should_query_disclose_option(category, defquery)
 int category;
 char *defquery;
@@ -658,7 +671,7 @@ char *defquery;
 }
 
 #ifdef DUMPLOG
-STATIC_OVL void
+static void
 dump_plines()
 {
     int i, j;
@@ -681,7 +694,7 @@ dump_plines()
 #endif
 
 /*ARGSUSED*/
-STATIC_OVL void
+static void
 dump_everything(how, when)
 int how;
 time_t when; /* date+time at end of game */
@@ -751,7 +764,7 @@ time_t when; /* date+time at end of game */
 #endif
 }
 
-STATIC_OVL void
+static void
 disclose(how, taken)
 int how;
 boolean taken;
@@ -825,7 +838,7 @@ boolean taken;
 }
 
 /* try to get the player back in a viable state after being killed */
-STATIC_OVL void
+static void
 savelife(how)
 int how;
 {
@@ -873,7 +886,7 @@ int how;
  * Get valuables from the given list.  Revised code: the list always remains
  * intact.
  */
-STATIC_OVL void
+static void
 get_valuables(list)
 struct obj *list; /* inventory or container contents */
 {
@@ -908,7 +921,7 @@ struct obj *list; /* inventory or container contents */
  *  Sort collected valuables, most frequent to least.  We could just
  *  as easily use qsort, but we don't care about efficiency here.
  */
-STATIC_OVL void
+static void
 sort_valuables(list, size)
 struct valuable_data list[];
 int size; /* max value is less than 20 */
@@ -937,11 +950,11 @@ int size; /* max value is less than 20 */
  * odds_and_ends() was used for 3.6.0 and 3.6.1.
  * Schroedinger's Cat is handled differently starting with 3.6.2.
  */
-STATIC_DCL boolean FDECL(odds_and_ends, (struct obj *, int));
+static boolean FDECL(odds_and_ends, (struct obj *, int));
 
 #define CAT_CHECK 2
 
-STATIC_OVL boolean
+static boolean
 odds_and_ends(list, what)
 struct obj *list;
 int what;
@@ -963,8 +976,64 @@ int what;
 }
 #endif
 
+/* deal with some objects which may be in an abnormal state at end of game */
+static void
+done_object_cleanup()
+{
+    int ox, oy;
+
+    /* might have been killed while using a disposable item, so make sure
+       it's gone prior to inventory disclosure and creation of bones */
+    inven_inuse(TRUE);
+    /*
+     * Hero can die when throwing an object (by hitting an adjacent
+     * gas spore, for instance, or being hit by mis-returning Mjollnir),
+     * or while in transit (from falling down stairs).  If that happens,
+     * some object(s) might be in limbo rather than on the map or in
+     * any inventory.  Saving bones with an active light source in limbo
+     * would trigger an 'object not local' panic.
+     *
+     * We used to use dealloc_obj() on g.thrownobj and g.kickedobj but
+     * that keeps them out of bones and could leave uball in a confused
+     * state (gone but still attached).  Place them on the map but
+     * bypass flooreffects().  That could lead to minor anomalies in
+     * bones, like undamaged paper at water or lava locations or piles
+     * not being knocked down holes, but it seems better to get this
+     * game over with than risk being tangled up in more and more details.
+     */
+    ox = u.ux + u.dx, oy = u.uy + u.dy;
+    if (!isok(ox, oy) || !accessible(ox, oy))
+        ox = u.ux, oy = u.uy;
+    /* put thrown or kicked object on map (for bones); location might
+       be incorrect (perhaps killed by divine lightning when throwing at
+       a temple priest?) but this should be better than just vanishing
+       (fragile stuff should be taken care of before getting here) */
+    if (g.thrownobj && g.thrownobj->where == OBJ_FREE) {
+        place_object(g.thrownobj, ox, oy);
+        stackobj(g.thrownobj), g.thrownobj = 0;
+    }
+    if (g.kickedobj && g.kickedobj->where == OBJ_FREE) {
+        place_object(g.kickedobj, ox, oy);
+        stackobj(g.kickedobj), g.kickedobj = 0;
+    }
+    /* if Punished hero dies during level change or dies or quits while
+       swallowed, uball and uchain will be in limbo; put them on floor
+       so bones will have them and object list cleanup finds them */
+    if (uchain && uchain->where == OBJ_FREE) {
+        /* placebc(); */
+        lift_covet_and_placebc(override_restriction);
+    }
+    /* persistent inventory window now obsolete since disclosure uses
+       a normal popup one; avoids "Bad fruit #n" when saving bones */
+    if (iflags.perm_invent) {
+        iflags.perm_invent = FALSE;
+        update_inventory(); /* make interface notice the change */
+    }
+    return;
+}
+
 /* called twice; first to calculate total, then to list relevant items */
-STATIC_OVL void
+static void
 artifact_score(list, counting, endwin)
 struct obj *list;
 boolean counting; /* true => add up points; false => display them */
@@ -1024,7 +1093,7 @@ int how;
 #endif
         ) {
         /* skip status update if panicking or disconnected */
-        g.context.botl = g.context.botlx = FALSE;
+        g.context.botl = g.context.botlx = iflags.time_botl = FALSE;
     } else {
         /* otherwise force full status update */
         g.context.botlx = TRUE;
@@ -1062,10 +1131,11 @@ int how;
     if (how < PANICKED) {
         u.umortality++;
         /* in case caller hasn't already done this */
-        if (u.uhp > 0 || (Upolyd && u.mh > 0)) {
-            /* for deaths not triggered by loss of hit points, force
-               current HP to zero (0 HP when turning into green slime
-               is iffy but we don't have much choice--that is fatal) */
+        if (u.uhp != 0 || (Upolyd && u.mh != 0)) {
+            /* force HP to zero in case it is still positive (some
+               deaths aren't triggered by loss of hit points), or
+               negative (-1 is used as a flag in some circumstances
+               which don't apply when actually dying due to HP loss) */
             u.uhp = u.mh = 0;
             g.context.botl = 1;
         }
@@ -1093,6 +1163,7 @@ int how;
     if (!survive && (wizard || discover) && how <= GENOCIDED
         && !paranoid_query(ParanoidDie, "Die?")) {
         pline("OK, so you don't %s.", (how == CHOKING) ? "choke" : "die");
+        iflags.last_msg = PLNMSG_OK_DONT_DIE;
         savelife(how);
         survive = TRUE;
     }
@@ -1107,7 +1178,7 @@ int how;
 }
 
 /* separated from done() in order to specify the __noreturn__ attribute */
-STATIC_OVL void
+static void
 really_done(how)
 int how;
 {
@@ -1126,32 +1197,36 @@ int how;
     g.program_state.gameover = 1;
     /* in case of a subsequent panic(), there's no point trying to save */
     g.program_state.something_worth_saving = 0;
+#ifdef HANGUPHANDLING
+    if (g.program_state.done_hup)
+        done_stopprint++;
+#endif
     /* render vision subsystem inoperative */
     iflags.vision_inited = 0;
 
-    /* might have been killed while using a disposable item, so make sure
-       it's gone prior to inventory disclosure and creation of bones data */
-    inven_inuse(TRUE);
-    /* maybe not on object lists; if an active light source, would cause
-       big trouble (`obj_is_local' panic) for savebones() -> savelev() */
-    if (g.thrownobj && g.thrownobj->where == OBJ_FREE)
-        dealloc_obj(g.thrownobj);
-    if (g.kickedobj && g.kickedobj->where == OBJ_FREE)
-        dealloc_obj(g.kickedobj);
+    /* maybe use up active invent item(s), place thrown/kicked missile,
+       deal with ball and chain possibly being temporarily off the map */
+    if (!g.program_state.panicking)
+        done_object_cleanup();
+    /* in case we're panicking; normally cleared by done_object_cleanup() */
+    iflags.perm_invent = FALSE;
 
     /* remember time of death here instead of having bones, rip, and
        topten figure it out separately and possibly getting different
        time or even day if player is slow responding to --More-- */
     urealtime.finish_time = endtime = getnow();
     urealtime.realtime += (long) (endtime - urealtime.start_timing);
+    /* collect these for end of game disclosure (not used during play) */
+    iflags.at_night = night();
+    iflags.at_midnight = midnight();
 
     dump_open_log(endtime);
     /* Sometimes you die on the first move.  Life's not fair.
      * On those rare occasions you get hosed immediately, go out
      * smiling... :-)  -3.
      */
-    if (g.moves <= 1 && how < PANICKED) /* You die... --More-- */
-        pline("Do not pass go.  Do not collect 200 %s.", currency(200L));
+    if (g.moves <= 1 && how < PANICKED && !done_stopprint)
+        pline("Do not pass Go.  Do not collect 200 %s.", currency(200L));
 
     if (have_windows)
         wait_synch(); /* flush screen output */
@@ -1197,9 +1272,11 @@ int how;
     fixup_death(how); /* actually, fixup g.multi_reason */
 
     if (how != PANICKED) {
+        boolean silently = done_stopprint ? TRUE : FALSE;
+
         /* these affect score and/or bones, but avoid them during panic */
-        taken = paybill((how == ESCAPED) ? -1 : (how != QUIT));
-        paygd();
+        taken = paybill((how == ESCAPED) ? -1 : (how != QUIT), silently);
+        paygd(silently);
         clearpriests();
     } else
         taken = FALSE; /* lint; assert( !bones_ok ); */
@@ -1262,10 +1339,8 @@ int how;
         int mnum = u.umonnum;
 
         if (!Upolyd) {
-            /* Base corpse on race when not poly'd since original
-             * u.umonnum is based on role, and all role monsters
-             * are human.
-             */
+            /* Base corpse on race when not poly'd since original u.umonnum
+               is based on role, and all role monsters are human. */
             mnum = (flags.female && g.urace.femalenum != NON_PM)
                        ? g.urace.femalenum
                        : g.urace.malenum;
@@ -1306,7 +1381,7 @@ int how;
         }
     }
 
-    if (u.ugrave_arise >= LOW_PM) {
+    if (u.ugrave_arise >= LOW_PM && !done_stopprint) {
         /* give this feedback even if bones aren't going to be created,
            so that its presence or absence doesn't tip off the player to
            new bones or their lack; it might be a lie if makemon fails */
@@ -1341,9 +1416,8 @@ int how;
         }
         display_nhwindow(WIN_MESSAGE, TRUE);
         destroy_nhwindow(WIN_MAP),  WIN_MAP = WIN_ERR;
-#ifndef STATUS_HILITES
-        destroy_nhwindow(WIN_STATUS),  WIN_STATUS = WIN_ERR;
-#endif
+        if (WIN_STATUS != WIN_ERR)
+            destroy_nhwindow(WIN_STATUS),  WIN_STATUS = WIN_ERR;
         destroy_nhwindow(WIN_MESSAGE),  WIN_MESSAGE = WIN_ERR;
 
         if (!done_stopprint || flags.tombstone)
@@ -1538,9 +1612,12 @@ boolean identified, all_containers, reportempty;
 
     for (box = list; box; box = box->nobj) {
         if (Is_container(box) || box->otyp == STATUE) {
-            box->cknown = 1; /* we're looking at the contents now */
-            if (identified)
-                box->lknown = 1;
+            if (!box->cknown || (identified && !box->lknown)) {
+                box->cknown = 1; /* we're looking at the contents now */
+                if (identified)
+                    box->lknown = 1;
+                update_inventory();
+            }
             if (box->otyp == BAG_OF_TRICKS) {
                 continue; /* wrong type of container */
             } else if (box->cobj) {
@@ -1643,7 +1720,7 @@ static const char *vanqorders[NUM_VANQ_ORDER_MODES] = {
     "by count, low to high, by internal index within tied count",
 };
 
-STATIC_PTR int CFDECLSPEC
+static int CFDECLSPEC
 vanqsort_cmp(vptr1, vptr2)
 const genericptr vptr1;
 const genericptr vptr2;
@@ -1724,7 +1801,7 @@ const genericptr vptr2;
 }
 
 /* returns -1 if cancelled via ESC */
-STATIC_OVL int
+static int
 set_vanq_order()
 {
     winid tmpwin;
@@ -1769,7 +1846,7 @@ dovanquished()
 #define UniqCritterIndx(mndx) ((mons[mndx].geno & G_UNIQ) \
                                && mndx != PM_HIGH_PRIEST)
 
-STATIC_OVL void
+static void
 list_vanquished(defquery, ask)
 char defquery;
 boolean ask;
@@ -1917,7 +1994,7 @@ num_genocides()
     return n;
 }
 
-STATIC_OVL int
+static int
 num_extinct()
 {
     int i, n = 0;
@@ -1931,7 +2008,7 @@ num_extinct()
     return n;
 }
 
-STATIC_OVL void
+static void
 list_genocided(defquery, ask)
 char defquery;
 boolean ask;
@@ -2067,18 +2144,20 @@ struct kinfo *kptr;
 }
 
 void
-save_killers(fd, mode)
-int fd;
-int mode;
+save_killers(nhfp)
+NHFILE *nhfp;
 {
     struct kinfo *kptr;
 
-    if (perform_bwrite(mode)) {
+    if (perform_bwrite(nhfp)) {
         for (kptr = &g.killer; kptr != (struct kinfo *) 0; kptr = kptr->next) {
-            bwrite(fd, (genericptr_t) kptr, sizeof (struct kinfo));
+            if (nhfp->structlevel)
+	        bwrite(nhfp->fd, (genericptr_t)kptr, sizeof(struct kinfo));
+            if (nhfp->fieldlevel)
+	        sfo_kinfo(nhfp, kptr, "killers", "kinfo", 1);
         }
     }
-    if (release_data(mode)) {
+    if (release_data(nhfp)) {
         while (g.killer.next) {
             kptr = g.killer.next->next;
             free((genericptr_t) g.killer.next);
@@ -2088,13 +2167,16 @@ int mode;
 }
 
 void
-restore_killers(fd)
-int fd;
+restore_killers(nhfp)
+NHFILE *nhfp;
 {
     struct kinfo *kptr;
 
     for (kptr = &g.killer; kptr != (struct kinfo *) 0; kptr = kptr->next) {
-        mread(fd, (genericptr_t) kptr, sizeof (struct kinfo));
+        if (nhfp->structlevel)
+	    mread(nhfp->fd, (genericptr_t)kptr, sizeof(struct kinfo));
+        if (nhfp->fieldlevel)
+            sfi_kinfo(nhfp, kptr, "killers", "kinfo", 1);
         if (kptr->next) {
             kptr->next = (struct kinfo *) alloc(sizeof (struct kinfo));
         }

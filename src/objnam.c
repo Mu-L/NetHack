@@ -1,4 +1,4 @@
-/* NetHack 3.6	objnam.c	$NHDT-Date: 1547025168 2019/01/09 09:12:48 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.233 $ */
+/* NetHack 3.6	objnam.c	$NHDT-Date: 1571436005 2019/10/18 22:00:05 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.247 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -10,21 +10,21 @@
 #define SCHAR_LIM 127
 #define NUMOBUF 12
 
-STATIC_DCL char *FDECL(strprepend, (char *, const char *));
-STATIC_DCL short FDECL(rnd_otyp_by_wpnskill, (SCHAR_P));
-STATIC_DCL short FDECL(rnd_otyp_by_namedesc, (const char *, CHAR_P, int));
-STATIC_DCL boolean FDECL(wishymatch, (const char *, const char *, BOOLEAN_P));
-STATIC_DCL char *NDECL(nextobuf);
-STATIC_DCL void FDECL(releaseobuf, (char *));
-STATIC_DCL char *FDECL(minimal_xname, (struct obj *));
-STATIC_DCL void FDECL(add_erosion_words, (struct obj *, char *));
-STATIC_DCL char *FDECL(doname_base, (struct obj *obj, unsigned));
-STATIC_DCL char *FDECL(just_an, (char *str, const char *));
-STATIC_DCL boolean FDECL(singplur_lookup, (char *, char *, BOOLEAN_P,
+static char *FDECL(strprepend, (char *, const char *));
+static short FDECL(rnd_otyp_by_wpnskill, (SCHAR_P));
+static short FDECL(rnd_otyp_by_namedesc, (const char *, CHAR_P, int));
+static boolean FDECL(wishymatch, (const char *, const char *, BOOLEAN_P));
+static char *NDECL(nextobuf);
+static void FDECL(releaseobuf, (char *));
+static char *FDECL(minimal_xname, (struct obj *));
+static void FDECL(add_erosion_words, (struct obj *, char *));
+static char *FDECL(doname_base, (struct obj *obj, unsigned));
+static boolean FDECL(singplur_lookup, (char *, char *, BOOLEAN_P,
                                            const char *const *));
-STATIC_DCL char *FDECL(singplur_compound, (char *));
-STATIC_DCL char *FDECL(xname_flags, (struct obj *, unsigned));
-STATIC_DCL boolean FDECL(badman, (const char *, BOOLEAN_P));
+static char *FDECL(singplur_compound, (char *));
+static char *FDECL(xname_flags, (struct obj *, unsigned));
+static boolean FDECL(badman, (const char *, BOOLEAN_P));
+static char *FDECL(globwt, (struct obj *, char *, boolean *));
 
 struct Jitem {
     int item;
@@ -44,7 +44,7 @@ struct Jitem {
              && typ != SAPPHIRE && typ != BLACK_OPAL && typ != EMERALD \
              && typ != OPAL)))
 
-STATIC_OVL struct Jitem Japanese_items[] = { { SHORT_SWORD, "wakizashi" },
+static struct Jitem Japanese_items[] = { { SHORT_SWORD, "wakizashi" },
                                              { BROADSWORD, "ninja-to" },
                                              { FLAIL, "nunchaku" },
                                              { GLAIVE, "naginata" },
@@ -58,9 +58,9 @@ STATIC_OVL struct Jitem Japanese_items[] = { { SHORT_SWORD, "wakizashi" },
                                              { POT_BOOZE, "sake" },
                                              { 0, "" } };
 
-STATIC_DCL const char *FDECL(Japanese_item_name, (int i));
+static const char *FDECL(Japanese_item_name, (int i));
 
-STATIC_OVL char *
+static char *
 strprepend(s, pref)
 register char *s;
 register const char *pref;
@@ -80,7 +80,7 @@ register const char *pref;
 static char NEARDATA obufs[NUMOBUF][BUFSZ];
 static int obufidx = 0;
 
-STATIC_OVL char *
+static char *
 nextobuf()
 {
     obufidx = (obufidx + 1) % NUMOBUF;
@@ -88,7 +88,7 @@ nextobuf()
 }
 
 /* put the most recently allocated buffer back if possible */
-STATIC_OVL void
+static void
 releaseobuf(bufp)
 char *bufp;
 {
@@ -196,6 +196,28 @@ int otyp;
     if ((pp = strstri(bufp, " (")) != 0)
         *pp = '\0'; /* strip the appended description */
     return bufp;
+}
+
+/* typename for debugging feedback where data involved might be suspect */
+char *
+safe_typename(otyp)
+int otyp;
+{
+    unsigned save_nameknown;
+    char *res = 0;
+
+    if (otyp < STRANGE_OBJECT || otyp >= NUM_OBJECTS
+        || !OBJ_NAME(objects[otyp])) {
+        res = nextobuf();
+        Sprintf(res, "glorkum[%d]", otyp);
+    } else {
+        /* force it to be treated as fully discovered */
+        save_nameknown = objects[otyp].oc_name_known;
+        objects[otyp].oc_name_known = 1;
+        res = simple_typename(otyp);
+        objects[otyp].oc_name_known = save_nameknown;
+    }
+    return res;
 }
 
 boolean
@@ -389,7 +411,7 @@ struct obj *obj;
     return xname_flags(obj, CXN_NORMAL);
 }
 
-char *
+static char *
 xname_flags(obj, cxn_flags)
 register struct obj *obj;
 unsigned cxn_flags; /* bitmask of CXN_xxx values */
@@ -422,9 +444,12 @@ unsigned cxn_flags; /* bitmask of CXN_xxx values */
     if (!nn && ocl->oc_uses_known && ocl->oc_unique)
         obj->known = 0;
     if (!Blind && !g.distantname)
-        obj->dknown = TRUE;
+        obj->dknown = 1;
     if (Role_if(PM_PRIEST))
-        obj->bknown = TRUE;
+        obj->bknown = 1; /* actively avoid set_bknown();
+                          * we mustn't call update_inventory() now because
+                          * it would call xname() (via doname()) recursively
+                          * and could end up clobbering all the obufs... */
 
     if (iflags.override_ID) {
         known = dknown = bknown = TRUE;
@@ -715,7 +740,7 @@ unsigned cxn_flags; /* bitmask of CXN_xxx values */
      brown potion               -- if oc_name_known not set
      potion of object detection -- if discovered
  */
-STATIC_OVL char *
+static char *
 minimal_xname(obj)
 struct obj *obj;
 {
@@ -816,7 +841,7 @@ struct permonst *ptr;
     return uniq;
 }
 
-STATIC_OVL void
+static void
 add_erosion_words(obj, prefix)
 struct obj *obj;
 char *prefix;
@@ -894,17 +919,18 @@ struct obj *obj;
 #define DONAME_WITH_PRICE 1
 #define DONAME_VAGUE_QUAN 2
 
-STATIC_OVL char *
+static char *
 doname_base(obj, doname_flags)
 struct obj *obj;
 unsigned doname_flags;
 {
     boolean ispoisoned = FALSE,
             with_price = (doname_flags & DONAME_WITH_PRICE) != 0,
-            vague_quan = (doname_flags & DONAME_VAGUE_QUAN) != 0;
+            vague_quan = (doname_flags & DONAME_VAGUE_QUAN) != 0,
+            weightshown = FALSE;
     boolean known, dknown, cknown, bknown, lknown;
     int omndx = obj->corpsenm;
-    char prefix[PREFIX];
+    char prefix[PREFIX], globbuf[QBUFSZ];
     char tmpbuf[PREFIX + 1]; /* for when we have to add something at
                                 the start of prefix instead of the
                                 end (Strcat is used on the end) */
@@ -1015,7 +1041,7 @@ unsigned doname_flags;
         /* we count the number of separate stacks, which corresponds
            to the number of inventory slots needed to be able to take
            everything out if no merges occur */
-        long itemcount = count_contents(obj, FALSE, FALSE, TRUE);
+        long itemcount = count_contents(obj, FALSE, FALSE, TRUE, FALSE);
 
         Sprintf(eos(bp), " containing %ld item%s", itemcount,
                 plur(itemcount));
@@ -1029,7 +1055,12 @@ unsigned doname_flags;
     case ARMOR_CLASS:
         if (obj->owornmask & W_ARMOR)
             Strcat(bp, (obj == uskin) ? " (embedded in your skin)"
-                                      : " (being worn)");
+                       /* in case of perm_invent update while Wear/Takeoff
+                          is in progress; check doffing() before donning()
+                          because donning() returns True for both cases */
+                       : doffing(obj) ? " (being doffed)"
+                         : donning(obj) ? " (being donned)"
+                           : " (being worn)");
         /*FALLTHRU*/
     case WEAPON_CLASS:
         if (ispoisoned)
@@ -1197,25 +1228,30 @@ unsigned doname_flags;
         }
     }
     /* treat 'restoring' like suppress_price because shopkeeper and
-       bill might not be available yet while restore is in progress */
+       bill might not be available yet while restore is in progress
+       (objects won't normally be formatted during that time, but if
+       'perm_invent' is enabled then they might be) */
     if (iflags.suppress_price || g.restoring) {
         ; /* don't attempt to obtain any stop pricing, even if 'with_price' */
     } else if (is_unpaid(obj)) { /* in inventory or in container in invent */
         long quotedprice = unpaid_cost(obj, TRUE);
 
-        Sprintf(eos(bp), " (%s, %ld %s)",
+        Sprintf(eos(bp), " (%s, %s%ld %s)",
                 obj->unpaid ? "unpaid" : "contents",
+                globwt(obj, globbuf, &weightshown),
                 quotedprice, currency(quotedprice));
     } else if (with_price) { /* on floor or in container on floor */
         int nochrg = 0;
         long price = get_cost_of_shop_item(obj, &nochrg);
 
         if (price > 0L)
-            Sprintf(eos(bp), " (%s, %ld %s)",
+            Sprintf(eos(bp), " (%s, %s%ld %s)",
                     nochrg ? "contents" : "for sale",
+                    globwt(obj, globbuf, &weightshown),
                     price, currency(price));
         else if (nochrg > 0)
-            Strcat(bp, " (no charge)");
+            Sprintf(eos(bp), " (%sno charge)",
+                    globwt(obj, globbuf, &weightshown));
     }
     if (!strncmp(prefix, "a ", 2)) {
         /* save current prefix, without "a "; might be empty */
@@ -1226,10 +1262,13 @@ unsigned doname_flags;
         Strcat(prefix, tmpbuf);
     }
 
-    /* show weight for items (debug tourist info)
-     * aum is stolen from Crawl's "Arbitrary Unit of Measure" */
+    /* show weight for items (debug tourist info);
+       "aum" is stolen from Crawl's "Arbitrary Unit of Measure" */
     if (wizard && iflags.wizweight) {
-        Sprintf(eos(bp), " (%d aum)", obj->owt);
+        /* wizard mode user has asked to see object weights;
+           globs with shop pricing attached already include it */
+        if (!weightshown)
+            Sprintf(eos(bp), " (%u aum)", obj->owt);
     }
     bp = strprepend(bp, prefix);
     return bp;
@@ -1594,7 +1633,7 @@ char *FDECL((*func), (OBJ_P));
 }
 
 /* pick "", "a ", or "an " as article for 'str'; used by an() and doname() */
-STATIC_OVL char *
+char *
 just_an(outbuf, str)
 char *outbuf;
 const char *str;
@@ -1792,6 +1831,30 @@ struct obj *obj;
     *s = highc(*s);
     return s;
 }
+
+#if 0 /* stalled-out work in progress */
+/* Doname2() for itemized buying of 'obj' from a shop */
+char *
+payDoname(obj)
+struct obj *obj;
+{
+    static const char and_contents[] = " and its contents";
+    char *p = doname(obj);
+
+    if (Is_container(obj) && !obj->cknown) {
+        if (obj->unpaid) {
+            if ((int) strlen(p) + sizeof and_contents - 1 < BUFSZ - PREFIX)
+                Strcat(p, and_contents);
+            *p = highc(*p);
+        } else {
+            p = strprepend(p, "Contents of ");
+        }
+    } else {
+        *p = highc(*p);
+    }
+    return p;
+}
+#endif /*0*/
 
 /* returns "[your ]xname(obj)" or "Foobar's xname(obj)" or "the xname(obj)" */
 char *
@@ -2105,7 +2168,7 @@ static const char *const as_is[] = {
 };
 
 /* singularize/pluralize decisions common to both makesingular & makeplural */
-STATIC_OVL boolean
+static boolean
 singplur_lookup(basestr, endstring, to_plural, alt_as_is)
 char *basestr, *endstring;    /* base string, pointer to eos(string) */
 boolean to_plural;            /* true => makeplural, false => makesingular */
@@ -2176,7 +2239,7 @@ const char *const *alt_as_is; /* another set like as_is[] */
 }
 
 /* searches for common compounds, ex. lump of royal jelly */
-STATIC_OVL char *
+static char *
 singplur_compound(str)
 char *str;
 {
@@ -2507,7 +2570,7 @@ const char *oldstr;
     return bp;
 }
 
-boolean
+static boolean
 badman(basestr, to_plural)
 const char *basestr;
 boolean to_plural;            /* true => makeplural, false => makesingular */
@@ -2556,7 +2619,7 @@ boolean to_plural;            /* true => makeplural, false => makesingular */
 }
 
 /* compare user string against object name string using fuzzy matching */
-STATIC_OVL boolean
+static boolean
 wishymatch(u_str, o_str, retry_inverted)
 const char *u_str;      /* from user, so might be variant spelling */
 const char *o_str;      /* from objects[], so is in canonical form */
@@ -2655,7 +2718,7 @@ struct o_range {
 };
 
 /* wishable subranges of objects */
-STATIC_OVL NEARDATA const struct o_range o_ranges[] = {
+static NEARDATA const struct o_range o_ranges[] = {
     { "bag", TOOL_CLASS, SACK, BAG_OF_TRICKS },
     { "lamp", TOOL_CLASS, OIL_LAMP, MAGIC_LAMP },
     { "candle", TOOL_CLASS, TALLOW_CANDLE, WAX_CANDLE },
@@ -2728,7 +2791,7 @@ static const struct alt_spellings {
     { (const char *) 0, 0 },
 };
 
-STATIC_OVL short
+static short
 rnd_otyp_by_wpnskill(skill)
 schar skill;
 {
@@ -2752,7 +2815,7 @@ schar skill;
     return otyp;
 }
 
-STATIC_OVL short
+static short
 rnd_otyp_by_namedesc(name, oclass, xtra_prob)
 const char *name;
 char oclass;
@@ -3979,6 +4042,7 @@ struct obj *no_wish;
         otmp = (struct obj *) &cg.zeroobj;
         pline("For a moment, you feel %s in your %s, but it disappears!",
               something, makeplural(body_part(HAND)));
+        return otmp;
     }
 
     if (halfeaten && otmp->oclass == FOOD_CLASS) {
@@ -4019,7 +4083,7 @@ int first, last;
     return 0;
 }
 
-STATIC_OVL const char *
+static const char *
 Japanese_item_name(i)
 int i;
 {
@@ -4100,7 +4164,7 @@ const char *
 mimic_obj_name(mtmp)
 struct monst *mtmp;
 {
-    if (mtmp->m_ap_type == M_AP_OBJECT) {
+    if (M_AP_TYPE(mtmp) == M_AP_OBJECT) {
         if (mtmp->mappearance == GOLD_PIECE)
             return "gold";
         if (mtmp->mappearance != STRANGE_OBJECT)
@@ -4187,6 +4251,22 @@ const char *lastR;
     }
     /* assert( strlen(qbuf) < QBUFSZ ); */
     return qbuf;
+}
+
+static char *
+globwt(otmp, buf, weightformatted_p)
+struct obj *otmp;
+char *buf;
+boolean *weightformatted_p;
+{
+    *buf = '\0';
+    if (otmp->globby) {
+        Sprintf(buf, "%u aum, ", otmp->owt);
+        *weightformatted_p = TRUE;
+    } else {
+        *weightformatted_p = FALSE;
+    }
+    return buf;
 }
 
 /*objnam.c*/

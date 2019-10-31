@@ -1,16 +1,11 @@
-/* NetHack 3.6	dog.c	$NHDT-Date: 1545439150 2018/12/22 00:39:10 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.85 $ */
+/* NetHack 3.6	dog.c	$NHDT-Date: 1554580624 2019/04/06 19:57:04 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.85 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 
-STATIC_DCL int NDECL(pet_type);
-
-/* cloned from mon.c; used here if mon_arrive() can't place mon */
-#define LEVEL_SPECIFIC_NOCORPSE(mdat) \
-    (Is_rogue_level(&u.uz)            \
-     || (g.level.flags.graveyard && is_undead(mdat) && rn2(3)))
+static int NDECL(pet_type);
 
 void
 newedog(mtmp)
@@ -58,7 +53,7 @@ register struct monst *mtmp;
     EDOG(mtmp)->killed_by_u = 0;
 }
 
-STATIC_OVL int
+static int
 pet_type()
 {
     if (g.urole.petnum != NON_PM)
@@ -472,7 +467,8 @@ long nmv; /* number of moves */
 {
     int imv = 0; /* avoid zillions of casts and lint warnings */
 
-#if defined(DEBUG) || defined(BETA)
+#if defined(DEBUG) || (NH_DEVEL_STATUS != NH_STATUS_RELEASED)
+
     if (nmv < 0L) { /* crash likely... */
         panic("catchup from future time?");
         /*NOTREACHED*/
@@ -696,7 +692,8 @@ coord *cc;   /* optional destination coordinates */
         /* **** NOTE: worm is truncated to # segs = max wormno size **** */
         num_segs = min(cnt, MAX_NUM_WORMS - 1); /* used below */
         wormgone(mtmp); /* destroys tail and takes head off map */
-        place_monster(mtmp, mtmp->mx, mtmp->my); /* put head back for relmon */
+        /* there used to be a place_monster() here for the relmon() below,
+           but it doesn't require the monster to be on the map anymore */
     }
 
     /* set minvent's obj->no_charge to 0 */

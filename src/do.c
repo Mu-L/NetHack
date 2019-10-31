@@ -1,4 +1,4 @@
-/* NetHack 3.6	do.c	$NHDT-Date: 1545597418 2018/12/23 20:36:58 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.182 $ */
+/* NetHack 3.6	do.c	$NHDT-Date: 1559670603 2019/06/04 17:50:03 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.192 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Derek S. Ray, 2015. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -8,15 +8,15 @@
 #include "hack.h"
 #include "lev.h"
 
-STATIC_DCL void FDECL(trycall, (struct obj *));
-STATIC_DCL void NDECL(polymorph_sink);
-STATIC_DCL boolean NDECL(teleport_sink);
-STATIC_DCL void FDECL(dosinkring, (struct obj *));
-STATIC_PTR int FDECL(drop, (struct obj *));
-STATIC_PTR int NDECL(wipeoff);
-STATIC_DCL int FDECL(menu_drop, (int));
-STATIC_DCL int NDECL(currentlevel_rewrite);
-STATIC_DCL void NDECL(final_level);
+static void FDECL(trycall, (struct obj *));
+static void NDECL(polymorph_sink);
+static boolean NDECL(teleport_sink);
+static void FDECL(dosinkring, (struct obj *));
+static int FDECL(drop, (struct obj *));
+static int NDECL(wipeoff);
+static int FDECL(menu_drop, (int));
+static NHFILE *NDECL(currentlevel_rewrite);
+static void NDECL(final_level);
 /* static boolean FDECL(badspot, (XCHAR_P,XCHAR_P)); */
 
 static NEARDATA const char drop_types[] = { ALLOW_COUNT, COIN_CLASS,
@@ -137,6 +137,8 @@ const char *verb;
     struct trap *t;
     struct monst *mtmp;
     struct obj *otmp;
+    boolean tseen;
+    int ttyp = NO_TRAP;
 
     if (obj->where != OBJ_FREE)
         panic("flooreffects: obj not free");
@@ -148,18 +150,43 @@ const char *verb;
         return TRUE;
     } else if (obj->otyp == BOULDER && (t = t_at(x, y)) != 0
                && (is_pit(t->ttyp) || is_hole(t->ttyp))) {
+        ttyp = t->ttyp;
+        tseen = t->tseen ? TRUE : FALSE;
         if (((mtmp = m_at(x, y)) && mtmp->mtrapped)
             || (u.utrap && u.ux == x && u.uy == y)) {
-            if (*verb)
-                pline_The("boulder %s into the pit%s.",
-                          vtense((const char *) 0, verb),
-                          (mtmp) ? "" : " with you");
+            if (*verb && (cansee(x, y) || distu(x, y) == 0))
+                pline("%s boulder %s into the pit%s.",
+                      Blind ? "A" : "The",
+                      vtense((const char *) 0, verb),
+                      mtmp ? "" : " with you");
             if (mtmp) {
                 if (!passes_walls(mtmp->data) && !throws_rocks(mtmp->data)) {
-                    int dieroll = rnd(20);
+                    /* dieroll was rnd(20); 1: maximum chance to hit
+                       since trapped target is a sitting duck */
+                    int damage, dieroll = 1;
 
-                    if (hmon(mtmp, obj, HMON_THROWN, dieroll)
-                        && !is_whirly(mtmp->data))
+                    /* 3.6.2: this was calling hmon() unconditionally
+                       so always credited/blamed the hero but the boulder
+                       might have been thrown by a giant or launched by
+                       a rolling boulder trap triggered by a monster or
+                       dropped by a scroll of earth read by a monster */
+                    if (g.context.mon_moving) {
+                        /* normally we'd use ohitmon() but it can call
+                           drop_throw() which calls flooreffects() */
+                        damage = dmgval(obj, mtmp);
+                        mtmp->mhp -= damage;
+                        if (DEADMONSTER(mtmp)) {
+                            if (canspotmon(mtmp))
+                                pline("%s is %s!", Monnam(mtmp),
+                                      (nonliving(mtmp->data)
+                                       || is_vampshifter(mtmp))
+                                      ? "destroyed" : "killed");
+                            mondied(mtmp);
+                        }
+                    } else {
+                        (void) hmon(mtmp, obj, HMON_THROWN, dieroll);
+                    }
+                    if (!DEADMONSTER(mtmp) && !is_whirly(mtmp->data))
                         return FALSE; /* still alive */
                 }
                 mtmp->mtrapped = 0;
@@ -177,17 +204,22 @@ const char *verb;
                 You_hear("a CRASH! beneath you.");
             } else if (!Blind && cansee(x, y)) {
                 pline_The("boulder %s%s.",
-                    (t->ttyp == TRAPDOOR && !t->tseen)
-                        ? "triggers and " : "",
-                          t->ttyp == TRAPDOOR
+                          (ttyp == TRAPDOOR && !tseen)
+                              ? "triggers and " : "",
+                          (ttyp == TRAPDOOR)
                               ? "plugs a trap door"
-                              : t->ttyp == HOLE ? "plugs a hole"
-                                                : "fills a pit");
+                              : (ttyp == HOLE) ? "plugs a hole"
+                                               : "fills a pit");
             } else {
                 You_hear("a boulder %s.", verb);
             }
         }
-        deltrap(t);
+        /*
+         * Note:  trap might have gone away via ((hmon -> killed -> xkilled)
+         *  || mondied) -> mondead -> m_detach -> fill_pit.
+         */
+        if ((t = t_at(x, y)) != 0)
+            deltrap(t);
         useupf(obj, 1L);
         bury_objs(x, y);
         newsym(x, y);
@@ -252,15 +284,15 @@ register struct obj *obj;
               an(hcolor(obj->blessed ? NH_AMBER : NH_BLACK)), doname(obj),
               otense(obj, "hit"));
         if (!Hallucination)
-            obj->bknown = 1;
+            obj->bknown = 1; /* ok to bypass set_bknown() */
     } else {
         pline("%s %s on the altar.", Doname2(obj), otense(obj, "land"));
         if (obj->oclass != COIN_CLASS)
-            obj->bknown = 1;
+            obj->bknown = 1; /* ok to bypass set_bknown() */
     }
 }
 
-STATIC_OVL void
+static void
 trycall(obj)
 register struct obj *obj;
 {
@@ -270,7 +302,7 @@ register struct obj *obj;
 
 /* Transforms the sink at the player's position into
    a fountain, throne, altar or grave. */
-STATIC_DCL void
+static void
 polymorph_sink()
 {
     uchar sym = S_sink;
@@ -322,7 +354,7 @@ polymorph_sink()
 
 /* Teleports the sink at the player's position;
    return True if sink teleported. */
-STATIC_DCL boolean
+static boolean
 teleport_sink()
 {
     int cx, cy;
@@ -353,7 +385,7 @@ teleport_sink()
 }
 
 /* obj is a ring being dropped over a kitchen sink */
-STATIC_OVL void
+static void
 dosinkring(obj)
 register struct obj *obj;
 {
@@ -369,7 +401,7 @@ register struct obj *obj;
         goto giveback;
     case RIN_SLOW_DIGESTION:
         pline_The("ring is regurgitated!");
-    giveback:
+ giveback:
         obj->in_use = FALSE;
         dropx(obj);
         trycall(obj);
@@ -541,7 +573,7 @@ const char *word;
                   obj->corpsenm ? " any of" : "", plur(obj->quan));
         }
         obj->corpsenm = 0; /* reset */
-        obj->bknown = 1;
+        set_bknown(obj, 1);
         return FALSE;
     }
     if (obj->otyp == LEASH && obj->leashmon != 0) {
@@ -557,7 +589,7 @@ const char *word;
     return TRUE;
 }
 
-STATIC_PTR int
+static int
 drop(obj)
 register struct obj *obj;
 {
@@ -778,7 +810,7 @@ doddrop()
 }
 
 /* Drop things from the hero's inventory, using a menu. */
-STATIC_OVL int
+static int
 menu_drop(retry)
 int retry;
 {
@@ -888,7 +920,7 @@ int retry;
         }
     }
 
-drop_done:
+ drop_done:
     return n_dropped;
 }
 
@@ -1082,18 +1114,21 @@ doup()
 }
 
 /* check that we can write out the current level */
-STATIC_OVL int
+static NHFILE *
 currentlevel_rewrite()
 {
-    register int fd;
+    NHFILE *nhfp;
     char whynot[BUFSZ];
+#ifdef MFLOPPY
+    int savemode;
+#endif
 
     /* since level change might be a bit slow, flush any buffered screen
      *  output (like "you fall through a trap door") */
     mark_synch();
 
-    fd = create_levelfile(ledger_no(&u.uz), whynot);
-    if (fd < 0) {
+    nhfp = create_levelfile(ledger_no(&u.uz), whynot);
+    if (!nhfp) {
         /*
          * This is not quite impossible: e.g., we may have
          * exceeded our quota. If that is the case then we
@@ -1102,35 +1137,40 @@ currentlevel_rewrite()
          * writable.
          */
         pline1(whynot);
-        return -1;
+        return (NHFILE *) 0;
     }
 
 #ifdef MFLOPPY
-    if (!savelev(fd, ledger_no(&u.uz), COUNT_SAVE)) {
-        (void) nhclose(fd);
+    savemode = nhfp->mode;
+    nhfp->mode = COUNTING;
+    if (!savelev(nhfp, ledger_no(&u.uz))) {
+        close_nhfile(nhfp);
         delete_levelfile(ledger_no(&u.uz));
         pline("NetHack is out of disk space for making levels!");
         You("can save, quit, or continue playing.");
         return -1;
     }
+    nhfp->mode = savemode;
 #endif
-    return fd;
+    return nhfp;
 }
 
 #ifdef INSURANCE
 void
 save_currentstate()
 {
-    int fd;
+    NHFILE *nhfp;
 
     if (flags.ins_chkpt) {
         /* write out just-attained level, with pets and everything */
-        fd = currentlevel_rewrite();
-        if (fd < 0)
+        nhfp = currentlevel_rewrite();
+        if (!nhfp)
             return;
-        bufon(fd);
-        savelev(fd, ledger_no(&u.uz), WRITE_SAVE);
-        bclose(fd);
+        if (nhfp->structlevel)
+            bufon(nhfp->fd);
+        nhfp->mode = WRITING;
+        savelev(nhfp,ledger_no(&u.uz));
+        close_nhfile(nhfp);
     }
 
     /* write out non-level state */
@@ -1150,12 +1190,52 @@ register xchar x, y;
 }
 */
 
+/* when arriving on a level, if hero and a monster are trying to share same
+   spot, move one; extracted from goto_level(); also used by wiz_makemap() */
+void
+u_collide_m(mtmp)
+struct monst *mtmp;
+{
+    coord cc;
+
+    if (!mtmp || mtmp == u.usteed || mtmp != m_at(u.ux, u.uy)) {
+        impossible("level arrival collision: %s?",
+                   !mtmp ? "no monster"
+                     : (mtmp == u.usteed) ? "steed is on map"
+                       : "monster not co-located");
+        return;
+    }
+
+    /* There's a monster at your target destination; it might be one
+       which accompanied you--see mon_arrive(dogmove.c)--or perhaps
+       it was already here.  Randomly move you to an adjacent spot
+       or else the monster to any nearby location.  Prior to 3.3.0
+       the latter was done unconditionally. */
+    if (!rn2(2) && enexto(&cc, u.ux, u.uy, g.youmonst.data)
+        && distu(cc.x, cc.y) <= 2)
+        u_on_newpos(cc.x, cc.y); /*[maybe give message here?]*/
+    else
+        mnexto(mtmp);
+
+    if ((mtmp = m_at(u.ux, u.uy)) != 0) {
+        /* there was an unconditional impossible("mnexto failed")
+           here, but it's not impossible and we're prepared to cope
+           with the situation, so only say something when debugging */
+        if (wizard)
+            pline("(monster in hero's way)");
+        if (!rloc(mtmp, TRUE) || (mtmp = m_at(u.ux, u.uy)) != 0)
+            /* no room to move it; send it away, to return later */
+            m_into_limbo(mtmp);
+    }
+}
+
 void
 goto_level(newlevel, at_stairs, falling, portal)
 d_level *newlevel;
 boolean at_stairs, falling, portal;
 {
-    int fd, l_idx;
+    int l_idx, save_mode;
+    NHFILE *nhfp;
     xchar new_ledger;
     boolean cant_go_back, great_effort,
             up = (depth(newlevel) < depth(&u.uz)),
@@ -1236,15 +1316,15 @@ boolean at_stairs, falling, portal;
     if (u.utrap && u.utraptype == TT_BURIEDBALL)
         buried_ball_to_punishment(); /* (before we save/leave old level) */
 
-    fd = currentlevel_rewrite();
-    if (fd < 0)
+    nhfp = currentlevel_rewrite();
+    if (!nhfp)
         return;
 
     /* discard context which applies to the level we're leaving;
        for lock-picking, container may be carried, in which case we
        keep context; if on the floor, it's about to be saved+freed and
        maybe_reset_pick() needs to do its carried() check before that */
-    maybe_reset_pick();
+    maybe_reset_pick((struct obj *) 0);
     reset_trapset(); /* even if to-be-armed trap obj is accompanying hero */
     iflags.travelcc.x = iflags.travelcc.y = 0; /* travel destination cache */
     g.context.polearm.hitmon = (struct monst *) 0; /* polearm target */
@@ -1283,11 +1363,30 @@ boolean at_stairs, falling, portal;
     cant_go_back = (newdungeon && In_endgame(newlevel));
     if (!cant_go_back) {
         update_mlstmv(); /* current monsters are becoming inactive */
-        bufon(fd);       /* use buffered output */
+        if (nhfp->structlevel)
+            bufon(nhfp->fd);       /* use buffered output */
     }
-    savelev(fd, ledger_no(&u.uz),
-            cant_go_back ? FREE_SAVE : (WRITE_SAVE | FREE_SAVE));
-    bclose(fd);
+    save_mode = nhfp->mode;
+    nhfp->mode = cant_go_back ? FREEING : (WRITING | FREEING);
+    savelev(nhfp, ledger_no(&u.uz));
+    nhfp->mode = save_mode;
+    /* air bubbles and clouds are saved in game-state rather than with the
+       level they're used on; in normal play, you can't leave and return
+       to any endgame level--bubbles aren't needed once you move to the
+       next level so used to be discarded when the next special level was
+       loaded; but in wizard mode you can leave and return, and since they
+       aren't saved with the level and restored upon return (new ones are
+       created instead), we need to discard them to avoid a memory leak;
+       so bubbles are now discarded as we leave the level they're used on */
+    if (Is_waterlevel(&u.uz) || Is_airlevel(&u.uz)) {
+        NHFILE tmpnhfp;
+
+        zero_nhfile(&tmpnhfp);
+        tmpnhfp.fd = -1;
+        tmpnhfp.mode = FREEING;
+        save_waterlevel(&tmpnhfp);
+    }
+    close_nhfile(nhfp);
     if (cant_go_back) {
         /* discard unreachable levels; keep #0 */
         for (l_idx = maxledgerno(); l_idx > 0; --l_idx)
@@ -1337,17 +1436,30 @@ boolean at_stairs, falling, portal;
         new = TRUE; /* made the level */
     } else {
         /* returning to previously visited level; reload it */
-        fd = open_levelfile(new_ledger, whynot);
-        if (tricked_fileremoved(fd, whynot)) {
+        nhfp = open_levelfile(new_ledger, whynot);
+        if (tricked_fileremoved(nhfp, whynot)) {
             /* we'll reach here if running in wizard mode */
             error("Cannot continue this game.");
         }
+        reseed_random(rn2);
+        reseed_random(rn2_on_display_rng);
         minit(); /* ZEROCOMP */
-        getlev(fd, g.hackpid, new_ledger, FALSE);
-        (void) nhclose(fd);
+        getlev(nhfp, g.hackpid, new_ledger, FALSE);
+        /* when in wizard mode, it is possible to leave from and return to
+           any level in the endgame; above, we discarded bubble/cloud info
+           when leaving Plane of Water or Air so recreate some now */
+        if (Is_waterlevel(&u.uz) || Is_airlevel(&u.uz)) {
+            NHFILE tmpnhfp;
+
+            zero_nhfile(&tmpnhfp);
+            tmpnhfp.fd = -1;
+            restore_waterlevel(&tmpnhfp);
+        }
+        close_nhfile(nhfp);
         oinit(); /* reassign level dependent obj probabilities */
     }
     reglyph_darkroom();
+    u.uinwater = 0;
     /* do this prior to level-change pline messages */
     vision_reset();         /* clear old level's line-of-sight */
     g.vision_full_recalc = 0; /* don't let that reenable vision yet */
@@ -1438,33 +1550,12 @@ boolean at_stairs, falling, portal;
      */
     run_timers();
 
+    /* hero might be arriving at a spot containing a monster;
+       if so, move one or the other to another location */
+    if ((mtmp = m_at(u.ux, u.uy)) != 0)
+        u_collide_m(mtmp);
+
     initrack();
-
-    if ((mtmp = m_at(u.ux, u.uy)) != 0 && mtmp != u.usteed) {
-        /* There's a monster at your target destination; it might be one
-           which accompanied you--see mon_arrive(dogmove.c)--or perhaps
-           it was already here.  Randomly move you to an adjacent spot
-           or else the monster to any nearby location.  Prior to 3.3.0
-           the latter was done unconditionally. */
-        coord cc;
-
-        if (!rn2(2) && enexto(&cc, u.ux, u.uy, g.youmonst.data)
-            && distu(cc.x, cc.y) <= 2)
-            u_on_newpos(cc.x, cc.y); /*[maybe give message here?]*/
-        else
-            mnexto(mtmp);
-
-        if ((mtmp = m_at(u.ux, u.uy)) != 0) {
-            /* there was an unconditional impossible("mnearto failed")
-               here, but it's not impossible and we're prepared to cope
-               with the situation, so only say something when debugging */
-            if (wizard)
-                pline("(monster in hero's way)");
-            if (!rloc(mtmp, TRUE) || (mtmp = m_at(u.ux, u.uy)) != 0)
-                /* no room to move it; send it away, to return later */
-                m_into_limbo(mtmp);
-        }
-    }
 
     /* initial movement of bubbles just before vision_recalc */
     if (Is_waterlevel(&u.uz) || Is_airlevel(&u.uz))
@@ -1592,7 +1683,7 @@ boolean at_stairs, falling, portal;
     (void) pickup(1);
 }
 
-STATIC_OVL void
+static void
 final_level()
 {
     struct monst *mtmp;
@@ -1688,17 +1779,16 @@ struct obj *corpse;
     where = corpse->where;
     is_uwep = (corpse == uwep);
     chewed = (corpse->oeaten != 0);
-    Strcpy(cname,
-           corpse_xname(corpse, chewed ? "bite-covered" : (const char *) 0,
-                        CXN_SINGULAR));
+    Strcpy(cname, corpse_xname(corpse,
+                               chewed ? "bite-covered" : (const char *) 0,
+                               CXN_SINGULAR));
     mcarry = (where == OBJ_MINVENT) ? corpse->ocarry : 0;
 
     if (where == OBJ_CONTAINED) {
         struct monst *mtmp2;
 
         container = corpse->ocontainer;
-        mtmp2 =
-            get_container_location(container, &container_where, (int *) 0);
+        mtmp2 = get_container_location(container, &container_where, (int *) 0);
         /* container_where is the outermost container's location even if
          * nested */
         if (container_where == OBJ_MINVENT && mtmp2)
@@ -1818,7 +1908,7 @@ donull()
     return 1; /* Do nothing, but let other things happen */
 }
 
-STATIC_PTR int
+static int
 wipeoff(VOID_ARGS)
 {
     if (u.ucreamed < 4)

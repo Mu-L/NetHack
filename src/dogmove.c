@@ -1,4 +1,4 @@
-/* NetHack 3.6	dogmove.c	$NHDT-Date: 1545439152 2018/12/22 00:39:12 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.72 $ */
+/* NetHack 3.6	dogmove.c	$NHDT-Date: 1557094801 2019/05/05 22:20:01 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.74 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -7,17 +7,17 @@
 
 #include "mfndpos.h"
 
-STATIC_DCL boolean FDECL(dog_hunger, (struct monst *, struct edog *));
-STATIC_DCL int FDECL(dog_invent, (struct monst *, struct edog *, int));
-STATIC_DCL int FDECL(dog_goal, (struct monst *, struct edog *, int, int, int));
-STATIC_DCL struct monst *FDECL(find_targ, (struct monst *, int, int, int));
-STATIC_OVL int FDECL(find_friends, (struct monst *, struct monst *, int));
-STATIC_DCL struct monst *FDECL(best_target, (struct monst *));
-STATIC_DCL long FDECL(score_targ, (struct monst *, struct monst *));
-STATIC_DCL boolean FDECL(can_reach_location, (struct monst *, XCHAR_P,
+static boolean FDECL(dog_hunger, (struct monst *, struct edog *));
+static int FDECL(dog_invent, (struct monst *, struct edog *, int));
+static int FDECL(dog_goal, (struct monst *, struct edog *, int, int, int));
+static struct monst *FDECL(find_targ, (struct monst *, int, int, int));
+static int FDECL(find_friends, (struct monst *, struct monst *, int));
+static struct monst *FDECL(best_target, (struct monst *));
+static long FDECL(score_targ, (struct monst *, struct monst *));
+static boolean FDECL(can_reach_location, (struct monst *, XCHAR_P,
                                               XCHAR_P, XCHAR_P, XCHAR_P));
-STATIC_DCL boolean FDECL(could_reach_item, (struct monst *, XCHAR_P, XCHAR_P));
-STATIC_DCL void FDECL(quickmimic, (struct monst *));
+static boolean FDECL(could_reach_item, (struct monst *, XCHAR_P, XCHAR_P));
+static void FDECL(quickmimic, (struct monst *));
 
 /* pick a carried item for pet to drop */
 struct obj *
@@ -121,7 +121,7 @@ static NEARDATA const char nofetch[] = { BALL_CLASS, CHAIN_CLASS, ROCK_CLASS,
                                          0 };
 
 
-STATIC_PTR void FDECL(wantdoor, (int, int, genericptr_t));
+static void FDECL(wantdoor, (int, int, genericptr_t));
 
 boolean
 cursed_object_at(x, y)
@@ -355,7 +355,7 @@ boolean devour;
 }
 
 /* hunger effects -- returns TRUE on starvation */
-STATIC_OVL boolean
+static boolean
 dog_hunger(mtmp, edog)
 struct monst *mtmp;
 struct edog *edog;
@@ -401,7 +401,7 @@ struct edog *edog;
 /* do something with object (drop, pick up, eat) at current position
  * returns 1 if object eaten (since that counts as dog's move), 2 if died
  */
-STATIC_OVL int
+static int
 dog_invent(mtmp, edog, udist)
 register struct monst *mtmp;
 register struct edog *edog;
@@ -474,7 +474,7 @@ int udist;
 
 /* set dog's goal -- gtyp, gx, gy;
    returns -1/0/1 (dog's desire to approach player) or -2 (abort move) */
-STATIC_OVL int
+static int
 dog_goal(mtmp, edog, after, udist, whappr)
 register struct monst *mtmp;
 struct edog *edog;
@@ -618,8 +618,7 @@ int after, udist, whappr;
     return appr;
 }
 
-
-STATIC_OVL struct monst *
+static struct monst *
 find_targ(mtmp, dx, dy, maxdist)
 register struct monst *mtmp;
 int dx, dy;
@@ -647,14 +646,13 @@ int maxdist;
         if (!m_cansee(mtmp, curx, cury))
             break;
 
-        targ = m_at(curx, cury);
-
         if (curx == mtmp->mux && cury == mtmp->muy)
             return &g.youmonst;
 
-        if (targ) {
+        if ((targ = m_at(curx, cury)) != 0) {
             /* Is the monster visible to the pet? */
-            if ((!targ->minvis || perceives(mtmp->data)) && !targ->mundetected)
+            if ((!targ->minvis || perceives(mtmp->data))
+                && !targ->mundetected)
                 break;
             /* If the pet can't see it, it assumes it aint there */
             targ = 0;
@@ -663,7 +661,7 @@ int maxdist;
     return targ;
 }
 
-STATIC_OVL int
+static int
 find_friends(mtmp, mtarg, maxdist)
 struct monst *mtmp, *mtarg;
 int    maxdist;
@@ -709,7 +707,7 @@ int    maxdist;
     return 0;
 }
 
-STATIC_OVL long
+static long
 score_targ(mtmp, mtarg)
 struct monst *mtmp, *mtarg;
 {
@@ -810,8 +808,7 @@ struct monst *mtmp, *mtarg;
     return score;
 }
 
-
-STATIC_OVL struct monst *
+static struct monst *
 best_target(mtmp)
 struct monst *mtmp;   /* Pet */
 {
@@ -861,7 +858,6 @@ struct monst *mtmp;   /* Pet */
 
     return best_targ;
 }
-
 
 /* return 0 (no move), 1 (move) or 2 (dead) */
 int
@@ -1127,7 +1123,7 @@ int after; /* this is extra fast monster movement */
                 chcnt = 0;
             chi = i;
         }
-    nxti:
+ nxti:
         ;
     }
 
@@ -1142,6 +1138,7 @@ int after; /* this is extra fast monster movement */
         /* How hungry is the pet? */
         if (!mtmp->isminion) {
             struct edog *dog = EDOG(mtmp);
+
             hungry = (g.monstermoves > (dog->hungrytime + 300));
         }
 
@@ -1271,7 +1268,7 @@ int after; /* this is extra fast monster movement */
 }
 
 /* check if a monster could pick up objects from a location */
-STATIC_OVL boolean
+static boolean
 could_reach_item(mon, nx, ny)
 struct monst *mon;
 xchar nx, ny;
@@ -1290,7 +1287,7 @@ xchar nx, ny;
  * Since the maximum food distance is 5, this should never be more than 5
  * calls deep.
  */
-STATIC_OVL boolean
+static boolean
 can_reach_location(mon, mx, my, fx, fy)
 struct monst *mon;
 xchar mx, my, fx, fy;
@@ -1326,7 +1323,7 @@ xchar mx, my, fx, fy;
 }
 
 /* do_clear_area client */
-STATIC_PTR void
+static void
 wantdoor(x, y, distance)
 int x, y;
 genericptr_t distance;
@@ -1364,7 +1361,7 @@ finish_meating(mtmp)
 struct monst *mtmp;
 {
     mtmp->meating = 0;
-    if (mtmp->m_ap_type && mtmp->mappearance && mtmp->cham == NON_PM) {
+    if (M_AP_TYPE(mtmp) && mtmp->mappearance && mtmp->cham == NON_PM) {
         /* was eating a mimic and now appearance needs resetting */
         mtmp->m_ap_type = 0;
         mtmp->mappearance = 0;
@@ -1372,7 +1369,7 @@ struct monst *mtmp;
     }
 }
 
-STATIC_OVL void
+static void
 quickmimic(mtmp)
 struct monst *mtmp;
 {
@@ -1381,6 +1378,15 @@ struct monst *mtmp;
 
     if (Protection_from_shape_changers || !mtmp->meating)
         return;
+
+    /* with polymorph, the steed's equipment would be re-checked and its
+       saddle would come off, triggering DISMOUNT_FELL, but mimicking
+       doesn't impact monster's equipment; normally DISMOUNT_POLY is for
+       rider taking on an unsuitable shape, but its message works fine
+       for this and also avoids inflicting damage during forced dismount;
+       do this before changing so that dismount refers to original shape */
+    if (mtmp == u.usteed)
+        dismount_steed(DISMOUNT_POLY);
 
     do {
         idx = rn2(SIZE(qm));
@@ -1409,15 +1415,15 @@ struct monst *mtmp;
         newsym(mtmp->mx, mtmp->my);
         You("%s %s %sappear%s where %s was!",
             cansee(mtmp->mx, mtmp->my) ? "see" : "sense that",
-            (mtmp->m_ap_type == M_AP_FURNITURE)
+            (M_AP_TYPE(mtmp) == M_AP_FURNITURE)
                 ? an(defsyms[mtmp->mappearance].explanation)
-                : (mtmp->m_ap_type == M_AP_OBJECT
+                : (M_AP_TYPE(mtmp) == M_AP_OBJECT
                    && OBJ_DESCR(objects[mtmp->mappearance]))
                       ? an(OBJ_DESCR(objects[mtmp->mappearance]))
-                      : (mtmp->m_ap_type == M_AP_OBJECT
+                      : (M_AP_TYPE(mtmp) == M_AP_OBJECT
                          && OBJ_NAME(objects[mtmp->mappearance]))
                             ? an(OBJ_NAME(objects[mtmp->mappearance]))
-                            : (mtmp->m_ap_type == M_AP_MONSTER)
+                            : (M_AP_TYPE(mtmp) == M_AP_MONSTER)
                                   ? an(mons[mtmp->mappearance].mname)
                                   : something,
             cansee(mtmp->mx, mtmp->my) ? "" : "has ",

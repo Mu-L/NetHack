@@ -1,4 +1,4 @@
-/* NetHack 3.6	read.c	$NHDT-Date: 1546465285 2019/01/02 21:41:25 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.164 $ */
+/* NetHack 3.6	read.c	$NHDT-Date: 1561485713 2019/06/25 18:01:53 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.172 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -16,26 +16,26 @@ static NEARDATA const char readable[] = { ALL_CLASSES, SCROLL_CLASS,
                                           SPBOOK_CLASS, 0 };
 static const char all_count[] = { ALLOW_COUNT, ALL_CLASSES, 0 };
 
-STATIC_DCL boolean FDECL(learnscrolltyp, (SHORT_P));
-STATIC_DCL char *FDECL(erode_obj_text, (struct obj *, char *));
-STATIC_DCL char *FDECL(apron_text, (struct obj *, char *buf));
-STATIC_DCL void FDECL(stripspe, (struct obj *));
-STATIC_DCL void FDECL(p_glow1, (struct obj *));
-STATIC_DCL void FDECL(p_glow2, (struct obj *, const char *));
-STATIC_DCL void FDECL(forget_single_object, (int));
+static boolean FDECL(learnscrolltyp, (SHORT_P));
+static char *FDECL(erode_obj_text, (struct obj *, char *));
+static char *FDECL(apron_text, (struct obj *, char *buf));
+static void FDECL(stripspe, (struct obj *));
+static void FDECL(p_glow1, (struct obj *));
+static void FDECL(p_glow2, (struct obj *, const char *));
+static void FDECL(forget_single_object, (int));
 #if 0 /* not used */
-STATIC_DCL void FDECL(forget_objclass, (int));
+static void FDECL(forget_objclass, (int));
 #endif
-STATIC_DCL void FDECL(randomize, (int *, int));
-STATIC_DCL void FDECL(forget, (int));
-STATIC_DCL int FDECL(maybe_tame, (struct monst *, struct obj *));
-STATIC_DCL boolean FDECL(get_valid_stinking_cloud_pos, (int, int));
-STATIC_DCL boolean FDECL(is_valid_stinking_cloud_pos, (int, int, BOOLEAN_P));
-STATIC_PTR void FDECL(display_stinking_cloud_positions, (int));
-STATIC_PTR void FDECL(set_lit, (int, int, genericptr));
-STATIC_DCL void NDECL(do_class_genocide);
+static void FDECL(randomize, (int *, int));
+static void FDECL(forget, (int));
+static int FDECL(maybe_tame, (struct monst *, struct obj *));
+static boolean FDECL(get_valid_stinking_cloud_pos, (int, int));
+static boolean FDECL(is_valid_stinking_cloud_pos, (int, int, BOOLEAN_P));
+static void FDECL(display_stinking_cloud_positions, (int));
+static void FDECL(set_lit, (int, int, genericptr));
+static void NDECL(do_class_genocide);
 
-STATIC_OVL boolean
+static boolean
 learnscrolltyp(scrolltyp)
 short scrolltyp;
 {
@@ -58,7 +58,7 @@ struct obj *sobj;
         (void) learnscrolltyp(sobj->otyp);
 }
 
-STATIC_OVL char *
+static char *
 erode_obj_text(otmp, buf)
 struct obj *otmp;
 char *buf;
@@ -160,7 +160,7 @@ char *buf;
     return erode_obj_text(tshirt, buf);
 }
 
-STATIC_OVL char *
+static char *
 apron_text(apron, buf)
 struct obj *apron;
 char *buf;
@@ -406,7 +406,7 @@ doread()
     return 1;
 }
 
-STATIC_OVL void
+static void
 stripspe(obj)
 register struct obj *obj;
 {
@@ -422,14 +422,14 @@ register struct obj *obj;
     }
 }
 
-STATIC_OVL void
+static void
 p_glow1(otmp)
 register struct obj *otmp;
 {
     pline("%s briefly.", Yobjnam2(otmp, Blind ? "vibrate" : "glow"));
 }
 
-STATIC_OVL void
+static void
 p_glow2(otmp, color)
 register struct obj *otmp;
 register const char *color;
@@ -712,7 +712,7 @@ int curse_bless;
 }
 
 /* Forget known information about this object type. */
-STATIC_OVL void
+static void
 forget_single_object(obj_id)
 int obj_id;
 {
@@ -729,7 +729,7 @@ int obj_id;
 
 #if 0 /* here if anyone wants it.... */
 /* Forget everything known about a particular object class. */
-STATIC_OVL void
+static void
 forget_objclass(oclass)
 int oclass;
 {
@@ -742,7 +742,7 @@ int oclass;
 #endif
 
 /* randomize the given list of numbers  0 <= i < count */
-STATIC_OVL void
+static void
 randomize(indices, count)
 int *indices;
 int count;
@@ -890,7 +890,7 @@ int percent;
  *      howmuch & ALL_MAP       = forget whole map
  *      howmuch & ALL_SPELLS    = forget all spells
  */
-STATIC_OVL void
+static void
 forget(howmuch)
 int howmuch;
 {
@@ -924,7 +924,7 @@ int howmuch;
 }
 
 /* monster is hit by scroll of taming's effect */
-STATIC_OVL int
+static int
 maybe_tame(mtmp, sobj)
 struct monst *mtmp;
 struct obj *sobj;
@@ -947,7 +947,7 @@ struct obj *sobj;
     return 0;
 }
 
-STATIC_OVL boolean
+static boolean
 get_valid_stinking_cloud_pos(x,y)
 int x,y;
 {
@@ -956,7 +956,7 @@ int x,y;
               || distu(x, y) >= 32));
 }
 
-STATIC_OVL boolean
+static boolean
 is_valid_stinking_cloud_pos(x, y, showmsg)
 int x, y;
 boolean showmsg;
@@ -969,7 +969,7 @@ boolean showmsg;
     return TRUE;
 }
 
-STATIC_PTR void
+static void
 display_stinking_cloud_positions(state)
 int state;
 {
@@ -1282,6 +1282,10 @@ struct obj *sobj; /* scroll, or fake spellbook object for scroll-like spell */
 
                 /* gold isn't subject to cursing and blessing */
                 if (obj->oclass == COIN_CLASS)
+                    continue;
+                /* hide current scroll from itself so that perm_invent won't
+                   show known blessed scroll losing bknown when confused */
+                if (obj == sobj && obj->quan == 1L)
                     continue;
                 wornmask = (obj->owornmask & ~(W_BALL | W_ART | W_ARTI));
                 if (wornmask && !sblessed) {
@@ -1893,12 +1897,12 @@ struct litmon {
     struct monst *mon;
     struct litmon *nxt;
 };
-STATIC_VAR struct litmon *gremlins = 0;
+static struct litmon *gremlins = 0;
 
 /*
  * Low-level lit-field update routine.
  */
-STATIC_PTR void
+static void
 set_lit(x, y, val)
 int x, y;
 genericptr_t val;
@@ -2025,7 +2029,7 @@ struct obj *obj;
     }
 }
 
-STATIC_OVL void
+static void
 do_class_genocide()
 {
     int i, j, immunecnt, gonecnt, goodcnt, class, feel_dead = 0;
@@ -2104,6 +2108,10 @@ do_class_genocide()
                     kill_genocided_monsters();
                     update_inventory(); /* eggs & tins */
                     pline("Wiped out all %s.", nam);
+                    if (Upolyd && vampshifted(&g.youmonst)
+                        /* current shifted form or base vampire form */
+                        && (i == u.umonnum || i == g.youmonst.cham))
+                        polyself(3); /* vampshifter back to vampire */
                     if (Upolyd && i == u.umonnum) {
                         u.mh = -1;
                         if (Unchanging) {
@@ -2222,6 +2230,10 @@ int how;
                 continue;
             }
             ptr = &mons[mndx];
+            /* first revert if current shifted form or base vampire form */
+            if (Upolyd && vampshifted(&g.youmonst)
+                && (mndx == u.umonnum || mndx == g.youmonst.cham))
+                polyself(3); /* vampshifter (bat, &c) back to vampire */
             /* Although "genus" is Latin for race, the hero benefits
              * from both race and role; thus genocide affects either.
              */
@@ -2385,12 +2397,14 @@ unpunish()
 {
     struct obj *savechain = uchain;
 
+    /* chain goes away */
     obj_extract_self(uchain);
     newsym(uchain->ox, uchain->oy);
-    setworn((struct obj *) 0, W_CHAIN);
+    setworn((struct obj *) 0, W_CHAIN); /* sets 'uchain' to Null */
     dealloc_obj(savechain);
+    /* ball persists */
     uball->spe = 0;
-    setworn((struct obj *) 0, W_BALL);
+    setworn((struct obj *) 0, W_BALL); /* sets 'uball' to Null */
 }
 
 /* some creatures have special data structures that only make sense in their
@@ -2428,7 +2442,7 @@ struct _create_particular_data {
     char monclass;
     boolean randmonst;
     boolean maketame, makepeaceful, makehostile;
-    boolean sleeping, saddled, invisible;
+    boolean sleeping, saddled, invisible, hidden;
 };
 
 boolean
@@ -2444,7 +2458,7 @@ struct _create_particular_data *d;
     d->fem = -1; /* gender not specified */
     d->randmonst = FALSE;
     d->maketame = d->makepeaceful = d->makehostile = FALSE;
-    d->sleeping = d->saddled = d->invisible = FALSE;
+    d->sleeping = d->saddled = d->invisible = d->hidden = FALSE;
 
     if ((tmpp = strstri(bufp, "saddled ")) != 0) {
         d->saddled = TRUE;
@@ -2457,6 +2471,10 @@ struct _create_particular_data *d;
     if ((tmpp = strstri(bufp, "invisible ")) != 0) {
         d->invisible = TRUE;
         (void) memset(tmpp, ' ', sizeof "invisible " - 1);
+    }
+    if ((tmpp = strstri(bufp, "hidden ")) != 0) {
+        d->hidden = TRUE;
+        (void) memset(tmpp, ' ', sizeof "hidden " - 1);
     }
     /* check "female" before "male" to avoid false hit mid-word */
     if ((tmpp = strstri(bufp, "female ")) != 0) {
@@ -2512,7 +2530,7 @@ create_particular_creation(d)
 struct _create_particular_data *d;
 {
     struct permonst *whichpm = NULL;
-    int i, firstchoice = NON_PM;
+    int i, mx, my, firstchoice = NON_PM;
     struct monst *mtmp;
     boolean madeany = FALSE;
 
@@ -2543,6 +2561,7 @@ struct _create_particular_data *d;
             /* otherwise try again */
             continue;
         }
+        mx = mtmp->mx, my = mtmp->my;
         /* 'is_FOO()' ought to be called 'always_FOO()' */
         if (d->fem != -1 && !is_male(mtmp->data) && !is_female(mtmp->data))
             mtmp->female = d->fem; /* ignored for is_neuter() */
@@ -2559,15 +2578,33 @@ struct _create_particular_data *d;
             put_saddle_on_mon(otmp, mtmp);
         }
         if (d->invisible) {
-            int mx = mtmp->mx, my = mtmp->my;
             mon_set_minvis(mtmp);
             if (does_block(mx, my, &levl[mx][my]))
                 block_point(mx, my);
             else
                 unblock_point(mx, my);
         }
+       if (d->hidden
+           && ((is_hider(mtmp->data) && mtmp->data->mlet != S_MIMIC)
+               || (hides_under(mtmp->data) && OBJ_AT(mx, my))
+               || (mtmp->data->mlet == S_EEL && is_pool(mx, my))))
+            mtmp->mundetected = 1;
         if (d->sleeping)
             mtmp->msleeping = 1;
+        /* iff asking for 'hidden', show locaton of every created monster
+           that can't be seen--whether that's due to successfully hiding
+           or vision issues (line-of-sight, invisibility, blindness) */
+        if (d->hidden && !canspotmon(mtmp)) {
+            int count = couldsee(mx, my) ? 8 : 4;
+            char saveviz = g.viz_array[my][mx];
+
+            if (!flags.sparkle)
+                count /= 2;
+            g.viz_array[my][mx] |= (IN_SIGHT | COULD_SEE);
+            flash_glyph_at(mx, my, mon_to_glyph(mtmp, newsym_rn2), count);
+            g.viz_array[my][mx] = saveviz;
+            newsym(mx, my);
+        }
         madeany = TRUE;
         /* in case we got a doppelganger instead of what was asked
            for, make it start out looking like what was asked for */

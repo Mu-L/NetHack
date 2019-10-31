@@ -1,4 +1,4 @@
-/* NetHack 3.6	exper.c	$NHDT-Date: 1544917599 2018/12/15 23:46:39 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.31 $ */
+/* NetHack 3.6	exper.c	$NHDT-Date: 1562114352 2019/07/03 00:39:12 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.33 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2007. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -8,12 +8,14 @@
 #include <limits.h>
 #endif
 
-STATIC_DCL int FDECL(enermod, (int));
+static int FDECL(enermod, (int));
 
 long
 newuexp(lev)
 int lev;
 {
+    if (lev < 1) /* for newuexp(u.ulevel - 1) when u.ulevel is 1 */
+        return 0L;
     if (lev < 10)
         return (10L * (1L << lev));
     if (lev < 20)
@@ -21,7 +23,7 @@ int lev;
     return (10000000L * ((long) (lev - 19)));
 }
 
-STATIC_OVL int
+static int
 enermod(en)
 int en;
 {
@@ -161,24 +163,36 @@ void
 more_experienced(exper, rexp)
 register int exper, rexp;
 {
-    long newexp = u.uexp + exper;
-    long rexpincr = 4 * exper + rexp;
-    long newrexp = u.urexp + rexpincr;
+    long oldexp = u.uexp,
+         oldrexp = u.urexp,
+         newexp = oldexp + exper,
+         rexpincr = 4 * exper + rexp,
+         newrexp = oldrexp + rexpincr;
 
     /* cap experience and score on wraparound */
     if (newexp < 0 && exper > 0)
         newexp = LONG_MAX;
     if (newrexp < 0 && rexpincr > 0)
         newrexp = LONG_MAX;
-    u.uexp = newexp;
-    u.urexp = newrexp;
 
-    if (exper
+    if (newexp != oldexp) {
+        u.uexp = newexp;
+        if (flags.showexp)
+            g.context.botl = TRUE;
+        /* even when experience points aren't being shown, experience level
+           might be highlighted with a percentage highlight rule and that
+           percentage depends upon experience points */
+        if (!g.context.botl && exp_percent_changing())
+            g.context.botl = TRUE;
+    }
+    /* newrexp will always differ from oldrexp unless they're LONG_MAX */
+    if (newrexp != oldrexp) {
+        u.urexp = newrexp;
 #ifdef SCORE_ON_BOTL
-        || flags.showscore
+        if (flags.showscore)
+            g.context.botl = TRUE;
 #endif
-        )
-        g.context.botl = 1;
+    }
     if (u.urexp >= (Role_if(PM_WIZARD) ? 1000 : 2000))
         flags.beginner = 0;
 }
@@ -243,7 +257,7 @@ const char *drainer; /* cause of death, if drain should be fatal */
             rehumanize();
     }
 
-    g.context.botl = 1;
+    g.context.botl = TRUE;
 }
 
 /*
@@ -296,14 +310,14 @@ boolean incr; /* true iff via incremental experience growth */
         }
         ++u.ulevel;
         pline("Welcome %sto experience level %d.",
-              u.ulevelmax < u.ulevel ? "" : "back ",
+              (u.ulevelmax < u.ulevel) ? "" : "back ",
               u.ulevel);
         if (u.ulevelmax < u.ulevel)
             u.ulevelmax = u.ulevel;
         adjabil(u.ulevel - 1, u.ulevel); /* give new intrinsics */
         reset_rndmonst(NON_PM);          /* new monster selection */
     }
-    g.context.botl = 1;
+    g.context.botl = TRUE;
 }
 
 /* compute a random amount of experience points suitable for the hero's

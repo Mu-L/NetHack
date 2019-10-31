@@ -1,4 +1,4 @@
-/* NetHack 3.6	mapglyph.c	$NHDT-Date: 1526429201 2018/05/16 00:06:41 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.47 $ */
+/* NetHack 3.6	mapglyph.c	$NHDT-Date: 1552945095 2019/03/18 21:38:15 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.48 $ */
 /* Copyright (c) David Cohrs, 1991                                */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -66,11 +66,12 @@ unsigned *ospecial;
 {
     register int offset, idx;
     int color = NO_COLOR;
-    nhsym ch;
+    nhsym ch, ovsym;
     unsigned special = 0;
     /* condense multiple tests in macro version down to single */
-    boolean has_rogue_ibm_graphics = HAS_ROGUE_IBM_GRAPHICS;
-    boolean has_rogue_color = (has_rogue_ibm_graphics
+    boolean has_rogue_ibm_graphics = HAS_ROGUE_IBM_GRAPHICS,
+            is_you = (x == u.ux && y == u.uy),
+            has_rogue_color = (has_rogue_ibm_graphics
                                && g.symset[g.currentgraphics].nocolor == 0);
 
     /*
@@ -206,7 +207,7 @@ unsigned *ospecial;
     } else { /* a monster */
         idx = mons[glyph].mlet + SYM_OFF_M;
         if (has_rogue_color && iflags.use_color) {
-            if (x == u.ux && y == u.uy)
+            if (is_you)
                 /* actually player should be yellow-on-gray if in corridor */
                 color = CLR_YELLOW;
             else
@@ -215,11 +216,24 @@ unsigned *ospecial;
             mon_color(glyph);
 #ifdef TEXTCOLOR
             /* special case the hero for `showrace' option */
-            if (iflags.use_color && x == u.ux && y == u.uy
-                && flags.showrace && !Upolyd)
+            if (iflags.use_color && is_you && flags.showrace && !Upolyd)
                 color = HI_DOMESTIC;
 #endif
         }
+    }
+
+    /* These were requested by a blind player to enhance screen reader use */
+    if (sysopt.accessibility == 1) {
+        ovsym = Is_rogue_level(&u.uz)
+                    ? g.ov_rogue_syms[SYM_PET_OVERRIDE + SYM_OFF_X]
+                    : g.ov_primary_syms[SYM_PET_OVERRIDE + SYM_OFF_X];
+        if (ovsym && (special & MG_PET))
+            idx = SYM_PET_OVERRIDE + SYM_OFF_X;
+        ovsym = Is_rogue_level(&u.uz)
+                    ? g.ov_rogue_syms[SYM_PLAYER_OVERRIDE + SYM_OFF_X]
+                    : g.ov_primary_syms[SYM_PLAYER_OVERRIDE + SYM_OFF_X];
+        if (ovsym && is_you)
+            idx = SYM_PLAYER_OVERRIDE + SYM_OFF_X;
     }
 
     ch = g.showsyms[idx];
@@ -249,7 +263,7 @@ int glyph;
     return encbuf;
 }
 
-const char *
+char *
 decode_mixed(buf, str)
 char *buf;
 const char *str;
@@ -257,8 +271,8 @@ const char *str;
     static const char hex[] = "00112233445566778899aAbBcCdDeEfF";
     char *put = buf;
 
-    if (!put || !str)
-        return "";
+    if (!str)
+        return strcpy(buf, "");
 
     while (*str) {
         if (*str == '\\') {
@@ -312,6 +326,15 @@ const char *str;
                 break;
 #endif
             case '\\':
+                break;
+            case '\0':
+                /* String ended with '\\'.  This can happen when someone
+                   names an object with a name ending with '\\', drops the
+                   named object on the floor nearby and does a look at all
+                   nearby objects. */
+                /* brh - should we perhaps not allow things to have names
+                   that contain '\\' */
+                str = save_str;
                 break;
             }
         }

@@ -1,4 +1,4 @@
-/* NetHack 3.6	mhitm.c	$NHDT-Date: 1513297346 2017/12/15 00:22:26 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.99 $ */
+/* NetHack 3.6	mhitm.c	$NHDT-Date: 1560161806 2019/06/10 10:16:46 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.116 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -9,51 +9,26 @@
 static const char brief_feeling[] =
     "have a %s feeling for a moment, then it passes.";
 
-STATIC_DCL char *FDECL(mon_nam_too, (char *, struct monst *, struct monst *));
-STATIC_DCL int FDECL(hitmm, (struct monst *, struct monst *,
+static int FDECL(hitmm, (struct monst *, struct monst *,
                              struct attack *));
-STATIC_DCL int FDECL(gazemm, (struct monst *, struct monst *,
+static int FDECL(gazemm, (struct monst *, struct monst *,
                               struct attack *));
-STATIC_DCL int FDECL(gulpmm, (struct monst *, struct monst *,
+static int FDECL(gulpmm, (struct monst *, struct monst *,
                               struct attack *));
-STATIC_DCL int FDECL(explmm, (struct monst *, struct monst *,
+static int FDECL(explmm, (struct monst *, struct monst *,
                               struct attack *));
-STATIC_DCL int FDECL(mdamagem, (struct monst *, struct monst *,
+static int FDECL(mdamagem, (struct monst *, struct monst *,
                                 struct attack *));
-STATIC_DCL void FDECL(mswingsm, (struct monst *, struct monst *,
+static void FDECL(mswingsm, (struct monst *, struct monst *,
                                  struct obj *));
-STATIC_DCL void FDECL(noises, (struct monst *, struct attack *));
-STATIC_DCL void FDECL(missmm, (struct monst *, struct monst *,
+static void FDECL(noises, (struct monst *, struct attack *));
+static void FDECL(missmm, (struct monst *, struct monst *,
                                struct attack *));
-STATIC_DCL int FDECL(passivemm, (struct monst *, struct monst *,
+static int FDECL(passivemm, (struct monst *, struct monst *,
                                  BOOLEAN_P, int));
 
 
-/* returns mon_nam(mon) relative to other_mon; normal name unless they're
-   the same, in which case the reference is to {him|her|it} self */
-STATIC_OVL char *
-mon_nam_too(outbuf, mon, other_mon)
-char *outbuf;
-struct monst *mon, *other_mon;
-{
-    if (mon != other_mon)
-        Strcpy(outbuf, mon_nam(mon));
-    else
-        switch (pronoun_gender(mon, FALSE)) {
-        case 0:
-            Strcpy(outbuf, "himself");
-            break;
-        case 1:
-            Strcpy(outbuf, "herself");
-            break;
-        default:
-            Strcpy(outbuf, "itself");
-            break;
-        }
-    return outbuf;
-}
-
-STATIC_OVL void
+static void
 noises(magr, mattk)
 register struct monst *magr;
 register struct attack *mattk;
@@ -69,29 +44,29 @@ register struct attack *mattk;
     }
 }
 
-STATIC_OVL
+static
 void
 missmm(magr, mdef, mattk)
 register struct monst *magr, *mdef;
 struct attack *mattk;
 {
     const char *fmt;
-    char buf[BUFSZ], mdef_name[BUFSZ];
+    char buf[BUFSZ];
 
     if (g.vis) {
         if (!canspotmon(magr))
             map_invisible(magr->mx, magr->my);
         if (!canspotmon(mdef))
             map_invisible(mdef->mx, mdef->my);
-        if (mdef->m_ap_type)
+        if (M_AP_TYPE(mdef))
             seemimic(mdef);
-        if (magr->m_ap_type)
+        if (M_AP_TYPE(magr))
             seemimic(magr);
         fmt = (could_seduce(magr, mdef, mattk) && !magr->mcan)
                   ? "%s pretends to be friendly to"
                   : "%s misses";
         Sprintf(buf, fmt, Monnam(magr));
-        pline("%s %s.", buf, mon_nam_too(mdef_name, mdef, magr));
+        pline("%s %s.", buf, mon_nam_too(mdef, magr));
     } else
         noises(magr, mattk);
 }
@@ -214,7 +189,7 @@ boolean quietly;
     /* undetected monster becomes un-hidden if it is displaced */
     if (mdef->mundetected)
         mdef->mundetected = 0;
-    if (mdef->m_ap_type && mdef->m_ap_type != M_AP_MONSTER)
+    if (M_AP_TYPE(mdef) && M_AP_TYPE(mdef) != M_AP_MONSTER)
         seemimic(mdef);
     /* wake up the displaced defender */
     mdef->msleeping = 0;
@@ -408,7 +383,8 @@ register struct monst *magr, *mdef;
                                  || objects[g.otmp->otyp].oc_material == METAL))
                     && mdef->mhp > 1
                     && !mdef->mcan) {
-                    if (clone_mon(mdef, 0, 0)) {
+                    struct monst *mclone;
+                    if ((mclone = clone_mon(mdef, 0, 0)) != 0) {
                         if (g.vis && canspotmon(mdef)) {
                             char buf[BUFSZ];
 
@@ -416,6 +392,7 @@ register struct monst *magr, *mdef;
                             pline("%s divides as %s hits it!", buf,
                                   mon_nam(magr));
                         }
+                        mintrap(mclone);
                     }
                 }
             } else
@@ -519,22 +496,22 @@ register struct monst *magr, *mdef;
 }
 
 /* Returns the result of mdamagem(). */
-STATIC_OVL int
+static int
 hitmm(magr, mdef, mattk)
 register struct monst *magr, *mdef;
 struct attack *mattk;
 {
     if (g.vis) {
         int compat;
-        char buf[BUFSZ], mdef_name[BUFSZ];
+        char buf[BUFSZ];
 
         if (!canspotmon(magr))
             map_invisible(magr->mx, magr->my);
         if (!canspotmon(mdef))
             map_invisible(mdef->mx, mdef->my);
-        if (mdef->m_ap_type)
+        if (M_AP_TYPE(mdef))
             seemimic(mdef);
-        if (magr->m_ap_type)
+        if (M_AP_TYPE(magr))
             seemimic(magr);
         if ((compat = could_seduce(magr, mdef, mattk)) && !magr->mcan) {
             Sprintf(buf, "%s %s", Monnam(magr),
@@ -570,7 +547,7 @@ struct attack *mattk;
             default:
                 Sprintf(buf, "%s hits", magr_name);
             }
-            pline("%s %s.", buf, mon_nam_too(mdef_name, mdef, magr));
+            pline("%s %s.", buf, mon_nam_too(mdef, magr));
         }
     } else
         noises(magr, mattk);
@@ -579,7 +556,7 @@ struct attack *mattk;
 }
 
 /* Returns the same values as mdamagem(). */
-STATIC_OVL int
+static int
 gazemm(magr, mdef, mattk)
 register struct monst *magr, *mdef;
 struct attack *mattk;
@@ -588,7 +565,7 @@ struct attack *mattk;
 
     if (g.vis) {
         if (mdef->data->mlet == S_MIMIC
-            && mdef->m_ap_type != M_AP_NOTHING)
+            && M_AP_TYPE(mdef) != M_AP_NOTHING)
             seemimic(mdef);
         Sprintf(buf, "%s gazes at", Monnam(magr));
         pline("%s %s...", buf,
@@ -665,7 +642,7 @@ struct monst *magr, *mdef;
 }
 
 /* Returns the same values as mattackm(). */
-STATIC_OVL int
+static int
 gulpmm(magr, mdef, mattk)
 register struct monst *magr, *mdef;
 register struct attack *mattk;
@@ -753,7 +730,7 @@ register struct attack *mattk;
     return status;
 }
 
-STATIC_OVL int
+static int
 explmm(magr, mdef, mattk)
 struct monst *magr, *mdef;
 struct attack *mattk;
@@ -904,7 +881,7 @@ register struct attack *mattk;
     case AD_WERE:
     case AD_HEAL:
     case AD_PHYS:
-    physical:
+ physical:
         if (mattk->aatyp == AT_KICK && thick_skinned(pd)) {
             tmp = 0;
         } else if (mattk->aatyp == AT_WEAP) {
@@ -1064,7 +1041,7 @@ register struct attack *mattk;
     case AD_STON:
         if (magr->mcan)
             break;
-    do_stone:
+ do_stone:
         /* may die from the acid if it eats a stone-curing corpse */
         if (munstone(mdef, FALSE))
             goto post_stone;
@@ -1077,7 +1054,7 @@ register struct attack *mattk;
             if (g.vis && canseemon(mdef))
                 pline("%s turns to stone!", Monnam(mdef));
             monstone(mdef);
-        post_stone:
+ post_stone:
             if (!DEADMONSTER(mdef))
                 return 0;
             else if (mdef->mtame && !g.vis)
@@ -1090,6 +1067,7 @@ register struct attack *mattk;
         if (!cancelled && tmp < mdef->mhp && !tele_restrict(mdef)) {
             char mdef_Monnam[BUFSZ];
             boolean wasseen = canspotmon(mdef);
+
             /* save the name before monster teleports, otherwise
                we'll get "it" in the suddenly disappears message */
             if (g.vis && wasseen)
@@ -1098,6 +1076,11 @@ register struct attack *mattk;
             (void) rloc(mdef, TRUE);
             if (g.vis && wasseen && !canspotmon(mdef) && mdef != u.usteed)
                 pline("%s suddenly disappears!", mdef_Monnam);
+            if (tmp >= mdef->mhp) { /* see hitmu(mhitu.c) */
+                if (mdef->mhp == 1)
+                    ++mdef->mhp;
+                tmp = mdef->mhp - 1;
+            }
         }
         break;
     case AD_SLEE:
@@ -1345,7 +1328,8 @@ register struct attack *mattk;
             break; /* physical damage only */
         if (!rn2(4) && !slimeproof(pd)) {
             if (!munslime(mdef, FALSE) && !DEADMONSTER(mdef)) {
-                if (newcham(mdef, &mons[PM_GREEN_SLIME], FALSE, g.vis && canseemon(mdef)))
+                if (newcham(mdef, &mons[PM_GREEN_SLIME], FALSE,
+                            (boolean) (g.vis && canseemon(mdef))))
                     pd = mdef->data;
                 mdef->mstrategy &= ~STRAT_WAITFORU;
                 res = MM_HIT;
@@ -1487,7 +1471,7 @@ struct obj *obj;
         (void) erode_obj(obj, (char *) 0, dmgtyp, EF_GREASE | EF_VERBOSE);
 }
 
-STATIC_OVL void
+static void
 mswingsm(magr, mdef, otemp)
 struct monst *magr, *mdef;
 struct obj *otemp;
@@ -1504,7 +1488,7 @@ struct obj *otemp;
  * Passive responses by defenders.  Does not replicate responses already
  * handled above.  Returns same values as mattackm.
  */
-STATIC_OVL int
+static int
 passivemm(magr, mdef, mhit, mdead)
 register struct monst *magr, *mdef;
 boolean mhit;
@@ -1650,7 +1634,7 @@ int mdead;
     else
         tmp = 0;
 
-assess_dmg:
+ assess_dmg:
     if ((magr->mhp -= tmp) <= 0) {
         monkilled(magr, "", (int) mddat->mattk[i].adtyp);
         return (mdead | mhit | MM_AGR_DIED);

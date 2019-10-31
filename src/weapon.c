@@ -1,4 +1,4 @@
-/* NetHack 3.6	weapon.c	$NHDT-Date: 1547025169 2019/01/09 09:12:49 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.68 $ */
+/* NetHack 3.6	weapon.c	$NHDT-Date: 1559998716 2019/06/08 12:58:36 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.70 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -10,11 +10,11 @@
  */
 #include "hack.h"
 
-STATIC_DCL void FDECL(give_may_advance_msg, (int));
-STATIC_DCL boolean FDECL(could_advance, (int));
-STATIC_DCL boolean FDECL(peaked_skill, (int));
-STATIC_DCL int FDECL(slots_required, (int));
-STATIC_DCL void FDECL(skill_advance, (int));
+static void FDECL(give_may_advance_msg, (int));
+static boolean FDECL(could_advance, (int));
+static boolean FDECL(peaked_skill, (int));
+static int FDECL(slots_required, (int));
+static void FDECL(skill_advance, (int));
 
 /* Categories whose names don't come from OBJ_NAME(objects[type])
  */
@@ -33,7 +33,7 @@ STATIC_DCL void FDECL(skill_advance, (int));
 #define PN_ESCAPE_SPELL (-13)
 #define PN_MATTER_SPELL (-14)
 
-STATIC_VAR NEARDATA const short skill_names_indices[P_NUM_SKILLS] = {
+static NEARDATA const short skill_names_indices[P_NUM_SKILLS] = {
     0, DAGGER, KNIFE, AXE, PICK_AXE, SHORT_SWORD, BROADSWORD, LONG_SWORD,
     TWO_HANDED_SWORD, SCIMITAR, PN_SABER, CLUB, MACE, MORNING_STAR, FLAIL,
     PN_HAMMER, QUARTERSTAFF, PN_POLEARMS, SPEAR, TRIDENT, LANCE, BOW, SLING,
@@ -44,14 +44,14 @@ STATIC_VAR NEARDATA const short skill_names_indices[P_NUM_SKILLS] = {
 };
 
 /* note: entry [0] isn't used */
-STATIC_VAR NEARDATA const char *const odd_skill_names[] = {
+static NEARDATA const char *const odd_skill_names[] = {
     "no skill", "bare hands", /* use barehands_or_martial[] instead */
     "two weapon combat", "riding", "polearms", "saber", "hammer", "whip",
     "attack spells", "healing spells", "divination spells",
     "enchantment spells", "clerical spells", "escape spells", "matter spells",
 };
 /* indexed vis `is_martial() */
-STATIC_VAR NEARDATA const char *const barehands_or_martial[] = {
+static NEARDATA const char *const barehands_or_martial[] = {
     "bare handed combat", "martial arts"
 };
 
@@ -65,7 +65,7 @@ STATIC_VAR NEARDATA const char *const barehands_or_martial[] = {
 static NEARDATA const char kebabable[] = { S_XORN, S_DRAGON, S_JABBERWOCK,
                                            S_NAGA, S_GIANT,  '\0' };
 
-STATIC_OVL void
+static void
 give_may_advance_msg(skill)
 int skill;
 {
@@ -350,12 +350,123 @@ struct monst *mon;
     return  tmp;
 }
 
-STATIC_DCL struct obj *FDECL(oselect, (struct monst *, int));
+/* check whether blessed and/or silver damage applies for *non-weapon* hit;
+   return value is the amount of the extra damage */
+int
+special_dmgval(magr, mdef, armask, silverhit_p)
+struct monst *magr, *mdef;
+long armask; /* armor mask, multiple bits accepted for W_ARMC|W_ARM|W_ARMU
+              * or W_ARMG|W_RINGL|W_RINGR only */
+long *silverhit_p; /* output flag mask for silver bonus */
+{
+    struct obj *obj;
+    struct permonst *ptr = mdef->data;
+    boolean left_ring = (armask & W_RINGL) ? TRUE : FALSE,
+            right_ring = (armask & W_RINGR) ? TRUE : FALSE;
+    long silverhit = 0L;
+    int bonus = 0;
+
+    obj = 0;
+    if (armask & (W_ARMC | W_ARM | W_ARMU)) {
+        if ((armask & W_ARMC) != 0L
+            && (obj = which_armor(magr, W_ARMC)) != 0)
+            armask = W_ARMC;
+        else if ((armask & W_ARM) != 0L
+                 && (obj = which_armor(magr, W_ARM)) != 0)
+            armask = W_ARM;
+        else if ((armask & W_ARMU) != 0L
+                 && (obj = which_armor(magr, W_ARMU)) != 0)
+            armask = W_ARMU;
+        else
+            armask = 0L;
+    } else if (armask & (W_ARMG | W_RINGL | W_RINGR)) {
+        armask = ((obj = which_armor(magr, W_ARMG)) != 0) ?  W_ARMG : 0L;
+    } else {
+        obj = which_armor(magr, armask);
+    }
+
+    if (obj) {
+        if (obj->blessed
+            && (is_undead(ptr) || is_demon(ptr) || is_vampshifter(mdef)))
+            bonus += rnd(4);
+        /* the only silver armor is shield of reflection (silver dragon
+           scales refer to color, not material) and the only way to hit
+           with one--aside from throwing--is to wield it and perform a
+           weapon hit, but we include a general check here */
+        if (objects[obj->otyp].oc_material == SILVER
+            && mon_hates_silver(mdef)) {
+            bonus += rnd(20);
+            silverhit |= armask;
+        }
+
+    /* when no gloves we check for silver rings (blessed rings ignored) */
+    } else if ((left_ring || right_ring) && magr == &g.youmonst) {
+        if (left_ring && uleft) {
+            if (objects[uleft->otyp].oc_material == SILVER
+                && mon_hates_silver(mdef)) {
+                bonus += rnd(20);
+                silverhit |= W_RINGL;
+            }
+        }
+        if (right_ring && uright) {
+            if (objects[uright->otyp].oc_material == SILVER
+                && mon_hates_silver(mdef)) {
+                /* two silver rings don't give double silver damage
+                   but 'silverhit' messages might be adjusted for them */
+                if (!(silverhit & W_RINGL))
+                    bonus += rnd(20);
+                silverhit |= W_RINGR;
+            }
+        }
+    }
+
+    if (silverhit_p)
+        *silverhit_p = silverhit;
+    return bonus;
+}
+
+/* give a "silver <item> sears <target>" message;
+   not used for weapon hit, so we only handle rings */
+void
+silver_sears(magr, mdef, silverhit)
+struct monst *magr UNUSED;
+struct monst *mdef;
+long silverhit;
+{
+    char rings[20]; /* plenty of room for "rings" */
+    int ltyp = ((uleft && (silverhit & W_RINGL) != 0L)
+                ? uleft->otyp : STRANGE_OBJECT),
+        rtyp = ((uright && (silverhit & W_RINGR) != 0L)
+                ? uright->otyp : STRANGE_OBJECT);
+    boolean both,
+        l_ag = (objects[ltyp].oc_material == SILVER && uleft->dknown),
+        r_ag = (objects[rtyp].oc_material == SILVER && uright->dknown);
+
+    if ((silverhit & (W_RINGL | W_RINGR)) != 0L) {
+        /* plural if both the same type (so not multi_claw and both rings
+           are non-Null) and either both known or neither known, or both
+           silver (in case there is ever more than one type of silver ring)
+           and both known; singular if multi_claw (where one of ltyp or
+           rtyp will always be STRANGE_OBJECT) even if both rings are known
+           silver [see hmonas(uhitm.c) for explanation of 'multi_claw'] */
+        both = ((ltyp == rtyp && uleft->dknown == uright->dknown)
+                || (l_ag && r_ag));
+        Sprintf(rings, "ring%s", both ? "s" : "");
+        Your("%s%s %s %s!",
+             (l_ag || r_ag) ? "silver "
+             : both ? ""
+               : ((silverhit & W_RINGL) != 0L) ? "left "
+                 : "right ",
+             rings, vtense(rings, "sear"), mon_nam(mdef));
+    }
+}
+
+static struct obj *FDECL(oselect, (struct monst *, int));
 #define Oselect(x)                      \
     if ((otmp = oselect(mtmp, x)) != 0) \
         return otmp;
 
-STATIC_OVL struct obj *
+static struct obj *
 oselect(mtmp, x)
 struct monst *mtmp;
 int x;
@@ -718,8 +829,18 @@ register struct monst *mon;
         setmnotwielded(mon, mw_tmp);
         mon->weapon_check = NEED_WEAPON;
         if (canseemon(mon)) {
+            boolean newly_welded;
+
             pline("%s wields %s!", Monnam(mon), doname(obj));
-            if (mwelded(mw_tmp)) {
+            /* 3.6.3: mwelded() predicate expects the object to have its
+               W_WEP bit set in owormmask, but the pline here and for
+               artifact_light don't want that because they'd have '(weapon
+               in hand/claw)' appended; so we set it for the mwelded test
+               and then clear it, until finally setting it for good below */
+            obj->owornmask |= W_WEP;
+            newly_welded = mwelded(obj);
+            obj->owornmask &= ~W_WEP;
+            if (newly_welded) {
                 pline("%s %s to %s %s!", Tobjnam(obj, "weld"),
                       is_plural(obj) ? "themselves" : "itself",
                       s_suffix(mon_nam(mon)), mbodypart(mon, HAND));
@@ -732,6 +853,12 @@ register struct monst *mon;
                 pline("%s %s in %s %s!", Tobjnam(obj, "shine"),
                       arti_light_description(obj), s_suffix(mon_nam(mon)),
                       mbodypart(mon, HAND));
+            /* 3.6.3: artifact might be getting wielded by invisible monst */
+            else if (cansee(mon->mx, mon->my))
+                pline("Light begins shining %s.",
+                      (distu(mon->mx, mon->my) <= 5 * 5)
+                          ? "nearby"
+                          : "in the distance");
         }
         obj->owornmask = W_WEP;
         return 1;
@@ -923,7 +1050,7 @@ int skill;
 }
 
 /* return the # of slots required to advance the skill */
-STATIC_OVL int
+static int
 slots_required(skill)
 int skill;
 {
@@ -967,7 +1094,7 @@ boolean speedy;
 }
 
 /* return true if this skill could be advanced if more slots were available */
-STATIC_OVL boolean
+static boolean
 could_advance(skill)
 int skill;
 {
@@ -982,7 +1109,7 @@ int skill;
 
 /* return true if this skill has reached its maximum and there's been enough
    practice to become eligible for the next step if that had been possible */
-STATIC_OVL boolean
+static boolean
 peaked_skill(skill)
 int skill;
 {
@@ -994,7 +1121,7 @@ int skill;
                           >= practice_needed_to_advance(P_SKILL(skill))));
 }
 
-STATIC_OVL void
+static void
 skill_advance(skill)
 int skill;
 {

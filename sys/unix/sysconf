@@ -61,6 +61,11 @@ MAXPLAYERS=10
 # incubi to use nymphs' charm behavior rather than their own seduce behavior.
 #SEDUCE=0
 
+# Uncomment the next line to enable some accessibility features such
+# as S_player_override and S_pet_override symbols for screen readers
+# in the user config file.
+#ACCESSIBILITY=1
+
 # Uncomment to disable savefile UID checking.
 #CHECK_SAVE_UID=0
 
@@ -110,7 +115,8 @@ MAXPLAYERS=10
 
 # Try to get more info in case of a program bug or crash.  Only used
 # if the program is built with the PANICTRACE compile-time option enabled.
-# By default PANICTRACE is enabled if BETA is defined, otherwise disabled.
+# By default PANICTRACE is enabled if (NH_DEVEL_STATUS != NH_STATUS_RELEASED),
+# otherwise disabled.
 # Using GDB can get more information and works on more systems but requires
 # 'gdb' be available; using LIBC only works if NetHack is linked with a
 # libc that supports the backtrace(3) API.  Both require certain compilation

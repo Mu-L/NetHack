@@ -1,4 +1,4 @@
-/* NetHack 3.6	mkmaze.c	$NHDT-Date: 1543185071 2018/11/25 22:31:11 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.67 $ */
+/* NetHack 3.6	mkmaze.c	$NHDT-Date: 1559422240 2019/06/01 20:50:40 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.74 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -6,23 +6,25 @@
 #include "hack.h"
 #include "sp_lev.h"
 #include "lev.h" /* save & restore info */
+#include "sfproto.h"
 
-STATIC_DCL int FDECL(iswall, (int, int));
-STATIC_DCL int FDECL(iswall_or_stone, (int, int));
-STATIC_DCL boolean FDECL(is_solid, (int, int));
-STATIC_DCL int FDECL(extend_spine, (int[3][3], int, int, int));
-STATIC_DCL boolean FDECL(okay, (int, int, int));
-STATIC_DCL void FDECL(maze0xy, (coord *));
-STATIC_DCL boolean FDECL(put_lregion_here, (XCHAR_P, XCHAR_P, XCHAR_P,
+
+static int FDECL(iswall, (int, int));
+static int FDECL(iswall_or_stone, (int, int));
+static boolean FDECL(is_solid, (int, int));
+static int FDECL(extend_spine, (int[3][3], int, int, int));
+static boolean FDECL(okay, (int, int, int));
+static void FDECL(maze0xy, (coord *));
+static boolean FDECL(put_lregion_here, (XCHAR_P, XCHAR_P, XCHAR_P,
                                             XCHAR_P, XCHAR_P, XCHAR_P,
                                             XCHAR_P, BOOLEAN_P, d_level *));
-STATIC_DCL void NDECL(baalz_fixup);
-STATIC_DCL void NDECL(setup_waterlevel);
-STATIC_DCL void NDECL(unsetup_waterlevel);
-STATIC_DCL void FDECL(check_ransacked, (char *));
-STATIC_DCL void FDECL(migr_booty_item, (int, const char *));
-STATIC_DCL void FDECL(migrate_orc, (struct monst *, unsigned long));
-STATIC_DCL void NDECL(stolen_booty);
+static void NDECL(baalz_fixup);
+static void NDECL(setup_waterlevel);
+static void NDECL(unsetup_waterlevel);
+static void FDECL(check_ransacked, (char *));
+static void FDECL(migr_booty_item, (int, const char *));
+static void FDECL(migrate_orc, (struct monst *, unsigned long));
+static void NDECL(stolen_booty);
 
 /* adjust a coordinate one step in the specified direction */
 #define mz_move(X, Y, dir) \
@@ -36,7 +38,7 @@ STATIC_DCL void NDECL(stolen_booty);
         }                                                        \
     } while (0)
 
-STATIC_OVL int
+static int
 iswall(x, y)
 int x, y;
 {
@@ -49,7 +51,7 @@ int x, y;
             || type == SDOOR || type == IRONBARS);
 }
 
-STATIC_OVL int
+static int
 iswall_or_stone(x, y)
 int x, y;
 {
@@ -61,7 +63,7 @@ int x, y;
 }
 
 /* return TRUE if out of bounds, wall or rock */
-STATIC_OVL boolean
+static boolean
 is_solid(x, y)
 int x, y;
 {
@@ -86,7 +88,7 @@ int x, y;
  *              W x W           This would extend a spine from x down.
  *              . W W
  */
-STATIC_OVL int
+static int
 extend_spine(locale, wall_there, dx, dy)
 int locale[3][3];
 int wall_there, dx, dy;
@@ -222,7 +224,7 @@ int x1, y1, x2, y2;
     fix_wall_spines(x1, y1, x2, y2);
 }
 
-STATIC_OVL boolean
+static boolean
 okay(x, y, dir)
 int x, y;
 int dir;
@@ -236,7 +238,7 @@ int dir;
 }
 
 /* find random starting point for maze generation */
-STATIC_OVL void
+static void
 maze0xy(cc)
 coord *cc;
 {
@@ -312,7 +314,7 @@ d_level *lev;
     impossible("Couldn't place lregion type %d!", rtype);
 }
 
-STATIC_OVL boolean
+static boolean
 put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev)
 xchar x, y;
 xchar nlx, nly, nhx, nhy;
@@ -320,6 +322,8 @@ xchar rtype;
 boolean oneshot;
 d_level *lev;
 {
+    struct monst *mtmp;
+
     if (bad_location(x, y, nlx, nly, nhx, nhy)) {
         if (!oneshot) {
             return FALSE; /* caller should try again */
@@ -340,11 +344,12 @@ d_level *lev;
     case LR_UPTELE:
     case LR_DOWNTELE:
         /* "something" means the player in this case */
-        if (MON_AT(x, y)) {
+        if ((mtmp = m_at(x, y)) != 0) {
             /* move the monster if no choice, or just try again */
-            if (oneshot)
-                (void) rloc(m_at(x, y), FALSE);
-            else
+            if (oneshot) {
+                if (!rloc(mtmp, TRUE))
+                    m_into_limbo(mtmp);
+            } else
                 return FALSE;
         }
         u_on_newpos(x, y);
@@ -366,7 +371,7 @@ d_level *lev;
 /* fix up Baalzebub's lair, which depicts a level-sized beetle;
    its legs are walls within solid rock--regular wallification
    classifies them as superfluous and gets rid of them */
-STATIC_OVL void
+static void
 baalz_fixup()
 {
     struct monst *mtmp;
@@ -461,14 +466,8 @@ fixup_special()
     struct mkroom *croom;
     boolean added_branch = FALSE;
 
-    if (g.was_waterlevel) {
-        g.was_waterlevel = FALSE;
-        u.uinwater = 0;
-        unsetup_waterlevel();
-    }
     if (Is_waterlevel(&u.uz) || Is_airlevel(&u.uz)) {
         g.level.flags.hero_memory = 0;
-        g.was_waterlevel = TRUE;
         /* water level is an odd beast - it has to be set up
            before calling place_lregions etc. */
         setup_waterlevel();
@@ -486,13 +485,14 @@ fixup_special()
                 lev.dlevel = atoi(r->rname.str);
             } else {
                 s_level *sp = find_level(r->rname.str);
+
                 lev = sp->dlevel;
             }
             /*FALLTHRU*/
 
         case LR_UPSTAIR:
         case LR_DOWNSTAIR:
-        place_it:
+ place_it:
             place_lregion(r->inarea.x1, r->inarea.y1, r->inarea.x2,
                           r->inarea.y2, r->delarea.x1, r->delarea.y1,
                           r->delarea.x2, r->delarea.y2, r->rtype, &lev);
@@ -615,7 +615,7 @@ fixup_special()
     g.num_lregions = 0;
 }
 
-void
+static void
 check_ransacked(s)
 char *s;
 {
@@ -626,7 +626,7 @@ char *s;
 #define ORC_LEADER 1
 static const char *orcfruit[] = { "paddle cactus", "dwarven root" };
 
-void
+static void
 migrate_orc(mtmp, mflags)
 struct monst *mtmp;
 unsigned long mflags;
@@ -646,14 +646,14 @@ unsigned long mflags;
         /* once in a blue moon, he won't be at the very bottom */
         if (!rn2(40))
             nlev--;
-        mtmp->mspare1 = MIGR_LEFTOVERS;
+        mtmp->mspare1 |= MIGR_LEFTOVERS;
     } else {
         nlev = rn2((max_depth - cur_depth) + 1) + cur_depth;
         if (nlev == cur_depth)
             nlev++;
         if (nlev > max_depth)
             nlev = max_depth;
-        mtmp->mspare1 = 0L;
+        mtmp->mspare1 = (mtmp->mspare1 & ~MIGR_LEFTOVERS);
     }
     get_level(&dest, nlev);
     migrate_to_level(mtmp, ledger_no(&dest), MIGR_RANDOM, (coord *) 0);
@@ -671,7 +671,7 @@ struct monst *mtmp;
     goldprob = is_captain ? 600 : 300;
     gemprob = goldprob / 4;
     if (rn2(1000) < goldprob) {
-        if ((otmp = mksobj(GOLD_PIECE, FALSE, FALSE)) != 0) {
+        if ((otmp = mksobj(GOLD_PIECE, TRUE, FALSE)) != 0) {
             otmp->quan = 1L + rnd(goldprob);
             otmp->owt = weight(otmp);
             add_to_minv(mtmp, otmp);
@@ -687,18 +687,18 @@ struct monst *mtmp;
     }
     if (is_captain || !rn2(8)) {
         otyp = shiny_obj(RING_CLASS);
-        if (otyp != STRANGE_OBJECT && (otmp = mksobj(otyp, FALSE, FALSE)) != 0)
+        if (otyp != STRANGE_OBJECT && (otmp = mksobj(otyp, TRUE, FALSE)) != 0)
             add_to_minv(mtmp, otmp);
     }
 }
-void
+static void
 migr_booty_item(otyp, gang)
 int otyp;
 const char *gang;
 {
     struct obj *otmp;
 
-    otmp = mksobj_migr_to_species(otyp, (unsigned long) M2_ORC, FALSE, FALSE);
+    otmp = mksobj_migr_to_species(otyp, (unsigned long) M2_ORC, TRUE, FALSE);
     if (otmp && gang) {
         new_oname(otmp, strlen(gang) + 1); /* removes old name if present */
         Strcpy(ONAME(otmp), gang);
@@ -712,7 +712,7 @@ const char *gang;
     }
 }
 
-void
+static void
 stolen_booty(VOID_ARGS)
 {
     char *gang, gang_name[BUFSZ];
@@ -1377,21 +1377,22 @@ fumaroles()
 #define gbxmax (g.xmax - 1)
 #define gbymax (g.ymax - 1)
 
-STATIC_DCL void NDECL(set_wportal);
-STATIC_DCL void FDECL(mk_bubble, (int, int, int));
-STATIC_DCL void FDECL(mv_bubble, (struct bubble *, int, int, BOOLEAN_P));
+static void NDECL(set_wportal);
+static void FDECL(mk_bubble, (int, int, int));
+static void FDECL(mv_bubble, (struct bubble *, int, int, BOOLEAN_P));
 
 void
 movebubbles()
 {
-    static boolean up;
-    struct bubble *b;
-    int x, y, i, j;
-    struct trap *btrap;
     static const struct rm water_pos = { cmap_to_glyph(S_water), WATER, 0, 0,
                                          0, 0, 0, 0, 0, 0 };
     static const struct rm air_pos = { cmap_to_glyph(S_cloud), AIR, 0, 0, 0,
                                        1, 0, 0, 0, 0 };
+    static boolean up = FALSE;
+    struct bubble *b;
+    struct container *cons;
+    struct trap *btrap;
+    int x, y, i, j, bcpin = 0;
 
     /* set up the portal the first time bubbles are moved */
     if (!g.wportal)
@@ -1402,7 +1403,7 @@ movebubbles()
     if (Is_waterlevel(&u.uz)) {
         /* keep attached ball&chain separate from bubble objects */
         if (Punished)
-            unplacebc();
+            bcpin = unplacebc_and_covet_placebc();
 
         /*
          * Pick up everything inside of a bubble then fill all bubble
@@ -1422,9 +1423,6 @@ movebubbles()
                         /* pick up objects, monsters, hero, and traps */
                         if (OBJ_AT(x, y)) {
                             struct obj *olist = (struct obj *) 0, *otmp;
-                            struct container *cons =
-                                (struct container *) alloc(
-                                    sizeof(struct container));
 
                             while ((otmp = g.level.objects[x][y]) != 0) {
                                 remove_object(otmp);
@@ -1433,6 +1431,7 @@ movebubbles()
                                 olist = otmp;
                             }
 
+                            cons = (struct container *) alloc(sizeof *cons);
                             cons->x = x;
                             cons->y = y;
                             cons->what = CONS_OBJ;
@@ -1442,10 +1441,8 @@ movebubbles()
                         }
                         if (MON_AT(x, y)) {
                             struct monst *mon = m_at(x, y);
-                            struct container *cons =
-                                (struct container *) alloc(
-                                    sizeof(struct container));
 
+                            cons = (struct container *) alloc(sizeof *cons);
                             cons->x = x;
                             cons->y = y;
                             cons->what = CONS_MON;
@@ -1461,12 +1458,10 @@ movebubbles()
 
                             newsym(x, y); /* clean up old position */
                             mon->mx = mon->my = 0;
+                            mon->mstate |= MON_BUBBLEMOVE;
                         }
                         if (!u.uswallow && x == u.ux && y == u.uy) {
-                            struct container *cons =
-                                (struct container *) alloc(
-                                    sizeof(struct container));
-
+                            cons = (struct container *) alloc(sizeof *cons);
                             cons->x = x;
                             cons->y = y;
                             cons->what = CONS_HERO;
@@ -1476,10 +1471,7 @@ movebubbles()
                             b->cons = cons;
                         }
                         if ((btrap = t_at(x, y)) != 0) {
-                            struct container *cons =
-                                (struct container *) alloc(
-                                    sizeof(struct container));
-
+                            cons = (struct container *) alloc(sizeof *cons);
                             cons->x = x;
                             cons->y = y;
                             cons->what = CONS_TRAP;
@@ -1494,10 +1486,22 @@ movebubbles()
                     }
         }
     } else if (Is_airlevel(&u.uz)) {
-        for (x = 0; x < COLNO; x++)
-            for (y = 0; y < ROWNO; y++) {
+        boolean xedge, yedge;
+
+        for (x = 1; x <= (COLNO - 1); x++)
+            for (y = 0; y <= (ROWNO - 1); y++) {
                 levl[x][y] = air_pos;
                 unblock_point(x, y);
+                /* all air or all cloud around the perimeter of the Air
+                   level tends to look strange; break up the pattern */
+                xedge = (boolean) (x < gbxmin || x > gbxmax);
+                yedge = (boolean) (y < gbymin || y > gbymax);
+                if (xedge || yedge) {
+                    if (!rn2(xedge ? 3 : 5)) {
+                        levl[x][y].typ = CLOUD;
+                        block_point(x, y);
+                    }
+                }
             }
     }
 
@@ -1516,7 +1520,7 @@ movebubbles()
 
     /* put attached ball&chain back */
     if (Is_waterlevel(&u.uz) && Punished)
-        placebc();
+        lift_covet_and_placebc(bcpin);
     g.vision_full_recalc = 1;
 }
 
@@ -1556,33 +1560,46 @@ water_friction()
 }
 
 void
-save_waterlevel(fd, mode)
-int fd, mode;
+save_waterlevel(nhfp)
+NHFILE *nhfp;
 {
     struct bubble *b;
 
     if (!Is_waterlevel(&u.uz) && !Is_airlevel(&u.uz))
         return;
 
-    if (perform_bwrite(mode)) {
+    if (perform_bwrite(nhfp)) {
         int n = 0;
         for (b = g.bbubbles; b; b = b->next)
             ++n;
-        bwrite(fd, (genericptr_t) &n, sizeof(int));
-        bwrite(fd, (genericptr_t) &g.xmin, sizeof(int));
-        bwrite(fd, (genericptr_t) &g.ymin, sizeof(int));
-        bwrite(fd, (genericptr_t) &g.xmax, sizeof(int));
-        bwrite(fd, (genericptr_t) &g.ymax, sizeof(int));
-        for (b = g.bbubbles; b; b = b->next)
-            bwrite(fd, (genericptr_t) b, sizeof(struct bubble));
+        if (nhfp->structlevel) {
+            bwrite(nhfp->fd, (genericptr_t) &n, sizeof(int));
+            bwrite(nhfp->fd, (genericptr_t) &g.xmin, sizeof(int));
+            bwrite(nhfp->fd, (genericptr_t) &g.ymin, sizeof(int));
+            bwrite(nhfp->fd, (genericptr_t) &g.xmax, sizeof(int));
+            bwrite(nhfp->fd, (genericptr_t) &g.ymax, sizeof(int));
+        }
+        if (nhfp->fieldlevel) {
+            sfo_int(nhfp, &n, "waterlevel", "bubble_count", 1);
+            sfo_int(nhfp, &g.xmin, "waterlevel", "g.xmin", 1);
+            sfo_int(nhfp, &g.ymin, "waterlevel", "g.ymin", 1);
+            sfo_int(nhfp, &g.xmax, "waterlevel", "g.xmax", 1);
+            sfo_int(nhfp, &g.ymax, "waterlevel", "g.ymax", 1);
+        }
+        for (b = g.bbubbles; b; b = b->next) {
+            if (nhfp->structlevel)
+                bwrite(nhfp->fd, (genericptr_t) b, sizeof(struct bubble));
+            if (nhfp->fieldlevel)
+                sfo_bubble(nhfp, b, "waterlevel", "bubble", 1);
+        }
     }
-    if (release_data(mode))
+    if (release_data(nhfp))
         unsetup_waterlevel();
 }
 
 void
-restore_waterlevel(fd)
-int fd;
+restore_waterlevel(nhfp)
+NHFILE *nhfp;
 {
     struct bubble *b = (struct bubble *) 0, *btmp;
     int i, n;
@@ -1590,28 +1607,47 @@ int fd;
     if (!Is_waterlevel(&u.uz) && !Is_airlevel(&u.uz))
         return;
 
+    if (nhfp->fd == -1) { /* special handling for restore in goto_level() */
+        if (!wizard)
+            impossible("restore_waterlevel: returning to %s?",
+                       Is_waterlevel(&u.uz) ? "Water" : "Air");
+        setup_waterlevel();
+        return;
+    }
+
     set_wportal();
-    mread(fd, (genericptr_t) &n, sizeof(int));
-    mread(fd, (genericptr_t) &g.xmin, sizeof(int));
-    mread(fd, (genericptr_t) &g.ymin, sizeof(int));
-    mread(fd, (genericptr_t) &g.xmax, sizeof(int));
-    mread(fd, (genericptr_t) &g.ymax, sizeof(int));
+    if (nhfp->structlevel) {
+        mread(nhfp->fd,(genericptr_t)&n,sizeof(int));
+        mread(nhfp->fd,(genericptr_t)&g.xmin,sizeof(int));
+        mread(nhfp->fd,(genericptr_t)&g.ymin,sizeof(int));
+        mread(nhfp->fd,(genericptr_t)&g.xmax,sizeof(int));
+        mread(nhfp->fd,(genericptr_t)&g.ymax,sizeof(int));
+    }
+    if (nhfp->fieldlevel) {
+        sfi_int(nhfp, &n, "waterlevel", "bubble_count", 1);
+        sfi_int(nhfp, &g.xmin, "waterlevel", "g.xmin", 1);
+        sfi_int(nhfp, &g.ymin, "waterlevel", "g.ymin", 1);
+        sfi_int(nhfp, &g.xmax, "waterlevel", "g.xmax", 1);
+        sfi_int(nhfp, &g.ymax, "waterlevel", "g.ymax", 1);
+    }
     for (i = 0; i < n; i++) {
         btmp = b;
         b = (struct bubble *) alloc(sizeof(struct bubble));
-        mread(fd, (genericptr_t) b, sizeof(struct bubble));
-        if (g.bbubbles) {
-            btmp->next = b;
-            b->prev = btmp;
-        } else {
-            g.bbubbles = b;
-            b->prev = (struct bubble *) 0;
-        }
-        mv_bubble(b, 0, 0, TRUE);
+        if (nhfp->structlevel)
+            mread(nhfp->fd,(genericptr_t) b, sizeof(struct bubble));
+        if (nhfp->fieldlevel)
+            sfi_bubble(nhfp, b, "waterlevel", "bubble", 1);
+      if (g.bbubbles) {
+          btmp->next = b;
+          b->prev = btmp;
+      } else {
+          g.bbubbles = b;
+          b->prev = (struct bubble *) 0;
+      }
+      mv_bubble(b, 0, 0, TRUE);
     }
     g.ebubbles = b;
     b->next = (struct bubble *) 0;
-    g.was_waterlevel = TRUE;
 }
 
 const char *
@@ -1644,7 +1680,7 @@ xchar x, y;
     return hliquid("water");
 }
 
-STATIC_OVL void
+static void
 set_wportal()
 {
     /* there better be only one magic portal on water level... */
@@ -1654,29 +1690,40 @@ set_wportal()
     impossible("set_wportal(): no portal!");
 }
 
-STATIC_OVL void
+static void
 setup_waterlevel()
 {
-    int x, y;
-    int xskip, yskip;
-    int water_glyph = cmap_to_glyph(S_water),
-        air_glyph = cmap_to_glyph(S_air);
+    int x, y, xskip, yskip, typ, glyph;
 
-    /* ouch, hardcoded... */
+    if (!Is_waterlevel(&u.uz) && !Is_airlevel(&u.uz))
+        panic("setup_waterlevel(): [%d:%d] neither 'Water' nor 'Air'",
+              (int) u.uz.dnum, (int) u.uz.dlevel);
 
+    /* ouch, hardcoded... (file scope statics and used in bxmin,bymax,&c) */
     g.xmin = 3;
     g.ymin = 1;
+    /* use separate statements so that compiler won't complain about min()
+       comparing two constants; the alternative is to do this in the
+       preprocessor: #if (20 > ROWNO-1) g.ymax=ROWNO-1 #else g.ymax=20 #endif */
     g.xmax = 78;
+    g.xmax = min(g.xmax, (COLNO - 1) - 1);
     g.ymax = 20;
+    g.ymax = min(g.ymax, (ROWNO - 1));
 
-    /* set hero's memory to water */
+    /* entire level is remembered as one glyph and any unspecified portion
+       should default to level's base element rather than to usual stone */
+    glyph = cmap_to_glyph(Is_waterlevel(&u.uz) ? S_water : S_air);
+    typ = Is_waterlevel(&u.uz) ? WATER : AIR;
 
-    for (x = g.xmin; x <= g.xmax; x++)
-        for (y = g.ymin; y <= g.ymax; y++)
-            levl[x][y].glyph = Is_waterlevel(&u.uz) ? water_glyph : air_glyph;
+    /* set unspecified terrain (stone) and hero's memory to water or air */
+    for (x = 1; x <= COLNO - 1; x++)
+        for (y = 0; y <= ROWNO - 1; y++) {
+            levl[x][y].glyph = glyph;
+            if (levl[x][y].typ == STONE)
+                levl[x][y].typ = typ;
+        }
 
     /* make bubbles */
-
     if (Is_waterlevel(&u.uz)) {
         xskip = 10 + rn2(10);
         yskip = 4 + rn2(4);
@@ -1690,13 +1737,12 @@ setup_waterlevel()
             mk_bubble(x, y, rn2(7));
 }
 
-STATIC_OVL void
+static void
 unsetup_waterlevel()
 {
     struct bubble *b, *bb;
 
     /* free bubbles */
-
     for (b = g.bbubbles; b; b = bb) {
         bb = b->next;
         free((genericptr_t) b);
@@ -1704,7 +1750,7 @@ unsetup_waterlevel()
     g.bbubbles = g.ebubbles = (struct bubble *) 0;
 }
 
-STATIC_OVL void
+static void
 mk_bubble(x, y, n)
 int x, y, n;
 {
@@ -1715,14 +1761,15 @@ int x, y, n;
      * in situ, either.  The first two elements tell the dimensions of
      * the bubble's bounding box.
      */
-    static uchar bm2[] = { 2, 1, 0x3 },
-                 bm3[] = { 3, 2, 0x7, 0x7 },
-                 bm4[] = { 4, 3, 0x6, 0xf, 0x6 },
-                 bm5[] = { 5, 3, 0xe, 0x1f, 0xe },
-                 bm6[] = { 6, 4, 0x1e, 0x3f, 0x3f, 0x1e },
-                 bm7[] = { 7, 4, 0x3e, 0x7f, 0x7f, 0x3e },
-                 bm8[] = { 8, 4, 0x7e, 0xff, 0xff, 0x7e },
-                 *bmask[] = { bm2, bm3, bm4, bm5, bm6, bm7, bm8 };
+    static const uchar
+        bm2[] = { 2, 1, 0x3 },
+        bm3[] = { 3, 2, 0x7, 0x7 },
+        bm4[] = { 4, 3, 0x6, 0xf, 0x6 },
+        bm5[] = { 5, 3, 0xe, 0x1f, 0xe },
+        bm6[] = { 6, 4, 0x1e, 0x3f, 0x3f, 0x1e },
+        bm7[] = { 7, 4, 0x3e, 0x7f, 0x7f, 0x3e },
+        bm8[] = { 8, 4, 0x7e, 0xff, 0xff, 0x7e },
+        *const bmask[] = { bm2, bm3, bm4, bm5, bm6, bm7, bm8 };
     struct bubble *b;
 
     if (x >= gbxmax || y >= gbymax)
@@ -1734,7 +1781,7 @@ int x, y, n;
     if (bmask[n][1] > MAX_BMASK) {
         panic("bmask size is larger than MAX_BMASK");
     }
-    b = (struct bubble *) alloc(sizeof(struct bubble));
+    b = (struct bubble *) alloc(sizeof *b);
     if ((x + (int) bmask[n][0] - 1) > gbxmax)
         x = gbxmax - bmask[n][0] + 1;
     if ((y + (int) bmask[n][1] - 1) > gbymax)
@@ -1745,7 +1792,7 @@ int x, y, n;
     b->dy = 1 - rn2(3);
     /* y dimension is the length of bitmap data - see bmask above */
     (void) memcpy((genericptr_t) b->bm, (genericptr_t) bmask[n],
-                  (bmask[n][1] + 2) * sizeof(b->bm[0]));
+                  (bmask[n][1] + 2) * sizeof (b->bm[0]));
     b->cons = 0;
     if (!g.bbubbles)
         g.bbubbles = b;
@@ -1767,7 +1814,7 @@ int x, y, n;
  * in the immediate neighborhood of one, he/she may get sucked inside.
  * This property also makes leaving a bubble slightly difficult.
  */
-STATIC_OVL void
+static void
 mv_bubble(b, dx, dy, ini)
 struct bubble *b;
 int dx, dy;
@@ -1860,32 +1907,37 @@ boolean ini;
                 for (olist = (struct obj *) cons->list; olist; olist = otmp) {
                     otmp = olist->nexthere;
                     place_object(olist, cons->x, cons->y);
+                    stackobj(olist);
                 }
                 break;
             }
 
             case CONS_MON: {
                 struct monst *mon = (struct monst *) cons->list;
-                (void) mnearto(mon, cons->x, cons->y, TRUE);
+
+                /* mnearto() might fail. We can jump right to elemental_clog
+                   from here rather than deal_with_overcrowding() */
+                if (!mnearto(mon, cons->x, cons->y, TRUE))
+                    elemental_clog(mon);
                 break;
             }
 
             case CONS_HERO: {
+                struct monst *mtmp = m_at(cons->x, cons->y);
                 int ux0 = u.ux, uy0 = u.uy;
 
-                /* change u.ux0 and u.uy0? */
-                u.ux = cons->x;
-                u.uy = cons->y;
+                u_on_newpos(cons->x, cons->y);
                 newsym(ux0, uy0); /* clean up old position */
 
-                if (MON_AT(cons->x, cons->y)) {
-                    mnexto(m_at(cons->x, cons->y));
+                if (mtmp) {
+                    mnexto(mtmp);
                 }
                 break;
             }
 
             case CONS_TRAP: {
                 struct trap *btrap = (struct trap *) cons->list;
+
                 btrap->tx = cons->x;
                 btrap->ty = cons->y;
                 break;
@@ -1906,7 +1958,8 @@ boolean ini;
         b->dy = -b->dy;
         break;
     case 3:
-        b->dy = -b->dy; /* fall through */
+        b->dy = -b->dy;
+        /*FALLTHRU*/
     case 2:
         b->dx = -b->dx;
         break;

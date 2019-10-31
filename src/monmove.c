@@ -1,4 +1,4 @@
-/* NetHack 3.6	monmove.c	$NHDT-Date: 1545596010 2018/12/23 20:13:30 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.111 $ */
+/* NetHack 3.6	monmove.c	$NHDT-Date: 1557094802 2019/05/05 22:20:02 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.113 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2006. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -7,13 +7,13 @@
 #include "mfndpos.h"
 #include "artifact.h"
 
-STATIC_DCL void FDECL(watch_on_duty, (struct monst *));
-STATIC_DCL int FDECL(disturb, (struct monst *));
-STATIC_DCL void FDECL(release_hero, (struct monst *));
-STATIC_DCL void FDECL(distfleeck, (struct monst *, int *, int *, int *));
-STATIC_DCL int FDECL(m_arrival, (struct monst *));
-STATIC_DCL boolean FDECL(stuff_prevents_passage, (struct monst *));
-STATIC_DCL int FDECL(vamp_shift, (struct monst *, struct permonst *,
+static void FDECL(watch_on_duty, (struct monst *));
+static int FDECL(disturb, (struct monst *));
+static void FDECL(release_hero, (struct monst *));
+static void FDECL(distfleeck, (struct monst *, int *, int *, int *));
+static int FDECL(m_arrival, (struct monst *));
+static boolean FDECL(stuff_prevents_passage, (struct monst *));
+static int FDECL(vamp_shift, (struct monst *, struct permonst *,
                                   BOOLEAN_P));
 
 /* True if mtmp died */
@@ -76,7 +76,7 @@ const char *shout;
     }
 }
 
-STATIC_OVL void
+static void
 watch_on_duty(mtmp)
 register struct monst *mtmp;
 {
@@ -203,7 +203,7 @@ boolean digest_meal;
  * Possibly awaken the given monster.  Return a 1 if the monster has been
  * jolted awake.
  */
-STATIC_OVL int
+static int
 disturb(mtmp)
 register struct monst *mtmp;
 {
@@ -229,8 +229,8 @@ register struct monst *mtmp;
               || mtmp->data->mlet == S_LEPRECHAUN) || !rn2(50))
         && (Aggravate_monster
             || (mtmp->data->mlet == S_DOG || mtmp->data->mlet == S_HUMAN)
-            || (!rn2(7) && mtmp->m_ap_type != M_AP_FURNITURE
-                && mtmp->m_ap_type != M_AP_OBJECT))) {
+            || (!rn2(7) && M_AP_TYPE(mtmp) != M_AP_FURNITURE
+                && M_AP_TYPE(mtmp) != M_AP_OBJECT))) {
         mtmp->msleeping = 0;
         return 1;
     }
@@ -238,7 +238,7 @@ register struct monst *mtmp;
 }
 
 /* ungrab/expel held/swallowed hero */
-STATIC_OVL void
+static void
 release_hero(mon)
 struct monst *mon;
 {
@@ -329,8 +329,8 @@ boolean fleemsg;
             mtmp->mfleetim = (unsigned) min(fleetime, 127);
         }
         if (!mtmp->mflee && fleemsg && canseemon(mtmp)
-            && mtmp->m_ap_type != M_AP_FURNITURE
-            && mtmp->m_ap_type != M_AP_OBJECT) {
+            && M_AP_TYPE(mtmp) != M_AP_FURNITURE
+            && M_AP_TYPE(mtmp) != M_AP_OBJECT) {
             /* unfortunately we can't distinguish between temporary
                sleep and temporary paralysis, so both conditions
                receive the same alternate message */
@@ -351,7 +351,7 @@ boolean fleemsg;
     memset(mtmp->mtrack, 0, sizeof(mtmp->mtrack));
 }
 
-STATIC_OVL void
+static void
 distfleeck(mtmp, inrange, nearby, scared)
 register struct monst *mtmp;
 int *inrange, *nearby, *scared;
@@ -392,7 +392,7 @@ int *inrange, *nearby, *scared;
 
 /* perform a special one-time action for a monster; returns -1 if nothing
    special happened, 0 if monster uses up its turn, 1 if monster is killed */
-STATIC_OVL int
+static int
 m_arrival(mon)
 struct monst *mon;
 {
@@ -1030,7 +1030,7 @@ register int after;
         if ((likegold || likegems || likeobjs || likemagic || likerock
              || conceals) && (!*in_rooms(omx, omy, SHOPBASE)
                               || (!rn2(25) && !mtmp->isshk))) {
-        look_for_obj:
+ look_for_obj:
             oomx = min(COLNO - 1, omx + minr);
             oomy = min(ROWNO - 1, omy + minr);
             lmx = max(1, omx - minr);
@@ -1620,6 +1620,7 @@ register struct monst *mtmp;
 
     if (!gotu) {
         register int try_cnt = 0;
+
         do {
             if (++try_cnt > 200)
                 goto found_you; /* punt */
@@ -1633,7 +1634,7 @@ register struct monst *mtmp;
                               && (can_ooze(mtmp) || can_fog(mtmp)))))
                  || !couldsee(mx, my));
     } else {
-    found_you:
+ found_you:
         mx = u.ux;
         my = u.uy;
     }
@@ -1679,7 +1680,7 @@ xchar x, y;
  * Inventory prevents passage under door.
  * Used by can_ooze() and can_fog().
  */
-STATIC_OVL boolean
+static boolean
 stuff_prevents_passage(mtmp)
 struct monst *mtmp;
 {
@@ -1737,7 +1738,7 @@ struct monst *mtmp;
     return FALSE;
 }
 
-STATIC_OVL int
+static int
 vamp_shift(mon, ptr, domsg)
 struct monst *mon;
 struct permonst *ptr;

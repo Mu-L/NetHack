@@ -1,14 +1,14 @@
-/* NetHack 3.6	mthrowu.c	$NHDT-Date: 1542765360 2018/11/21 01:56:00 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.78 $ */
+/* NetHack 3.6	mthrowu.c	$NHDT-Date: 1564767726 2019/08/02 17:42:06 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.85 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2016. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 
-STATIC_DCL int FDECL(monmulti, (struct monst *, struct obj *, struct obj *));
-STATIC_DCL void FDECL(monshoot, (struct monst *, struct obj *, struct obj *));
-STATIC_DCL int FDECL(drop_throw, (struct obj *, BOOLEAN_P, int, int));
-STATIC_DCL boolean FDECL(m_lined_up, (struct monst *, struct monst *));
+static int FDECL(monmulti, (struct monst *, struct obj *, struct obj *));
+static void FDECL(monshoot, (struct monst *, struct obj *, struct obj *));
+static int FDECL(drop_throw, (struct obj *, BOOLEAN_P, int, int));
+static boolean FDECL(m_lined_up, (struct monst *, struct monst *));
 
 #define URETREATING(x, y) \
     (distmin(u.ux, u.uy, x, y) > distmin(u.ux0, u.uy0, x, y))
@@ -20,7 +20,7 @@ STATIC_DCL boolean FDECL(m_lined_up, (struct monst *, struct monst *));
 /*
  * Keep consistent with breath weapons in zap.c, and AD_* in monattk.h.
  */
-STATIC_OVL NEARDATA const char *breathwep[] = {
+static NEARDATA const char *breathwep[] = {
     "fragments", "fire", "frost", "sleep gas", "a disintegration blast",
     "lightning", "poison gas", "acid", "strange breath #8",
     "strange breath #9"
@@ -102,7 +102,7 @@ const char *name; /* if null, then format `*objp' */
  * dothrow.c (for consistency). --KAA
  * Returns 0 if object still exists (not destroyed).
  */
-STATIC_OVL int
+static int
 drop_throw(obj, ohit, x, y)
 register struct obj *obj;
 boolean ohit;
@@ -146,7 +146,7 @@ int x, y;
 
 /* calculate multishot volley count for mtmp throwing otmp (if not ammo) or
    shooting otmp with mwep (if otmp is ammo and mwep appropriate launcher) */
-STATIC_OVL int
+static int
 monmulti(mtmp, otmp, mwep)
 struct monst *mtmp;
 struct obj *otmp, *mwep;
@@ -175,7 +175,10 @@ struct obj *otmp, *mwep;
         /* Elven Craftsmanship makes for light, quick bows */
         if (otmp->otyp == ELVEN_ARROW && !otmp->cursed)
             multishot++;
-        if (ammo_and_launcher(otmp, uwep) && mwep->otyp == ELVEN_BOW
+        /* for arrow, we checked bow&arrow when entering block, but for
+           bow, so far we've only validated that otmp is a weapon stack;
+           need to verify that it's a stack of arrows rather than darts */
+        if (mwep && mwep->otyp == ELVEN_BOW && ammo_and_launcher(otmp, mwep)
             && !mwep->cursed)
             multishot++;
         /* 1/3 of launcher enchantment */
@@ -231,7 +234,7 @@ struct obj *otmp, *mwep;
 }
 
 /* mtmp throws otmp, or shoots otmp with mwep, at hero or at monster mtarg */
-STATIC_OVL void
+static void
 monshoot(mtmp, otmp, mwep)
 struct monst *mtmp;
 struct obj *otmp, *mwep;
@@ -305,7 +308,7 @@ boolean verbose;    /* give message(s) even when you can't see what happened */
     struct obj *mon_launcher = g.marcher ? MON_WEP(g.marcher) : NULL;
 
     g.notonhead = (g.bhitpos.x != mtmp->mx || g.bhitpos.y != mtmp->my);
-    ismimic = mtmp->m_ap_type && mtmp->m_ap_type != M_AP_MONSTER;
+    ismimic = M_AP_TYPE(mtmp) && M_AP_TYPE(mtmp) != M_AP_MONSTER;
     vis = cansee(g.bhitpos.x, g.bhitpos.y);
 
     tmp = 5 + find_mac(mtmp) + omon_adj(mtmp, otmp, FALSE);
@@ -524,7 +527,7 @@ struct obj *obj;         /* missile (or stack providing it) */
      * be careful not to use either one after it's been freed.
      */
     if (sym)
-        tmp_at(DISP_FLASH, obj_to_glyph(singleobj));
+        tmp_at(DISP_FLASH, obj_to_glyph(singleobj, rn2_on_display_rng));
     while (range-- > 0) { /* Actually the loop is always exited by break */
         g.bhitpos.x += dx;
         g.bhitpos.y += dy;
@@ -1048,7 +1051,7 @@ int boulderhandling; /* 0=block, 1=ignore, 2=conditionally block */
     return FALSE;
 }
 
-STATIC_OVL boolean
+static boolean
 m_lined_up(mtarg, mtmp)
 struct monst *mtarg, *mtmp;
 {
@@ -1065,8 +1068,8 @@ register struct monst *mtmp;
 
     /* hero concealment usually trumps monst awareness of being lined up */
     if (Upolyd && rn2(25)
-        && (u.uundetected || (g.youmonst.m_ap_type != M_AP_NOTHING
-                              && g.youmonst.m_ap_type != M_AP_MONSTER)))
+        && (u.uundetected || (U_AP_TYPE != M_AP_NOTHING
+                              && U_AP_TYPE != M_AP_MONSTER)))
         return FALSE;
 
     ignore_boulders = (throws_rocks(mtmp->data)

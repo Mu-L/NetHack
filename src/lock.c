@@ -1,4 +1,4 @@
-/* NetHack 3.6	lock.c	$NHDT-Date: 1544442712 2018/12/10 11:51:52 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.82 $ */
+/* NetHack 3.6	lock.c	$NHDT-Date: 1548978605 2019/01/31 23:50:05 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.84 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -6,12 +6,12 @@
 #include "hack.h"
 
 /* occupation callbacks */
-STATIC_PTR int NDECL(picklock);
-STATIC_PTR int NDECL(forcelock);
+static int NDECL(picklock);
+static int NDECL(forcelock);
 
-STATIC_DCL const char *NDECL(lock_action);
-STATIC_DCL boolean FDECL(obstructed, (int, int, BOOLEAN_P));
-STATIC_DCL void FDECL(chest_shatter_msg, (struct obj *));
+static const char *NDECL(lock_action);
+static boolean FDECL(obstructed, (int, int, BOOLEAN_P));
+static void FDECL(chest_shatter_msg, (struct obj *));
 
 boolean
 picking_lock(x, y)
@@ -35,7 +35,7 @@ int x, y;
 }
 
 /* produce an occupation string appropriate for the current activity */
-STATIC_OVL const char *
+static const char *
 lock_action()
 {
     /* "unlocking"+2 == "locking" */
@@ -65,7 +65,7 @@ lock_action()
 }
 
 /* try to open/close a lock */
-STATIC_PTR int
+static int
 picklock(VOID_ARGS)
 {
     if (g.xlock.box) {
@@ -186,12 +186,13 @@ boolean destroyit;
             if (!rn2(3) || otmp->oclass == POTION_CLASS) {
                 chest_shatter_msg(otmp);
                 if (costly)
-                    loss +=
-                        stolen_value(otmp, u.ux, u.uy, peaceful_shk, TRUE);
+                    loss += stolen_value(otmp, u.ux, u.uy, peaceful_shk, TRUE);
                 if (otmp->quan == 1L) {
                     obfree(otmp, (struct obj *) 0);
                     continue;
                 }
+                /* this works because we're sure to have at least 1 left;
+                   otherwise it would fail since otmp is not in inventory */
                 useup(otmp);
             }
             if (box->otyp == ICE_BOX && otmp->otyp == CORPSE) {
@@ -210,7 +211,7 @@ boolean destroyit;
 }
 
 /* try to force a locked chest */
-STATIC_PTR int
+static int
 forcelock(VOID_ARGS)
 {
     if ((g.xlock.box->ox != u.ux) || (g.xlock.box->oy != u.uy))
@@ -243,10 +244,14 @@ forcelock(VOID_ARGS)
         return 1; /* still busy */
 
     You("succeed in forcing the lock.");
+    exercise(g.xlock.picktyp ? A_DEX : A_STR, TRUE);
+    /* breakchestlock() might destroy g.xlock.box; if so, g.xlock context will
+       be cleared (delobj -> obfree -> maybe_reset_pick); but it might not,
+       so explicitly clear that manually */
     breakchestlock(g.xlock.box, (boolean) (!g.xlock.picktyp && !rn2(3)));
+    reset_pick(); /* lock-picking context is no longer valid */
 
-    exercise((g.xlock.picktyp) ? A_DEX : A_STR, TRUE);
-    return ((g.xlock.usedtime = 0));
+    return 0;
 }
 
 void
@@ -254,15 +259,28 @@ reset_pick()
 {
     g.xlock.usedtime = g.xlock.chance = g.xlock.picktyp = 0;
     g.xlock.magic_key = FALSE;
-    g.xlock.door = 0;
-    g.xlock.box = 0;
+    g.xlock.door = (struct rm *) 0;
+    g.xlock.box = (struct obj *) 0;
 }
 
-/* level change; don't reset if hero is carrying xlock.box with him/her */
+/* level change or object deletion; context may no longer be valid */
 void
-maybe_reset_pick()
+maybe_reset_pick(container)
+struct obj *container; /* passed from obfree() */
 {
-    if (!g.xlock.box || !carried(g.xlock.box))
+    /*
+     * If a specific container, only clear context if it is for that
+     * particular container (which is being deleted).  Other stuff on
+     * the current dungeon level remains valid.
+     * However if 'container' is Null, clear context if not carrying
+     * g.xlock.box (which might be Null if context is for a door).
+     * Used for changing levels, where a floor container or a door is
+     * being left behind and won't be valid on the new level but a
+     * carried container will still be.  There might not be any context,
+     * in which case redundantly clearing it is harmless.
+     */
+    if (container ? (container == g.xlock.box)
+                  : (!g.xlock.box || !carried(g.xlock.box)))
         reset_pick();
 }
 
@@ -426,8 +444,8 @@ struct obj *pick;
 
         door = &levl[cc.x][cc.y];
         mtmp = m_at(cc.x, cc.y);
-        if (mtmp && canseemon(mtmp) && mtmp->m_ap_type != M_AP_FURNITURE
-            && mtmp->m_ap_type != M_AP_OBJECT) {
+        if (mtmp && canseemon(mtmp) && M_AP_TYPE(mtmp) != M_AP_FURNITURE
+            && M_AP_TYPE(mtmp) != M_AP_OBJECT) {
             if (picktyp == CREDIT_CARD
                 && (mtmp->isshk || mtmp->data == &mons[PM_ORACLE]))
                 verbalize("No checks, no credit, no problem.");
@@ -711,15 +729,15 @@ int x, y;
     return 1;
 }
 
-STATIC_OVL boolean
+static boolean
 obstructed(x, y, quietly)
 register int x, y;
 boolean quietly;
 {
     register struct monst *mtmp = m_at(x, y);
 
-    if (mtmp && mtmp->m_ap_type != M_AP_FURNITURE) {
-        if (mtmp->m_ap_type == M_AP_OBJECT)
+    if (mtmp && M_AP_TYPE(mtmp) != M_AP_FURNITURE) {
+        if (M_AP_TYPE(mtmp) == M_AP_OBJECT)
             goto objhere;
         if (!quietly) {
             if ((mtmp->mx != x) || (mtmp->my != y)) {
@@ -737,7 +755,7 @@ boolean quietly;
         return TRUE;
     }
     if (OBJ_AT(x, y)) {
-    objhere:
+ objhere:
         if (!quietly)
             pline("%s's in the way.", Something);
         return TRUE;
@@ -803,7 +821,7 @@ doclose()
         else if (portcullis || door->typ == DRAWBRIDGE_DOWN)
             There("is no obvious way to close the drawbridge.");
         else {
-        nodoor:
+ nodoor:
             You("%s no door there.", Blind ? "feel" : "see");
         }
         return res;
@@ -1043,7 +1061,7 @@ int x, y;
     return res;
 }
 
-STATIC_OVL void
+static void
 chest_shatter_msg(otmp)
 struct obj *otmp;
 {

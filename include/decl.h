@@ -1,4 +1,4 @@
-/* NetHack 3.6  decl.h  $NHDT-Date: 1547025154 2019/01/09 09:12:34 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.147 $ */
+/* NetHack 3.6  decl.h  $NHDT-Date: 1559601011 2019/06/03 22:30:11 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.150 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2007. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -7,14 +7,13 @@
 #define DECL_H
 
 #define E extern
-
-#if !defined(MFLOPPY) && !defined(VMS) && !defined(WIN32)
+#if !defined(MICRO) && !defined(VMS) && !defined(WIN32)
 #define LOCKNAMESIZE (PL_NSIZ + 14) /* long enough for uid+name+.99 */
 #define LOCKNAMEINIT "1lock"
 #define BONESINIT "bonesnn.xxx"
 #define BONESSIZE sizeof(BONESINIT)
 #else
-#if defined(MFLOPPY)
+#if defined(MICRO)
 #define LOCKNAMESIZE FILENAME
 #define LOCKNAMEINIT ""
 #define BONESINIT ""
@@ -34,28 +33,43 @@
 #endif
 #endif
 
+#define INDEXT ".xxxxxx"           /* largest indicator suffix */
+#define INDSIZE sizeof(INDEXT)
+
 #if defined(UNIX) || defined(__BEOS__)
-#define SAVESIZE (PL_NSIZ + 13) /* save/99999player.e */
-#else
+#define SAVEX "save/99999.e"
+#ifndef SAVE_EXTENSION
+#define SAVE_EXTENSION ""
+#endif
+#else /* UNIX || __BEOS__ */
 #ifdef VMS
-#define SAVESIZE (PL_NSIZ + 22) /* [.save]<uid>player.e;1 */
-#else
-#if defined(WIN32)
-#define SAVESIZE (PL_NSIZ + 40) /* username-player.NetHack-saved-game */
-#else
-#define SAVESIZE FILENAME /* from macconf.h or pcconf.h */
+#define SAVEX "[.save]nnnnn.e;1"
+#ifndef SAVE_EXTENSION
+#define SAVE_EXTENSION ""
 #endif
+#else /* VMS */
+#if defined(WIN32) || defined(MICRO)
+#define SAVEX ""
+#if !defined(SAVE_EXTENSION)
+#ifdef MICRO
+#define SAVE_EXTENSION ".svh"
 #endif
+#ifdef WIN32
+#define SAVE_EXTENSION ".NetHack-saved-game"
+#endif
+#endif /* !SAVE_EXTENSION */
+#endif /* WIN32 || MICRO */
+#endif /* else !VMS */
+#endif /* else !(UNIX || __BEOS__) */
+
+#ifndef SAVE_EXTENSION
+#define SAVE_EXTENSION ""
 #endif
 
-/* used in files.c */
-#ifdef HOLD_LOCKFILE_OPEN
-struct level_ftrack {
-    int init;
-    int fd;    /* file descriptor for level file     */
-    int oflag; /* open flags                         */
-    boolean nethack_thinks_it_is_open; /* Does NetHack think it's open? */
-};
+#ifndef MICRO
+#define SAVESIZE (PL_NSIZ + sizeof(SAVEX) + sizeof(SAVE_EXTENSION) + INDSIZE)
+#else
+#define SAVESIZE FILENAME
 #endif
 
 /* max size of a windowtype option */
@@ -162,6 +176,52 @@ struct sinfo {
     int wizkit_wishing;
 };
 
+/* Flags for controlling uptodate */
+#define UTD_CHECKSIZES                 0x01
+#define UTD_CHECKFIELDCOUNTS           0x02
+#define UTD_SKIP_SANITY1               0x04
+#define UTD_SKIP_SAVEFILEINFO          0x08
+
+/* NetHack ftypes */
+#define NHF_LEVELFILE       1
+#define NHF_SAVEFILE        2 
+#define NHF_BONESFILE       3
+/* modes */
+#define READING  0x0
+#define COUNTING 0x1
+#define WRITING  0x2
+#define FREEING  0x4
+#define MAX_BMASK 4
+/* operations of the various saveXXXchn & co. routines */
+#define perform_bwrite(nhfp) ((nhfp)->mode & (COUNTING | WRITING))
+#define release_data(nhfp) ((nhfp)->mode & FREEING)
+
+/* Content types for fieldlevel files */
+struct fieldlevel_content {
+    boolean deflt;        /* individual fields */
+    boolean binary;       /* binary rather than text */
+    boolean json;         /* JSON */
+};
+    
+typedef struct {
+    int fd;               /* for traditional structlevel binary writes */
+    int mode;             /* holds READING, WRITING, or FREEING modes  */
+    int ftype;            /* NHF_LEVELFILE, NHF_SAVEFILE, or NHF_BONESFILE */
+    int fnidx;            /* index of procs for fieldlevel saves */
+    long count;           /* holds current line count for default style file,
+                             field count for binary style */
+    boolean structlevel;  /* traditional structure binary saves */
+    boolean fieldlevel;   /* fieldlevel saves saves each field individually */
+    boolean addinfo;      /* if set, some additional context info from core */
+    boolean eof;          /* place to mark eof reached */
+    boolean bendian;      /* set to true if executing on a big-endian machine */
+    FILE *fpdef;          /* file pointer for fieldlevel default style */
+    FILE *fpdefmap;       /* file pointer mapfile for def format */
+    FILE *fplog;          /* file pointer logfile */
+    FILE *fpdebug;        /* file pointer debug info */
+    struct fieldlevel_content style;
+} NHFILE;
+
 E const char quitchars[];
 E const char vowels[];
 E const char ynchars[];
@@ -190,6 +250,7 @@ struct multishot {
     boolean s;
 };
 
+E NEARDATA boolean has_strong_rngseed;
 E const int shield_static[];
 
 #include "spell.h"
@@ -255,7 +316,8 @@ struct c_common_strings {
     const char *const c_nothing_happens, *const c_thats_enough_tries,
         *const c_silly_thing_to, *const c_shudder_for_moment,
         *const c_something, *const c_Something, *const c_You_can_move_again,
-        *const c_Never_mind, *c_vision_clears, *const c_the_your[2];
+        *const c_Never_mind, *c_vision_clears, *const c_the_your[2],
+        *const c_fakename[2];
 };
 
 E const struct c_common_strings c_common_strings;
@@ -270,6 +332,9 @@ E const struct c_common_strings c_common_strings;
 #define Never_mind c_common_strings.c_Never_mind
 #define vision_clears c_common_strings.c_vision_clears
 #define the_your c_common_strings.c_the_your
+/* fakename[] used occasionally so vtense() won't be fooled by an assigned
+   name ending in 's' */
+#define fakename c_common_strings.c_fakename
 
 /* material strings */
 E const char *materialnm[];
@@ -348,6 +413,12 @@ E const char *const monexplain[], invisexplain[], *const oclass_names[];
 E const char *fqn_prefix_names[PREFIX_COUNT];
 #endif
 
+struct restore_info {
+	const char *name;
+	int mread_flags;
+};
+E struct restore_info restoreinfo;
+
 E NEARDATA struct savefile_info sfcap, sfrestinfo, sfsaveinfo;
 
 struct opvar {
@@ -379,6 +450,13 @@ struct plinemsg_type {
 /* bitmask for callers of hide_unhide_msgtypes() */
 #define MSGTYP_MASK_REP_SHOW ((1 << MSGTYP_NOREP) | (1 << MSGTYP_NOSHOW))
 
+
+enum bcargs {override_restriction = -1};
+struct breadcrumbs {
+    const char *funcnm;
+    int linenum;
+    boolean in_effect;
+};
 #ifdef PANICTRACE
 E const char *ARGV0;
 #endif
@@ -641,8 +719,11 @@ struct instance_globals {
     boolean blinit;
     boolean update_all;
     boolean valset[MAXBLSTATS];
+#ifdef STATUS_HILITES
     long bl_hilite_moves;
+#endif
     unsigned long cond_hilites[BL_ATTCLR_MAX];
+    int now_or_before_idx;   /* 0..1 for array[2][] first index */
 
     /* cmd.c */
     struct cmd Cmd; /* flag.h */
@@ -691,6 +772,10 @@ struct instance_globals {
     int doorindex;
     char *save_cm;
     long done_money;
+    long domove_attempting;
+    long domove_succeeded;
+#define DOMOVE_WALK         0x00000001
+#define DOMOVE_RUSH         0x00000002
     const char *nomovemsg;
     char plname[PL_NSIZ]; /* player name */
     char pl_character[PL_CSIZ];
@@ -806,6 +891,7 @@ struct instance_globals {
     char preferred_pet; /* '\0', 'c', 'd', 'n' (none) */    
     struct monst *mydogs; /* monsters that went down/up together with @ */
     struct monst *migrating_mons; /* monsters moving to another level */
+    struct autopickup_exception *apelist;
     struct mvitals mvitals[NUMMONS];
 
     /* dokick.c */
@@ -817,8 +903,10 @@ struct instance_globals {
     struct symsetentry symset[NUM_GRAPHICS];
     int currentgraphics;
     nhsym showsyms[SYM_MAX]; /* symbols to be displayed */
-    nhsym l_syms[SYM_MAX];   /* loaded symbols          */
-    nhsym r_syms[SYM_MAX];   /* rogue symbols           */
+    nhsym primary_syms[SYM_MAX];   /* loaded primary symbols          */
+    nhsym rogue_syms[SYM_MAX];   /* loaded rogue symbols           */
+    nhsym ov_primary_syms[SYM_MAX];   /* loaded primary symbols          */
+    nhsym ov_rogue_syms[SYM_MAX];   /* loaded rogue symbols           */
     nhsym warnsyms[WARNCOUNT]; /* the current warning display symbols */
 
     /* dungeon.c */
@@ -850,9 +938,6 @@ struct instance_globals {
     boolean chosen_symset_start;
     boolean chosen_symset_end;
     int symset_which_set;
-#ifdef HOLD_LOCKFILE_OPEN
-    struct level_ftrack lftrack;
-#endif /*HOLD_LOCKFILE_OPEN*/
     char SAVEF[SAVESIZE]; /* holds relative path of save file from playground */
 #ifdef MICRO
     char SAVEP[SAVESIZE]; /* holds path of directory for save file */
@@ -1031,7 +1116,11 @@ struct instance_globals {
     /* questpgr.c */
     char cvt_buf[CVT_BUF_SIZE];
     struct qtlists qt_list;
+#ifdef DLB
     struct dlb_handle *msg_file;
+#else
+    FILE *msg_file;
+#endif
     /* used by ldrname() and neminame(), then copied into cvt_buf */
     char nambuf[CVT_BUF_SIZE];
 
@@ -1182,3 +1271,5 @@ E const struct const_globals cg;
 #undef E
 
 #endif /* DECL_H */
+
+

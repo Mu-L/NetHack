@@ -1,4 +1,4 @@
-/* NetHack 3.6	winX.c	$NHDT-Date: 1546081304 2018/12/29 11:01:44 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.71 $ */
+/* NetHack 3.6	winX.c	$NHDT-Date: 1552441031 2019/03/13 01:37:11 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.73 $ */
 /* Copyright (c) Dean Luick, 1992                                 */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -1355,9 +1355,20 @@ int how;
 time_t when;
 {
     struct xwindow *wp;
+    FILE *rip_fp = 0;
 
     check_winid(window);
     wp = &window_list[window];
+
+    /* make sure the graphical tombstone is available; it's not easy to
+       revert to the ASCII-art text tombstone once we're past this point */
+    if (appResources.tombstone && *appResources.tombstone)
+        rip_fp = fopen(appResources.tombstone, "r"); /* "rip.xpm" */
+    if (!rip_fp) {
+        genl_outrip(window, how, when);
+        return;
+    }
+    (void) fclose(rip_fp);
 
     if (wp->type == NHW_TEXT) {
         wp->text_information->is_rip = TRUE;
@@ -1950,7 +1961,7 @@ boolean complain;
     wp = &window_list[newwin];
     X11_start_menu(newwin);
 
-    any = zeroany;
+    any = cg.zeroany;
     while (dlb_fgets(line, LLEN, fp)) {
         X11_add_menu(newwin, NO_GLYPH, &any, 0, 0, ATR_NONE,
                      line, MENU_UNSELECTED);
@@ -2572,12 +2583,12 @@ init_standard_windows()
 }
 
 void
-nh_XtPopup(w, g, childwid)
+nh_XtPopup(w, grb, childwid)
 Widget w;        /* widget */
-int g;           /* type of grab */
+int grb;         /* type of grab */
 Widget childwid; /* child to receive focus (can be None) */
 {
-    XtPopup(w, (XtGrabKind) g);
+    XtPopup(w, (XtGrabKind) grb);
     XSetWMProtocols(XtDisplay(w), XtWindow(w), &wm_delete_window, 1);
     if (appResources.autofocus)
         XtSetKeyboardFocus(toplevel, childwid);

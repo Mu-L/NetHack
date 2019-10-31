@@ -1,13 +1,15 @@
-/* NetHack 3.6	engrave.c	$NHDT-Date: 1456304550 2016/02/24 09:02:30 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.61 $ */
+/* NetHack 3.6	engrave.c	$NHDT-Date: 1570318925 2019/10/05 23:42:05 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.75 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 #include "lev.h"
+#include "sfproto.h"
 
-STATIC_VAR NEARDATA struct engr *head_engr;
-STATIC_DCL const char *NDECL(blengr);
+
+static NEARDATA struct engr *head_engr;
+static const char *NDECL(blengr);
 
 char *
 random_engraving(outbuf)
@@ -18,7 +20,7 @@ char *outbuf;
     /* a random engraving may come from the "rumors" file,
        or from the "engrave" file (formerly in an array here) */
     if (!rn2(4) || !(rumor = getrumor(0, outbuf, TRUE)) || !*rumor)
-        (void) get_rnd_text(ENGRAVEFILE, outbuf);
+        (void) get_rnd_text(ENGRAVEFILE, outbuf, rn2);
 
     wipeout_text(outbuf, (int) (strlen(outbuf) / 4), 0);
     return outbuf;
@@ -287,7 +289,8 @@ int cnt;
 
 void
 wipe_engr_at(x, y, cnt, magical)
-xchar x, y, cnt, magical;
+xchar x, y, cnt;
+boolean magical;
 {
     register struct engr *ep = engr_at(x, y);
 
@@ -314,7 +317,6 @@ int x, y;
 {
     register struct engr *ep = engr_at(x, y);
     int sensed = 0;
-    char buf[BUFSZ];
 
     /* Sensing an engraving does not require sight,
      * nor does it necessarily imply comprehension (literacy).
@@ -363,17 +365,22 @@ int x, y;
             impossible("%s is written in a very strange way.", Something);
             sensed = 1;
         }
+
         if (sensed) {
-            char *et;
-            unsigned maxelen = BUFSZ - sizeof("You feel the words: \"\". ");
-            if (strlen(ep->engr_txt) > maxelen) {
-                (void) strncpy(buf, ep->engr_txt, (int) maxelen);
+            char *et, buf[BUFSZ];
+            int maxelen = (int) (sizeof buf
+                                 /* sizeof "literal" counts terminating \0 */
+                                 - sizeof "You feel the words: \"\".");
+
+            if ((int) strlen(ep->engr_txt) > maxelen) {
+                (void) strncpy(buf, ep->engr_txt, maxelen);
                 buf[maxelen] = '\0';
                 et = buf;
-            } else
+            } else {
                 et = ep->engr_txt;
+            }
             You("%s: \"%s\".", (Blind) ? "feel the words" : "read", et);
-            if (g.context.run > 1)
+            if (g.context.run > 0)
                 nomul(0);
         }
     }
@@ -498,7 +505,7 @@ doengrave()
     maxelen = BUFSZ - 1;
     if (oep)
         oetype = oep->engr_type;
-    if (is_demon(g.youmonst.data) || g.youmonst.data->mlet == S_VAMPIRE)
+    if (is_demon(g.youmonst.data) || is_vampire(g.youmonst.data))
         type = ENGR_BLOOD;
 
     /* Can the adventurer engrave at all? */
@@ -1173,48 +1180,69 @@ sanitize_engravings()
 }
 
 void
-save_engravings(fd, mode)
-int fd, mode;
+save_engravings(nhfp)
+NHFILE *nhfp;
 {
     struct engr *ep, *ep2;
     unsigned no_more_engr = 0;
 
     for (ep = head_engr; ep; ep = ep2) {
         ep2 = ep->nxt_engr;
-        if (ep->engr_lth && ep->engr_txt[0] && perform_bwrite(mode)) {
-            bwrite(fd, (genericptr_t) &ep->engr_lth, sizeof ep->engr_lth);
-            bwrite(fd, (genericptr_t) ep, sizeof (struct engr) + ep->engr_lth);
+        if (ep->engr_lth && ep->engr_txt[0] && perform_bwrite(nhfp)) {
+            if (nhfp->structlevel) {
+                bwrite(nhfp->fd, (genericptr_t)&(ep->engr_lth), sizeof(ep->engr_lth));
+                bwrite(nhfp->fd, (genericptr_t)ep, sizeof(struct engr) + ep->engr_lth);
+            }
+            if (nhfp->fieldlevel) {
+                sfo_unsigned(nhfp, &(ep->engr_lth), "engravings", "engr_lth", 1);
+                sfo_engr(nhfp, ep, "engravings", "engr", 1);
+                sfo_str(nhfp, ep->engr_txt, "engravings", "engr_txt", ep->engr_lth);
+            }
         }
-        if (release_data(mode))
+        if (release_data(nhfp))
             dealloc_engr(ep);
     }
-    if (perform_bwrite(mode))
-        bwrite(fd, (genericptr_t) &no_more_engr, sizeof no_more_engr);
-    if (release_data(mode))
+    if (perform_bwrite(nhfp)) {
+        if (nhfp->structlevel)
+            bwrite(nhfp->fd, (genericptr_t)&no_more_engr, sizeof no_more_engr);
+        if (nhfp->fieldlevel)
+           sfo_unsigned(nhfp, &no_more_engr, "engravings", "engr_lth", 1);
+    }
+    if (release_data(nhfp))
         head_engr = 0;
 }
 
 void
-rest_engravings(fd)
-int fd;
+rest_engravings(nhfp)
+NHFILE *nhfp;
 {
     struct engr *ep;
     unsigned lth;
 
     head_engr = 0;
     while (1) {
-        mread(fd, (genericptr_t) &lth, sizeof lth);
+        if (nhfp->structlevel)
+            mread(nhfp->fd, (genericptr_t) &lth, sizeof(unsigned));
+        if (nhfp->fieldlevel)
+            sfi_unsigned(nhfp, &lth, "engravings", "engr_lth", 1);
+
         if (lth == 0)
             return;
         ep = newengr(lth);
-        mread(fd, (genericptr_t) ep, sizeof (struct engr) + lth);
+        if (nhfp->structlevel) {
+            mread(nhfp->fd, (genericptr_t) ep, sizeof(struct engr) + lth);
+        }
+        if (nhfp->fieldlevel) {
+            sfi_engr(nhfp, ep, "engravings", "engr", 1);
+            ep->engr_txt = (char *) (ep + 1);
+            sfi_str(nhfp, ep->engr_txt, "engravings", "engr_txt", lth);
+        }
         ep->nxt_engr = head_engr;
         head_engr = ep;
-        ep->engr_txt = (char *) (ep + 1); /* Andreas Bormann */
-        /* Mark as finished for bones levels -- no problem for
+        ep->engr_txt = (char *) (ep + 1);	/* Andreas Bormann */
+        /* mark as finished for bones levels -- no problem for
          * normal levels as the player must have finished engraving
-         * to be able to move again.
-         */
+         * to be able to move again */
         ep->engr_time = g.moves;
     }
 }
@@ -1294,7 +1322,7 @@ const char *str;
     /* Engrave the headstone */
     del_engr_at(x, y);
     if (!str)
-        str = get_rnd_text(EPITAPHFILE, buf);
+        str = get_rnd_text(EPITAPHFILE, buf, rn2);
     make_engr_at(x, y, str, 0L, HEADSTONE);
     return;
 }
@@ -1320,7 +1348,7 @@ static const char blind_writing[][21] = {
      0x69, 0x76, 0x6b, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 };
 
-STATIC_OVL const char *
+static const char *
 blengr(VOID_ARGS)
 {
     return blind_writing[rn2(SIZE(blind_writing))];

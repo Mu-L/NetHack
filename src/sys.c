@@ -1,4 +1,4 @@
-/* NetHack 3.6	sys.c	$NHDT-Date: 1448241785 2015/11/23 01:23:05 $  $NHDT-Branch: master $:$NHDT-Revision: 1.35 $ */
+/* NetHack 3.6	sys.c	$NHDT-Date: 1547118632 2019/01/10 11:10:32 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.43 $ */
 /* Copyright (c) Kenneth Lorber, Kensington, Maryland, 2008. */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -63,7 +63,7 @@ sys_early_init()
     /* panic options */
     sysopt.gdbpath = dupstr(GDBPATH);
     sysopt.greppath = dupstr(GREPPATH);
-#ifdef BETA
+#if (NH_DEVEL_STATUS != NH_STATUS_RELEASED)
     sysopt.panictrace_gdb = 1;
 #ifdef PANICTRACE_LIBC
     sysopt.panictrace_libc = 2;
@@ -80,6 +80,7 @@ sys_early_init()
     sysopt.check_plname = 0;
     sysopt.seduce = 1; /* if it's compiled in, default to on */
     sysopt_seduce_set(sysopt.seduce);
+    sysopt.accessibility = 0;
     return;
 }
 
@@ -127,13 +128,20 @@ void
 sysopt_seduce_set(val)
 int val;
 {
-    const struct attack *setval = val ? c_sa_yes : c_sa_no;
+#if 0
+/*
+ * Attack substitution is now done on the fly in getmattk(mhitu.c).
+ */
+    struct attack *setval = val ? c_sa_yes : c_sa_no;
     int x;
 
     for (x = 0; x < NATTK; x++) {
         mons[PM_INCUBUS].mattk[x] = setval[x];
         mons[PM_SUCCUBUS].mattk[x] = setval[x];
     }
+#else
+    nhUse(val);
+#endif /*0*/
     return;
 }
 

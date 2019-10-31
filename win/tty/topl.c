@@ -1,4 +1,4 @@
-/* NetHack 3.6	topl.c	$NHDT-Date: 1540934784 2018/10/30 21:26:24 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.38 $ */
+/* NetHack 3.6	topl.c	$NHDT-Date: 1560608320 2019/06/15 14:18:40 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.47 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2009. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -14,20 +14,19 @@
 #define C(c) (0x1f & (c))
 #endif
 
-STATIC_DCL void FDECL(redotoplin, (const char *));
-STATIC_DCL void FDECL(topl_putsym, (CHAR_P));
-STATIC_DCL void NDECL(remember_topl);
-STATIC_DCL void FDECL(removetopl, (int));
-STATIC_DCL void FDECL(msghistory_snapshot, (BOOLEAN_P));
-STATIC_DCL void FDECL(free_msghistory_snapshot, (BOOLEAN_P));
+static void FDECL(redotoplin, (const char *));
+static void FDECL(topl_putsym, (CHAR_P));
+static void FDECL(removetopl, (int));
+static void FDECL(msghistory_snapshot, (BOOLEAN_P));
+static void FDECL(free_msghistory_snapshot, (BOOLEAN_P));
 
 int
 tty_doprev_message()
 {
     register struct WinDesc *cw = wins[WIN_MESSAGE];
-
     winid prevmsg_win;
     int i;
+
     if ((iflags.prevmsg_window != 's')
         && !ttyDisplay->inread) {           /* not single */
         if (iflags.prevmsg_window == 'f') { /* full */
@@ -123,7 +122,7 @@ tty_doprev_message()
     return 0;
 }
 
-STATIC_OVL void
+static void
 redotoplin(str)
 const char *str;
 {
@@ -144,7 +143,29 @@ const char *str;
         more();
 }
 
-STATIC_OVL void
+/* for use by tty_putstr() */
+void
+show_topl(str)
+const char *str;
+{
+    struct WinDesc *cw = wins[WIN_MESSAGE];
+
+    if (!(cw->flags & WIN_STOP)) {
+        if (ttyDisplay->cury && ttyDisplay->toplin == 2)
+            tty_clear_nhwindow(WIN_MESSAGE);
+
+        cw->curx = cw->cury = 0;
+        home();
+        cl_end();
+        addtopl(str);
+
+        if (ttyDisplay->cury && ttyDisplay->toplin != 3)
+            ttyDisplay->toplin = 2;
+    }
+}
+
+/* used by update_topl(); also by tty_putstr() */
+void
 remember_topl()
 {
     register struct WinDesc *cw = wins[WIN_MESSAGE];
@@ -231,7 +252,8 @@ register const char *bp;
     /* If there is room on the line, print message on same line */
     /* But messages like "You die..." deserve their own line */
     n0 = strlen(bp);
-    if ((ttyDisplay->toplin == 1 || (cw->flags & WIN_STOP)) && cw->cury == 0
+    if ((ttyDisplay->toplin == 1 || (cw->flags & WIN_STOP))
+        && cw->cury == 0
         && n0 + (int) strlen(g.toplines) + 3 < CO - 8 /* room for --More-- */
         && (notdied = strncmp(bp, "You die", 7)) != 0) {
         Strcat(g.toplines, "  ");
@@ -272,7 +294,7 @@ register const char *bp;
         redotoplin(g.toplines);
 }
 
-STATIC_OVL
+static
 void
 topl_putsym(c)
 char c;
@@ -323,7 +345,7 @@ const char *str;
         topl_putsym(*str++);
 }
 
-STATIC_OVL void
+static void
 removetopl(n)
 register int n;
 {
@@ -523,7 +545,7 @@ static char **snapshot_mesgs = 0;
 
 /* collect currently available message history data into a sequential array;
    optionally, purge that data from the active circular buffer set as we go */
-STATIC_OVL void
+static void
 msghistory_snapshot(purge)
 boolean purge; /* clear message history buffer as we copy it */
 {
@@ -569,7 +591,7 @@ boolean purge; /* clear message history buffer as we copy it */
 }
 
 /* release memory allocated to message history snapshot */
-STATIC_OVL void
+static void
 free_msghistory_snapshot(purged)
 boolean purged; /* True: took history's pointers, False: just cloned them */
 {

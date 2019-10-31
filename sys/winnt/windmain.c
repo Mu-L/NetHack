@@ -8,8 +8,28 @@
 #include "hack.h"
 #include "dlb.h"
 #include <ctype.h>
+#include <stdlib.h>
 #include <sys\stat.h>
 #include <errno.h>
+#ifndef __MINGW32__
+#include <appmodel.h>
+#endif
+#include <ShlObj.h>
+
+#ifdef __MINGW32__
+extern LONG GetCurrentPackageFullName(UINT32 *packageFullNameLength,
+                      PWSTR  packageFullName);
+extern HRESULT SHGetKnownFolderPath(REFKNOWNFOLDERID rfid,
+                      DWORD dwFlags, HANDLE hToken, PWSTR  *ppszPath);
+#ifdef INITGUID
+#define DEFINE_KNOWN_FOLDER(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) const GUID DECLSPEC_SELECTANY name = { l, w1, w2,{ b1, b2, b3, b4, b5, b6, b7, b8 } }
+#else
+#define DEFINE_KNOWN_FOLDER(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) const GUID name
+#endif
+DEFINE_KNOWN_FOLDER (FOLDERID_ProgramData, 0x62ab5d82, 0xfdc1, 0x4dc3, 0xa9, 0xdd, 0x07, 0x0d, 0x1d, 0x49, 0x5d, 0x97);
+DEFINE_KNOWN_FOLDER (FOLDERID_LocalAppData, 0xf1b32785, 0x6fba, 0x4fcf, 0x9d, 0x55, 0x7b, 0x8e, 0x7f, 0x15, 0x70, 0x91);
+DEFINE_KNOWN_FOLDER (FOLDERID_Profile, 0x5e6c858f, 0x0e22, 0x4760, 0x9a, 0xfe, 0xea, 0x33, 0x17, 0xb6, 0x71, 0x73);
+#endif
 
 #if 0
 #include "wintty.h"
@@ -22,7 +42,7 @@
 #define E extern
 static void FDECL(process_options, (int argc, char **argv));
 static void NDECL(nhusage);
-static char *FDECL(exepath, (char *));
+static char *NDECL(get_executable_path);
 char *NDECL(exename);
 boolean NDECL(fakeconsole);
 void NDECL(freefakeconsole);
@@ -32,8 +52,8 @@ E void NDECL(mswin_destroy_reg);
 #endif
 #ifdef TTY_GRAPHICS
 extern void NDECL(backsp);
-extern void NDECL(clear_screen);
 #endif
+extern void NDECL(clear_screen);
 #undef E
 
 #ifdef PC_LOCKING
@@ -44,12 +64,11 @@ void NDECL(windows_nhbell);
 int FDECL(windows_nh_poskey, (int *, int *, int *));
 void FDECL(windows_raw_print, (const char *));
 char FDECL(windows_yn_function, (const char *, const char *, CHAR_P));
-void FDECL(windows_getlin, (const char *, char *));
+static void FDECL(windows_getlin, (const char *, char *));
 extern int NDECL(windows_console_custom_nhgetch);
 void NDECL(safe_routines);
 
 char orgdir[PATHLEN];
-char *dir;
 boolean getreturn_enabled;
 extern int redirect_stdout;       /* from sys/share/pcsys.c */
 extern int GUILaunched;
@@ -65,6 +84,290 @@ static struct stat hbuf;
 #endif
 
 extern char orgdir[];
+
+boolean
+is_desktop_bridge_application()
+{
+    UINT32 length = 0;
+    LONG rc = GetCurrentPackageFullName(&length, NULL);
+
+    return (rc == ERROR_INSUFFICIENT_BUFFER);
+}
+
+void
+get_known_folder_path(
+    const KNOWNFOLDERID * folder_id,
+    char * path
+    , size_t path_size)
+{
+    PWSTR wide_path;
+    if (FAILED(SHGetKnownFolderPath(folder_id, 0, NULL, &wide_path)))
+        error("Unable to get known folder path");
+
+    size_t converted;
+    errno_t err;
+
+    err = wcstombs_s(&converted, path, path_size, wide_path, path_size - 1);
+
+    CoTaskMemFree(wide_path);
+
+    if (err != 0) error("Failed folder path string conversion");
+}
+
+void
+create_directory(const char * path)
+{
+    HRESULT hr = CreateDirectoryA(path, NULL);
+
+    if (FAILED(hr) && hr != ERROR_ALREADY_EXISTS)
+        error("Unable to create directory '%s'", path);
+}
+
+void
+build_known_folder_path(
+    const KNOWNFOLDERID * folder_id,
+    char * path,
+    size_t path_size)
+{
+    get_known_folder_path(folder_id, path, path_size);
+    strcat(path, "\\NetHack\\");
+    create_directory(path);
+    strcat(path, "3.6\\");
+    create_directory(path);
+}
+
+void
+build_environment_path(
+    const char * env_str,
+    const char * folder,
+    char * path,
+    size_t path_size)
+{
+    path[0] = '\0';
+
+    const char * root_path = nh_getenv(env_str);
+
+    if (root_path == NULL) return;
+
+    strcpy_s(path, path_size, root_path);
+
+    char * colon = index(path, ';');
+    if (colon != NULL) path[0] = '\0';
+
+    if (strlen(path) == 0) return;
+
+    append_slash(path);
+
+    if (folder != NULL) {
+        strcat_s(path, path_size, folder);
+        strcat_s(path, path_size, "\\");
+    }
+}
+
+boolean
+folder_file_exists(const char * folder, const char * file_name)
+{
+    char path[MAX_PATH];
+
+    if (folder[0] == '\0') return FALSE;
+
+    strcpy(path, folder);
+    strcat(path, file_name);
+    return file_exists(path);
+}
+
+/*
+ * Rules for setting prefix locations
+ *
+ * COMMON_NETHACK_PATH = %COMMONPROGRAMFILES%\NetHack\3.6\
+ * PROFILE_PATH = %SystemDrive%\Users\%USERNAME%\
+ *
+ * NETHACK_PROFILE_PATH = PROFILE_PATH\NetHack\3.6\
+ * NETHACK_PER_USER_DATA_PATH = PROFILE_PATH\AppData\Local\NetHack\3.6\
+ * NETHACK_GLOBAL_DATA_PATH = %SystemDrive%\ProgramData\NetHack\3.6\
+ * EXECUTABLE_PATH = path to where .exe lives
+ *
+ * HACKPREFIX:
+ *   - use environment variable NETHACKDIR if variable is defined
+ *   - otherwise use environment variable HACKDIR if variable is defined
+ *   - otherwise if store install use NETHACK_PROFILE_PATH
+ *   - otherwise if manual install use EXECUTABLE_PATH
+ *
+ * LEVELPREFIX, SAVEPREFIX:
+ *   - if store install use NETHACK_PER_USER_DATA_PATH
+ *   - if manual install use HACKPREFIX
+ *
+ * BONESPREFIX, SCOREPREFIX, LOCKPREFIX:
+ *   - if store install use NETHACK_GLOBAL_DATA_PATH
+ *   - if manual install use HACKPREFIX
+ *
+ * DATAPREFIX
+ *   - if store install use EXECUTABLE_PATH
+ *   - if manual install use HACKPREFIX
+ *
+ * SYSCONFPREFIX
+ *   - use COMMON_NETHACK_PATH if sysconf present
+ *   - otherwise use HACKPREFIX
+ *
+ * CONFIGPREFIX
+ *    - if manual install use PROFILE_PATH
+ *    - if store install use NETHACK_PROFILE_PATH
+ */
+
+void
+set_default_prefix_locations(const char *programPath)
+{
+    char *envp = NULL;
+    char *sptr = NULL;
+
+    static char hack_path[MAX_PATH];
+    static char executable_path[MAX_PATH];
+    static char nethack_profile_path[MAX_PATH];
+    static char nethack_per_user_data_path[MAX_PATH];
+    static char nethack_global_data_path[MAX_PATH];
+    static char sysconf_path[MAX_PATH];
+
+    strcpy(executable_path, get_executable_path());
+    append_slash(executable_path);
+
+    build_environment_path("NETHACKDIR", NULL, hack_path, sizeof(hack_path));
+
+    if (hack_path[0] == '\0')
+        build_environment_path("HACKDIR", NULL, hack_path, sizeof(hack_path));
+
+    build_known_folder_path(&FOLDERID_Profile, nethack_profile_path,
+        sizeof(nethack_profile_path));
+
+    build_known_folder_path(&FOLDERID_LocalAppData,
+        nethack_per_user_data_path, sizeof(nethack_per_user_data_path));
+
+    build_known_folder_path(&FOLDERID_ProgramData,
+        nethack_global_data_path, sizeof(nethack_global_data_path));
+
+    if (hack_path[0] == '\0')
+        strcpy(hack_path, nethack_profile_path);
+
+    g.fqn_prefix[LEVELPREFIX] = nethack_per_user_data_path;
+    g.fqn_prefix[SAVEPREFIX] = nethack_per_user_data_path;
+    g.fqn_prefix[BONESPREFIX] = nethack_global_data_path;
+    g.fqn_prefix[DATAPREFIX] = executable_path;
+    g.fqn_prefix[SCOREPREFIX] = nethack_global_data_path;
+    g.fqn_prefix[LOCKPREFIX] = nethack_global_data_path;
+    g.fqn_prefix[CONFIGPREFIX] = nethack_profile_path;
+
+    g.fqn_prefix[HACKPREFIX] = hack_path;
+    g.fqn_prefix[TROUBLEPREFIX] = hack_path;
+
+    build_environment_path("COMMONPROGRAMFILES", "NetHack\\3.6", sysconf_path,
+        sizeof(sysconf_path));
+
+    if(!folder_file_exists(sysconf_path, SYSCF_FILE))
+        strcpy(sysconf_path, hack_path);
+
+    g.fqn_prefix[SYSCONFPREFIX] = sysconf_path;
+
+}
+
+/* copy file if destination does not exist */
+void
+copy_file(
+    const char * dst_folder,
+    const char * dst_name,
+    const char * src_folder,
+    const char * src_name)
+{
+    char dst_path[MAX_PATH];
+    strcpy(dst_path, dst_folder);
+    strcat(dst_path, dst_name);
+
+    char src_path[MAX_PATH];
+    strcpy(src_path, src_folder);
+    strcat(src_path, src_name);
+
+    if(!file_exists(src_path))
+        error("Unable to copy file '%s' as it does not exist", src_path);
+
+    if(file_exists(dst_path))
+        return;
+
+    BOOL success = CopyFileA(src_path, dst_path, TRUE);
+    if(!success) error("Failed to copy '%s' to '%s'", src_path, dst_path);
+}
+
+/* update file copying if it does not exist or src is newer then dst */
+void
+update_file(
+    const char * dst_folder,
+    const char * dst_name,
+    const char * src_folder,
+    const char * src_name,
+    BOOL save_copy)
+{
+    char dst_path[MAX_PATH];
+    strcpy(dst_path, dst_folder);
+    strcat(dst_path, dst_name);
+
+    char src_path[MAX_PATH];
+    strcpy(src_path, src_folder);
+    strcat(src_path, src_name);
+
+    char save_path[MAX_PATH];
+    strcpy(save_path, dst_folder);
+    strcat(save_path, dst_name);
+    strcat(save_path, ".save");
+
+    if(!file_exists(src_path))
+        error("Unable to copy file '%s' as it does not exist", src_path);
+
+    if (!file_newer(src_path, dst_path))
+        return;
+
+    if (file_exists(dst_path) && save_copy)
+        CopyFileA(dst_path, save_path, FALSE);
+
+    BOOL success = CopyFileA(src_path, dst_path, FALSE);
+    if(!success) error("Failed to update '%s' to '%s'", src_path, dst_path);
+
+}
+
+void copy_config_content()
+{
+    /* Keep templates up to date */
+    /* TODO: Update the package to store config file as .nethackrc */
+    update_file(g.fqn_prefix[CONFIGPREFIX], CONFIG_TEMPLATE,
+        g.fqn_prefix[DATAPREFIX], CONFIG_FILE, FALSE);
+    update_file(g.fqn_prefix[SYSCONFPREFIX], SYSCF_TEMPLATE,
+        g.fqn_prefix[DATAPREFIX], SYSCF_FILE, FALSE);
+
+    /* If the required early game file does not exist, copy it */
+    /* NOTE: We never replace .nethackrc or sysconf */
+    copy_file(g.fqn_prefix[CONFIGPREFIX], CONFIG_FILE,
+        g.fqn_prefix[DATAPREFIX], CONFIG_FILE);
+    copy_file(g.fqn_prefix[SYSCONFPREFIX], SYSCF_FILE,
+        g.fqn_prefix[DATAPREFIX], SYSCF_FILE);
+
+    /* Update symbols and save a copy if we are replacing */
+    /* TODO: Can't HACKDIR be changed during option parsing
+       causing us to perhaps be checking options against the wrong
+       symbols file? */
+    update_file(g.fqn_prefix[HACKPREFIX], SYMBOLS,
+        g.fqn_prefix[DATAPREFIX], SYMBOLS, TRUE);
+}
+
+void
+copy_hack_content()
+{
+    /* Keep Guidebook and opthelp up to date */
+    update_file(g.fqn_prefix[HACKPREFIX], GUIDEBOOK_FILE,
+        g.fqn_prefix[DATAPREFIX], GUIDEBOOK_FILE, FALSE);
+    update_file(g.fqn_prefix[HACKPREFIX], OPTIONFILE,
+        g.fqn_prefix[DATAPREFIX], OPTIONFILE, FALSE);
+
+    /* Keep templates up to date */
+    update_file(g.fqn_prefix[HACKPREFIX], SYMBOLS_TEMPLATE,
+        g.fqn_prefix[DATAPREFIX], SYMBOLS, FALSE);
+
+}
 
 /*
  * __MINGW32__ Note
@@ -82,7 +385,7 @@ int argc;
 char *argv[];
 {
     boolean resuming = FALSE; /* assume new game */
-    int fd;
+    NHFILE *nhfp;
     char *windowtype = NULL;
     char *envp = NULL;
     char *sptr = NULL;
@@ -119,110 +422,25 @@ _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);*/
 #endif
 
     g.hname = "NetHack"; /* used for syntax messages */
+
+#if defined(CHDIR) && !defined(NOCWD_ASSUMPTIONS)
     /* Save current directory and make sure it gets restored when
      * the game is exited.
      */
     if (getcwd(orgdir, sizeof orgdir) == (char *) 0)
         error("NetHack: current directory path too long");
-    dir = nh_getenv("NETHACKDIR");
-    if (dir == (char *) 0)
-        dir = nh_getenv("HACKDIR");
-    if (dir == (char *) 0)
-        dir = exepath(argv[0]);
-#ifdef _MSC_VER
-    if (IsDebuggerPresent()) {
-        static char exepath[_MAX_PATH];
-        /* check if we're running under the debugger so we can get to the right folder anyway */
-        if (dir != (char *)0) {
-            char *top = (char *)0;
-
-            if (strlen(dir) < (_MAX_PATH - 1))
-                strcpy(exepath, dir);
-            top = strstr(exepath, "\\build\\.\\Debug");
-            if (!top) top = strstr(exepath, "\\build\\.\\Release");
-            if (top) {
-                *top = '\0';
-                if (strlen(exepath) < (_MAX_PATH - (strlen("\\binary\\") + 1))) {
-                    Strcat(exepath, "\\binary\\");
-                    if (strlen(exepath) < (PATHLEN - 1)) {
-                        dir = exepath;
-                    }
-                }
-            }
-        }
-    }
 #endif
-    if (dir != (char *)0) {
-        int prefcnt;
-        int fd;
-        boolean have_syscf = FALSE;
 
-        (void) strncpy(g.hackdir, dir, PATHLEN - 1);
-        g.hackdir[PATHLEN - 1] = '\0';
-        g.fqn_prefix[0] = (char *) alloc(strlen(g.hackdir) + 2);
-        Strcpy(g.fqn_prefix[0], g.hackdir);
-        append_slash(g.fqn_prefix[0]);
-        for (prefcnt = 1; prefcnt < PREFIX_COUNT; prefcnt++)
-             g.fqn_prefix[prefcnt] = g.fqn_prefix[0];
-        /* sysconf should be searched for in this location */
-        envp = nh_getenv("COMMONPROGRAMFILES");
-        if (envp) {
-            if ((sptr = index(envp, ';')) != 0)
-                *sptr = '\0';
-            if (strlen(envp) > 0) {
-                g.fqn_prefix[SYSCONFPREFIX] =
-                    (char *) alloc(strlen(envp) + 10);
-                Strcpy(g.fqn_prefix[SYSCONFPREFIX], envp);
-                append_slash(g.fqn_prefix[SYSCONFPREFIX]);
-                Strcat(g.fqn_prefix[SYSCONFPREFIX], "NetHack\\");
-            }
-        }
+    set_default_prefix_locations(argv[0]);
 
-        /* okay so we have the overriding and definitive locaton
-        for sysconf, but only in the event that there is not a 
-        sysconf file there (for whatever reason), check a secondary
-        location rather than abort. */
+#if defined(CHDIR) && !defined(NOCWD_ASSUMPTIONS)
+    chdir(fqn_prefix[HACKPREFIX]);
+#endif
 
-        /* Is there a SYSCF_FILE there? */
-        fd = open(fqname(SYSCF_FILE, SYSCONFPREFIX, 0), O_RDONLY);
-        if (fd >= 0) {
-            /* readable */
-            close(fd);
-            have_syscf = TRUE;
-        }
+    copy_config_content();
 
-        if (!have_syscf) {
-            /* No SYSCF_FILE where there should be one, and
-               without an installer, a user may not be able
-               to place one there. So, let's try somewhere else... */
-             g.fqn_prefix[SYSCONFPREFIX] = g.fqn_prefix[0];
-
-            /* Is there a SYSCF_FILE there? */
-            fd = open(fqname(SYSCF_FILE, SYSCONFPREFIX, 0), O_RDONLY);
-            if (fd >= 0) {
-                /* readable */
-                close(fd);
-                have_syscf = TRUE;
-            }
-        }
-
-        /* user's home directory should default to this - unless
-         * overridden */
-        envp = nh_getenv("USERPROFILE");
-        if (envp) {
-            if ((sptr = index(envp, ';')) != 0)
-                *sptr = '\0';
-            if (strlen(envp) > 0) {
-                g.fqn_prefix[CONFIGPREFIX] =
-                    (char *) alloc(strlen(envp) + 2);
-                Strcpy(g.fqn_prefix[CONFIGPREFIX], envp);
-                append_slash(g.fqn_prefix[CONFIGPREFIX]);
-            }
-        }
-    }
-    if (GUILaunched || IsDebuggerPresent()) {
+    if (GUILaunched || IsDebuggerPresent())
         getreturn_enabled = TRUE;
-    }
 
     check_recordfile((char *) 0);
     iflags.windowtype_deferred = TRUE;
@@ -232,42 +450,42 @@ _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);*/
                    failbuf);
         nethack_exit(EXIT_FAILURE);
     }
-    if (!g.hackdir[0])
-        Strcpy(g.hackdir, orgdir);
+
     process_options(argc, argv);
-    
+
+    copy_hack_content();
+
 /*
  * It seems you really want to play.
  */
-
     if (argc >= 1
         && !strcmpi(default_window_sys, "mswin")
         && (strstri(argv[0], "nethackw.exe") || GUILaunched))
-            iflags.windowtype_locked = TRUE;
-
+        iflags.windowtype_locked = TRUE;
     windowtype = default_window_sys;
+
+    if (!dlb_init()) {
+        pline("%s\n%s\n%s\n%s\n\n",
+              copyright_banner_line(1), copyright_banner_line(2),
+              copyright_banner_line(3), copyright_banner_line(4));
+        pline("NetHack was unable to open the required file \"%s\"",DLBFILE);
+        if (file_exists(DLBFILE))
+            pline("\nAre you perhaps trying to run NetHack within a zip utility?");
+        error("dlb_init failure.");
+    }
+
     if (!iflags.windowtype_locked) {
 #if defined(TTY_GRAPHICS)
         Strcpy(default_window_sys, "tty");
 #else
 #if defined(CURSES_GRAPHICS)
-        Strcpy(default_window_sys, "curses");    
+        Strcpy(default_window_sys, "curses");
 #endif /* CURSES */
 #endif /* TTY */
         if (iflags.windowtype_deferred && g.chosen_windowtype[0])
             windowtype = g.chosen_windowtype;
     }
     choose_windows(windowtype);
-
-    if (!dlb_init()) {
-        pline(
-            "%s\n%s\n%s\n%s\n\nNetHack was unable to open the required file "
-            "\"%s\".%s",
-            copyright_banner_line(1), copyright_banner_line(2),
-            copyright_banner_line(3), copyright_banner_line(4), DLBFILE,
-            "\nAre you perhaps trying to run NetHack within a zip utility?");
-        error("dlb_init failure.");
-    }
 
     u.uhp = 1; /* prevent RIP on early quits */
     u.ux = 0;  /* prevent flush_screen() */
@@ -294,7 +512,7 @@ _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);*/
     iflags.renameallowed = FALSE;
     /* Obtain the name of the logged on user and incorporate
      * it into the name. */
-    Sprintf(fnamebuf, "%s-%s", get_username(0), g.plname);
+    Sprintf(fnamebuf, "%s", g.plname);
     (void) fname_encode(
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-.", '%',
         fnamebuf, encodedfnamebuf, BUFSZ);
@@ -304,13 +522,13 @@ _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);*/
 
     /* Set up level 0 file to keep the game state.
      */
-    fd = create_levelfile(0, (char *) 0);
-    if (fd < 0) {
+    nhfp = create_levelfile(0, (char *) 0);
+    if (!nhfp) {
         raw_print("Cannot create lock file");
     } else {
         g.hackpid = GetCurrentProcessId();
-        write(fd, (genericptr_t) &g.hackpid, sizeof(g.hackpid));
-        nhclose(fd);
+        write(nhfp->fd, (genericptr_t) &g.hackpid, sizeof(g.hackpid));
+        close_nhfile(nhfp);
     }
     /*
      *  Initialize the vision system.  This must be before mklev() on a
@@ -323,7 +541,7 @@ _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);*/
      * We'll return here if new game player_selection() renames the hero.
      */
 attempt_restore:
-    if ((fd = restore_saved_game()) >= 0) {
+    if ((nhfp = restore_saved_game()) != 0) {
 #ifdef NEWS
         if (iflags.news) {
             display_file(NEWS, FALSE);
@@ -332,7 +550,7 @@ attempt_restore:
 #endif
         pline("Restoring save file...");
         mark_synch(); /* flush output */
-        if (dorecover(fd)) {
+        if (dorecover(nhfp)) {
             resuming = TRUE; /* not starting new game */
             if (discover)
                 You("are in non-scoring discovery mode.");
@@ -373,7 +591,7 @@ attempt_restore:
     return 0;
 }
 
-STATIC_OVL void
+static void
 process_options(argc, argv)
 int argc;
 char *argv[];
@@ -401,7 +619,7 @@ char *argv[];
              */
             argc--;
             argv++;
-            dir = argv[0] + 2;
+            const char * dir = argv[0] + 2;
             if (*dir == '=' || *dir == ':')
                 dir++;
             if (!*dir && argc > 1) {
@@ -532,7 +750,7 @@ char *argv[];
     }
 }
 
-STATIC_OVL void
+static void
 nhusage()
 {
     char buf1[BUFSZ], buf2[BUFSZ], *bufptr;
@@ -664,33 +882,28 @@ void freefakeconsole()
 }
 #endif
 
-#define EXEPATHBUFSZ 256
-char exepathbuf[EXEPATHBUFSZ];
-
 char *
-exepath(str)
-char *str;
+get_executable_path()
 {
-    char *tmp, *tmp2;
-    int bsize;
+    static char path_buffer[MAX_PATH];
 
-    if (!str)
-        return (char *) 0;
-    bsize = EXEPATHBUFSZ;
-    tmp = exepathbuf;
 #ifdef UNICODE
     {
         TCHAR wbuf[BUFSZ];
         GetModuleFileName((HANDLE) 0, wbuf, BUFSZ);
-        WideCharToMultiByte(CP_ACP, 0, wbuf, -1, tmp, bsize, NULL, NULL);
+        WideCharToMultiByte(CP_ACP, 0, wbuf, -1, path_buffer, sizeof(path_buffer), NULL, NULL);
     }
 #else
-    *(tmp + GetModuleFileName((HANDLE) 0, tmp, bsize)) = '\0';
+    DWORD length = GetModuleFileName((HANDLE) 0, path_buffer, MAX_PATH);
+    if (length == ERROR_INSUFFICIENT_BUFFER) error("Unable to get module name");
+    path_buffer[length] = '\0';
 #endif
-    tmp2 = strrchr(tmp, PATH_SEPARATOR);
-    if (tmp2)
-        *tmp2 = '\0';
-    return tmp;
+
+    char  * seperator = strrchr(path_buffer, PATH_SEPARATOR);
+    if (seperator)
+        *seperator = '\0';
+
+    return path_buffer;
 }
 
 /*ARGSUSED*/
@@ -782,7 +995,9 @@ getlock()
 {
     register int fd, c, ci, ct, ern;
     int fcmask = FCMASK;
+#ifndef SELF_RECOVER
     char tbuf[BUFSZ];
+#endif
     const char *fq_lock;
 #define OOPS_BUFSZ 512
     char oops[OOPS_BUFSZ];
@@ -797,7 +1012,7 @@ getlock()
     }
 
     /* regularize(lock); */ /* already done in pcmain */
-    Sprintf(tbuf, "%s", fqname(g.lock, LEVELPREFIX, 0));
+    /*Sprintf(tbuf, "%s", fqname(g.lock, LEVELPREFIX, 0)); */
     set_levelfile_name(g.lock, 0);
     fq_lock = fqname(g.lock, LEVELPREFIX, 1);
     if ((fd = open(fq_lock, 0)) == -1) {
@@ -806,21 +1021,7 @@ getlock()
 #if defined(CHDIR) && !defined(NOCWD_ASSUMPTIONS)
         chdirx(orgdir, 0);
 #endif
-#if defined(HOLD_LOCKFILE_OPEN)
-        if (errno == EACCES) {
-            Strcpy(
-                oops,
-                "\nThere are files from a game in progress under your name.");
-            Strcat(oops, "\nThe files are locked or inaccessible.");
-            Strcat(oops, " Is the other game still running?\n");
-            if (strlen(fq_lock) < ((OOPS_BUFSZ - 16) - strlen(oops)))
-                Sprintf(eos(oops), "Cannot open %s", fq_lock);
-            Strcat(oops, "\n");
-            unlock_file(HLOCK);
-            raw_print(oops);
-        } else
-#endif
-            error("Bad directory or name: %s\n%s\n", fq_lock,
+        error("Bad directory or name: %s\n%s\n", fq_lock,
                   strerror(errno));
         unlock_file(HLOCK);
         Sprintf(oops, "Cannot open %s", fq_lock);
@@ -929,5 +1130,42 @@ gotlock:
     }
 }
 #endif /* PC_LOCKING */
+
+boolean
+file_exists(path)
+const char *path;
+{
+    struct stat sb;
+
+    /* Just see if it's there */
+    if (stat(path, &sb)) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+/* 
+  file_newer returns TRUE if the file at a_path is newer then the file
+  at b_path.  If a_path does not exist, it returns FALSE.  If b_path
+  does not exist, it returns TRUE.
+ */
+boolean
+file_newer(a_path, b_path)
+const char * a_path;
+const char * b_path;
+{
+    struct stat a_sb;
+    struct stat b_sb;
+
+    if (stat(a_path, &a_sb))
+        return FALSE;
+
+    if (stat(b_path, &b_sb))
+        return TRUE;
+
+    if(difftime(a_sb.st_mtime, b_sb.st_mtime) < 0)
+        return TRUE;
+    return FALSE;
+}
 
 /*windmain.c*/

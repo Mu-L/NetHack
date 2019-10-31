@@ -1,4 +1,4 @@
-/* NetHack 3.6	role.c	$NHDT-Date: 1546137492 2018/12/30 02:38:12 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.55 $ */
+/* NetHack 3.6	role.c	$NHDT-Date: 1547086250 2019/01/10 02:10:50 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.56 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985-1999. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -712,10 +712,10 @@ const struct Align aligns[] = {
     { "evil", "unaligned", "Una", 0, A_NONE }
 };
 
-STATIC_DCL int NDECL(randrole_filtered);
-STATIC_DCL char *FDECL(promptsep, (char *, int));
-STATIC_DCL int FDECL(role_gendercount, (int));
-STATIC_DCL int FDECL(race_alignmentcount, (int));
+static int NDECL(randrole_filtered);
+static char *FDECL(promptsep, (char *, int));
+static int FDECL(role_gendercount, (int));
+static int FDECL(race_alignmentcount, (int));
 
 /* used by str2XXX() */
 static char NEARDATA randomstr[] = "random";
@@ -728,12 +728,19 @@ int rolenum;
 }
 
 int
-randrole()
+randrole(for_display)
+boolean for_display;
 {
-    return rn2(SIZE(roles) - 1);
+    int res = SIZE(roles) - 1;
+
+    if (for_display)
+        res = rn2_on_display_rng(res);
+    else
+        res = rn2(res);
+    return res;
 }
 
-STATIC_OVL int
+static int
 randrole_filtered()
 {
     int i, n = 0, set[SIZE(roles)];
@@ -746,7 +753,7 @@ randrole_filtered()
             && ok_gend(i, ROLE_NONE, ROLE_RANDOM, ROLE_NONE)
             && ok_align(i, ROLE_NONE, ROLE_NONE, ROLE_RANDOM))
             set[n++] = i;
-    return n ? set[rn2(n)] : randrole();
+    return n ? set[rn2(n)] : randrole(FALSE);
 }
 
 int
@@ -1347,7 +1354,7 @@ clearrolefilter()
     g.rfilter.mask = 0;
 }
 
-STATIC_OVL char *
+static char *
 promptsep(buf, num_post_attribs)
 char *buf;
 int num_post_attribs;
@@ -1364,7 +1371,7 @@ int num_post_attribs;
     return buf;
 }
 
-STATIC_OVL int
+static int
 role_gendercount(rolenum)
 int rolenum;
 {
@@ -1381,7 +1388,7 @@ int rolenum;
     return gendcount;
 }
 
-STATIC_OVL int
+static int
 race_alignmentcount(racenum)
 int racenum;
 {
@@ -2021,7 +2028,7 @@ role_init()
     if (flags.pantheon == -1) {             /* new game */
         flags.pantheon = flags.initrole;    /* use own gods */
         while (!roles[flags.pantheon].lgod) /* unless they're missing */
-            flags.pantheon = randrole();
+            flags.pantheon = randrole(FALSE);
     }
     if (!g.urole.lgod) {
         g.urole.lgod = roles[flags.pantheon].lgod;
@@ -2031,6 +2038,14 @@ role_init()
     /* 0 or 1; no gods are neuter, nor is gender randomized */
     g.quest_status.godgend = !strcmpi(align_gtitle(alignmnt), "goddess");
 
+#if 0
+/*
+ * Disable this fixup so that mons[] can be const.  The only
+ * place where it actually matters for the hero is in set_uasmon()
+ * and that can use mons[race] rather than mons[role] for this
+ * particular property.  Despite the comment, it is checked--where
+ * needed--via instrinsic 'Infravision' which set_uasmon() manages.
+ */
     /* Fix up infravision */
     if (mons[g.urace.malenum].mflags3 & M3_INFRAVISION) {
         /* although an infravision intrinsic is possible, infravision
@@ -2046,6 +2061,7 @@ role_init()
         if (g.urole.femalenum != NON_PM)
             mons[g.urole.femalenum].mflags3 |= M3_INFRAVISION;
     }
+#endif /*0*/
 
     /* Artifacts are fixed in hack_artifacts() */
 

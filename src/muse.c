@@ -1,4 +1,4 @@
-/* NetHack 3.6	muse.c	$NHDT-Date: 1547025167 2019/01/09 09:12:47 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.92 $ */
+/* NetHack 3.6	muse.c	$NHDT-Date: 1560161807 2019/06/10 10:16:47 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.96 $ */
 /*      Copyright (C) 1990 by Ken Arromdee                         */
 /* NetHack may be freely redistributed.  See license for details.  */
 
@@ -14,32 +14,33 @@
  * are confused don't know not to read scrolls, etc....
  */
 
-STATIC_DCL struct permonst *FDECL(muse_newcham_mon, (struct monst *));
-STATIC_DCL int FDECL(precheck, (struct monst *, struct obj *));
-STATIC_DCL void FDECL(mzapmsg, (struct monst *, struct obj *, BOOLEAN_P));
-STATIC_DCL void FDECL(mreadmsg, (struct monst *, struct obj *));
-STATIC_DCL void FDECL(mquaffmsg, (struct monst *, struct obj *));
-STATIC_DCL boolean FDECL(m_use_healing, (struct monst *));
-STATIC_PTR int FDECL(mbhitm, (struct monst *, struct obj *));
-STATIC_DCL void FDECL(mbhit, (struct monst *, int,
+static struct permonst *FDECL(muse_newcham_mon, (struct monst *));
+static int FDECL(precheck, (struct monst *, struct obj *));
+static void FDECL(mzapwand, (struct monst *, struct obj *, BOOLEAN_P));
+static void FDECL(mplayhorn, (struct monst *, struct obj *, BOOLEAN_P));
+static void FDECL(mreadmsg, (struct monst *, struct obj *));
+static void FDECL(mquaffmsg, (struct monst *, struct obj *));
+static boolean FDECL(m_use_healing, (struct monst *));
+static int FDECL(mbhitm, (struct monst *, struct obj *));
+static void FDECL(mbhit, (struct monst *, int,
                               int FDECL((*), (MONST_P, OBJ_P)),
                               int FDECL((*), (OBJ_P, OBJ_P)), struct obj *));
-STATIC_DCL void FDECL(you_aggravate, (struct monst *));
-STATIC_DCL void FDECL(mon_consume_unstone, (struct monst *, struct obj *,
+static void FDECL(you_aggravate, (struct monst *));
+static void FDECL(mon_consume_unstone, (struct monst *, struct obj *,
                                             BOOLEAN_P, BOOLEAN_P));
-STATIC_DCL boolean FDECL(cures_stoning, (struct monst *, struct obj *,
+static boolean FDECL(cures_stoning, (struct monst *, struct obj *,
                                          BOOLEAN_P));
-STATIC_DCL boolean FDECL(mcould_eat_tin, (struct monst *));
-STATIC_DCL boolean FDECL(muse_unslime, (struct monst *, struct obj *,
+static boolean FDECL(mcould_eat_tin, (struct monst *));
+static boolean FDECL(muse_unslime, (struct monst *, struct obj *,
                                         struct trap *, BOOLEAN_P));
-STATIC_DCL int FDECL(cures_sliming, (struct monst *, struct obj *));
-STATIC_DCL boolean FDECL(green_mon, (struct monst *));
+static int FDECL(cures_sliming, (struct monst *, struct obj *));
+static boolean FDECL(green_mon, (struct monst *));
 
 /* Any preliminary checks which may result in the monster being unable to use
  * the item.  Returns 0 if nothing happened, 2 if the monster can't do
  * anything (i.e. it teleported) and 1 if it's dead.
  */
-STATIC_OVL int
+static int
 precheck(mon, obj)
 struct monst *mon;
 struct obj *obj;
@@ -124,7 +125,7 @@ struct obj *obj;
             pline("%s zaps %s, which suddenly explodes!", Monnam(mon),
                   an(xname(obj)));
         } else {
-            /* same near/far threshold as mzapmsg() */
+            /* same near/far threshold as mzapwand() */
             int range = couldsee(mon->mx, mon->my) /* 9 or 5 */
                            ? (BOLT_LIM + 1) : (BOLT_LIM - 3);
 
@@ -144,8 +145,10 @@ struct obj *obj;
     return 0;
 }
 
-STATIC_OVL void
-mzapmsg(mtmp, otmp, self)
+/* when a monster zaps a wand give a message, deduct a charge, and if it
+   isn't directly seen, remove hero's memory of the number of charges */
+static void
+mzapwand(mtmp, otmp, self)
 struct monst *mtmp;
 struct obj *otmp;
 boolean self;
@@ -156,6 +159,7 @@ boolean self;
 
         You_hear("a %s zap.", (distu(mtmp->mx, mtmp->my) <= range * range)
                                  ? "nearby" : "distant");
+        otmp->known = 0;
     } else if (self) {
         pline("%s zaps %sself with %s!", Monnam(mtmp), mhim(mtmp),
               doname(otmp));
@@ -163,9 +167,36 @@ boolean self;
         pline("%s zaps %s!", Monnam(mtmp), an(xname(otmp)));
         stop_occupation();
     }
+    otmp->spe -= 1;
 }
 
-STATIC_OVL void
+/* similar to mzapwand() but for magical horns (only instrument mons play) */
+static void
+mplayhorn(mtmp, otmp, self)
+struct monst *mtmp;
+struct obj *otmp;
+boolean self;
+{
+    if (!canseemon(mtmp)) {
+        int range = couldsee(mtmp->mx, mtmp->my) /* 9 or 5 */
+                       ? (BOLT_LIM + 1) : (BOLT_LIM - 3);
+
+        You_hear("a horn being played %s.",
+                 (distu(mtmp->mx, mtmp->my) <= range * range)
+                 ? "nearby" : "in the distance");
+        otmp->known = 0; /* hero doesn't know how many charges are left */
+    } else {
+        otmp->dknown = 1;
+        pline("%s plays a %s directed at %s!", Monnam(mtmp), xname(otmp),
+              self ? mon_nam_too(mtmp, mtmp) : (char *) "you");
+        makeknown(otmp->otyp); /* (wands handle this slightly differently) */
+        if (!self)
+            stop_occupation();
+    }
+    otmp->spe -= 1; /* use a charge */
+}
+
+static void
 mreadmsg(mtmp, otmp)
 struct monst *mtmp;
 struct obj *otmp;
@@ -206,7 +237,7 @@ struct obj *otmp;
               vismon ? mon_nam(mtmp) : mhe(mtmp));
 }
 
-STATIC_OVL void
+static void
 mquaffmsg(mtmp, otmp)
 struct monst *mtmp;
 struct obj *otmp;
@@ -249,7 +280,7 @@ struct obj *otmp;
  * that if you polymorph into one you teleport at will.
  */
 
-STATIC_OVL boolean
+static boolean
 m_use_healing(mtmp)
 struct monst *mtmp;
 {
@@ -626,8 +657,7 @@ struct monst *mtmp;
         if ((mtmp->isshk && inhishop(mtmp)) || mtmp->isgd || mtmp->ispriest)
             return 2;
         m_flee(mtmp);
-        mzapmsg(mtmp, otmp, TRUE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, TRUE);
         how = WAN_TELEPORTATION;
  mon_tele:
         if (tele_restrict(mtmp)) { /* mysterious force... */
@@ -649,8 +679,7 @@ struct monst *mtmp;
         return 2;
     case MUSE_WAN_TELEPORTATION:
         g.zap_oseen = oseen;
-        mzapmsg(mtmp, otmp, FALSE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, FALSE);
         g.m_using = TRUE;
         mbhit(mtmp, rn1(8, 6), mbhitm, bhito, otmp);
         /* monster learns that teleportation isn't useful here */
@@ -696,8 +725,7 @@ struct monst *mtmp;
         struct trap *ttmp;
 
         m_flee(mtmp);
-        mzapmsg(mtmp, otmp, FALSE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, FALSE);
         if (oseen)
             makeknown(WAN_DIGGING);
         if (IS_FURNITURE(levl[mtmp->mx][mtmp->my].typ)
@@ -742,8 +770,7 @@ struct monst *mtmp;
 
         if (!enexto(&cc, mtmp->mx, mtmp->my, pm))
             return 0;
-        mzapmsg(mtmp, otmp, FALSE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, FALSE);
         mon = makemon((struct permonst *) 0, cc.x, cc.y, NO_MM_FLAGS);
         if (mon && canspotmon(mon) && oseen)
             makeknown(WAN_CREATE_MONSTER);
@@ -800,7 +827,7 @@ struct monst *mtmp;
 
             Mnam = Monnam(mtmp);
             pline("%s %s into a %s!", Mnam,
-                  vtense(Mnam, locomotion(mtmp->data, "jump")),
+                  vtense(fakename[0], locomotion(mtmp->data, "jump")),
                   (t->ttyp == TRAPDOOR) ? "trap door" : "hole");
             if (levl[g.trapx][g.trapy].typ == SCORR) {
                 levl[g.trapx][g.trapy].typ = CORR;
@@ -897,7 +924,7 @@ struct monst *mtmp;
         if (vis) {
             Mnam = Monnam(mtmp);
             pline("%s %s onto a teleport trap!", Mnam,
-                  vtense(Mnam, locomotion(mtmp->data, "jump")));
+                  vtense(fakename[0], locomotion(mtmp->data, "jump")));
             seetrap(t_at(g.trapx, g.trapy));
         }
         /*  don't use rloc_to() because worm tails must "move" */
@@ -1182,7 +1209,7 @@ struct monst *mtmp;
 #undef nomore
 }
 
-STATIC_PTR
+static
 int
 mbhitm(mtmp, otmp)
 register struct monst *mtmp;
@@ -1264,7 +1291,7 @@ register struct obj *otmp;
  * zapping you, so we need a special function for it.  (Unless someone wants
  * to merge the two functions...)
  */
-STATIC_OVL void
+static void
 mbhit(mon, range, fhitm, fhito, obj)
 struct monst *mon;  /* monster shooting the wand */
 register int range; /* direction and range */
@@ -1376,8 +1403,7 @@ struct monst *mtmp;
     case MUSE_WAN_COLD:
     case MUSE_WAN_LIGHTNING:
     case MUSE_WAN_MAGIC_MISSILE:
-        mzapmsg(mtmp, otmp, FALSE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, FALSE);
         if (oseen)
             makeknown(otmp->otyp);
         g.m_using = TRUE;
@@ -1388,12 +1414,7 @@ struct monst *mtmp;
         return (DEADMONSTER(mtmp)) ? 1 : 2;
     case MUSE_FIRE_HORN:
     case MUSE_FROST_HORN:
-        if (oseen) {
-            makeknown(otmp->otyp);
-            pline("%s plays a %s!", Monnam(mtmp), xname(otmp));
-        } else
-            You_hear("a horn being played.");
-        otmp->spe--;
+        mplayhorn(mtmp, otmp, FALSE);
         g.m_using = TRUE;
         buzz(-30 - ((otmp->otyp == FROST_HORN) ? AD_COLD - 1 : AD_FIRE - 1),
              rn1(6, 6), mtmp->mx, mtmp->my, sgn(mtmp->mux - mtmp->mx),
@@ -1403,8 +1424,7 @@ struct monst *mtmp;
     case MUSE_WAN_TELEPORTATION:
     case MUSE_WAN_STRIKING:
         g.zap_oseen = oseen;
-        mzapmsg(mtmp, otmp, FALSE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, FALSE);
         g.m_using = TRUE;
         mbhit(mtmp, rn1(8, 6), mbhitm, bhito, otmp);
         g.m_using = FALSE;
@@ -1795,8 +1815,7 @@ struct monst *mtmp;
     case MUSE_WAN_MAKE_INVISIBLE:
     case MUSE_POT_INVISIBILITY:
         if (otmp->otyp == WAN_MAKE_INVISIBLE) {
-            mzapmsg(mtmp, otmp, TRUE);
-            otmp->spe--;
+            mzapwand(mtmp, otmp, TRUE);
         } else
             mquaffmsg(mtmp, otmp);
         /* format monster's name before altering its visibility */
@@ -1822,8 +1841,7 @@ struct monst *mtmp;
         }
         return 2;
     case MUSE_WAN_SPEED_MONSTER:
-        mzapmsg(mtmp, otmp, TRUE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, TRUE);
         mon_adjust_speed(mtmp, 1, otmp);
         return 2;
     case MUSE_POT_SPEED:
@@ -1836,8 +1854,7 @@ struct monst *mtmp;
         m_useup(mtmp, otmp);
         return 2;
     case MUSE_WAN_POLYMORPH:
-        mzapmsg(mtmp, otmp, TRUE);
-        otmp->spe--;
+        mzapwand(mtmp, otmp, TRUE);
         (void) newcham(mtmp, muse_newcham_mon(mtmp), TRUE, FALSE);
         if (oseen)
             makeknown(WAN_POLYMORPH);
@@ -1856,7 +1873,7 @@ struct monst *mtmp;
             const char *Mnam = Monnam(mtmp);
 
             pline("%s deliberately %s onto a polymorph trap!", Mnam,
-                  vtense(Mnam, locomotion(mtmp->data, "jump")));
+                  vtense(fakename[0], locomotion(mtmp->data, "jump")));
         }
         if (vis)
             seetrap(t_at(g.trapx, g.trapy));
@@ -1947,7 +1964,7 @@ struct monst *mtmp;
     return 0;
 }
 
-STATIC_OVL void
+static void
 you_aggravate(mtmp)
 struct monst *mtmp;
 {
@@ -1957,7 +1974,7 @@ struct monst *mtmp;
 #ifdef CLIPPING
     cliparound(mtmp->mx, mtmp->my);
 #endif
-    show_glyph(mtmp->mx, mtmp->my, mon_to_glyph(mtmp));
+    show_glyph(mtmp->mx, mtmp->my, mon_to_glyph(mtmp, rn2_on_display_rng));
     display_self();
     You_feel("aggravated at %s.", noit_mon_nam(mtmp));
     display_nhwindow(WIN_MAP, TRUE);
@@ -2198,7 +2215,7 @@ boolean by_you;
     return FALSE;
 }
 
-STATIC_OVL void
+static void
 mon_consume_unstone(mon, obj, by_you, stoning)
 struct monst *mon;
 struct obj *obj;
@@ -2278,7 +2295,7 @@ boolean stoning; /* True: stop petrification, False: cure stun && confusion */
 }
 
 /* decide whether obj can cure petrification; also used when picking up */
-STATIC_OVL boolean
+static boolean
 cures_stoning(mon, obj, tinok)
 struct monst *mon;
 struct obj *obj;
@@ -2295,7 +2312,7 @@ boolean tinok;
                               || slimeproof(mon->data))));
 }
 
-STATIC_OVL boolean
+static boolean
 mcould_eat_tin(mon)
 struct monst *mon;
 {
@@ -2401,7 +2418,7 @@ boolean by_you;
 }
 
 /* mon uses an item--selected by caller--to burn away incipient slime */
-STATIC_OVL boolean
+static boolean
 muse_unslime(mon, obj, trap, by_you)
 struct monst *mon;
 struct obj *obj;
@@ -2434,7 +2451,7 @@ boolean by_you; /* true: if mon kills itself, hero gets credit/blame */
             newsym(mon->mx, mon->my);
             if (vis)
                 pline("%s %s %s %s fire trap!", Mnam,
-                      vtense(Mnam, locomotion(mon->data, "move")),
+                      vtense(fakename[0], locomotion(mon->data, "move")),
                       is_floater(mon->data) ? "over" : "onto",
                       trap->tseen ? "the" : "a");
         }
@@ -2470,8 +2487,7 @@ boolean by_you; /* true: if mon kills itself, hero gets credit/blame */
             dmg = 0; /* damage has been applied by explode() */
         }
     } else { /* wand/horn of fire w/ positive charge count */
-        mzapmsg(mon, obj, TRUE);
-        obj->spe--;
+        mplayhorn(mon, obj, TRUE);
         /* -1 => monster's wand of fire; 2 => # of damage dice */
         dmg = zhitm(mon, by_you ? 1 : -1, 2, &odummyp);
     }
@@ -2511,7 +2527,7 @@ boolean by_you; /* true: if mon kills itself, hero gets credit/blame */
 }
 
 /* decide whether obj can be used to cure green slime */
-STATIC_OVL int
+static int
 cures_sliming(mon, obj)
 struct monst *mon;
 struct obj *obj;
@@ -2528,7 +2544,7 @@ struct obj *obj;
 /* TRUE if monster appears to be green; for active TEXTCOLOR, we go by
    the display color, otherwise we just pick things that seem plausibly
    green (which doesn't necessarily match the TEXTCOLOR categorization) */
-STATIC_OVL boolean
+static boolean
 green_mon(mon)
 struct monst *mon;
 {

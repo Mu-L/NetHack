@@ -1,54 +1,50 @@
-/* NetHack 3.6	apply.c	$NHDT-Date: 1544442708 2018/12/10 11:51:48 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.269 $ */
+/* NetHack 3.6	apply.c	$NHDT-Date: 1571531886 2019/10/20 00:38:06 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.279 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 
-STATIC_DCL int FDECL(use_camera, (struct obj *));
-STATIC_DCL int FDECL(use_towel, (struct obj *));
-STATIC_DCL boolean FDECL(its_dead, (int, int, int *));
-STATIC_DCL int FDECL(use_stethoscope, (struct obj *));
-STATIC_DCL void FDECL(use_whistle, (struct obj *));
-STATIC_DCL void FDECL(use_magic_whistle, (struct obj *));
-STATIC_DCL int FDECL(use_leash, (struct obj *));
-STATIC_DCL int FDECL(use_mirror, (struct obj *));
-STATIC_DCL void FDECL(use_bell, (struct obj **));
-STATIC_DCL void FDECL(use_candelabrum, (struct obj *));
-STATIC_DCL void FDECL(use_candle, (struct obj **));
-STATIC_DCL void FDECL(use_lamp, (struct obj *));
-STATIC_DCL void FDECL(light_cocktail, (struct obj **));
-STATIC_PTR void FDECL(display_jump_positions, (int));
-STATIC_DCL void FDECL(use_tinning_kit, (struct obj *));
-STATIC_DCL void FDECL(use_figurine, (struct obj **));
-STATIC_DCL void FDECL(use_grease, (struct obj *));
-STATIC_DCL void FDECL(use_trap, (struct obj *));
-STATIC_DCL void FDECL(use_stone, (struct obj *));
-STATIC_PTR int NDECL(set_trap); /* occupation callback */
-STATIC_DCL int FDECL(use_whip, (struct obj *));
-STATIC_PTR void FDECL(display_polearm_positions, (int));
-STATIC_DCL int FDECL(use_pole, (struct obj *));
-STATIC_DCL int FDECL(use_cream_pie, (struct obj *));
-STATIC_DCL int FDECL(use_grapple, (struct obj *));
-STATIC_DCL int FDECL(do_break_wand, (struct obj *));
-STATIC_DCL boolean FDECL(figurine_location_checks, (struct obj *,
+static int FDECL(use_camera, (struct obj *));
+static int FDECL(use_towel, (struct obj *));
+static boolean FDECL(its_dead, (int, int, int *));
+static int FDECL(use_stethoscope, (struct obj *));
+static void FDECL(use_whistle, (struct obj *));
+static void FDECL(use_magic_whistle, (struct obj *));
+static int FDECL(use_leash, (struct obj *));
+static int FDECL(use_mirror, (struct obj *));
+static void FDECL(use_bell, (struct obj **));
+static void FDECL(use_candelabrum, (struct obj *));
+static void FDECL(use_candle, (struct obj **));
+static void FDECL(use_lamp, (struct obj *));
+static void FDECL(light_cocktail, (struct obj **));
+static void FDECL(display_jump_positions, (int));
+static void FDECL(use_tinning_kit, (struct obj *));
+static void FDECL(use_figurine, (struct obj **));
+static void FDECL(use_grease, (struct obj *));
+static void FDECL(use_trap, (struct obj *));
+static void FDECL(use_stone, (struct obj *));
+static int NDECL(set_trap); /* occupation callback */
+static int FDECL(use_whip, (struct obj *));
+static void FDECL(display_polearm_positions, (int));
+static int FDECL(use_pole, (struct obj *));
+static int FDECL(use_cream_pie, (struct obj *));
+static int FDECL(use_grapple, (struct obj *));
+static int FDECL(do_break_wand, (struct obj *));
+static boolean FDECL(figurine_location_checks, (struct obj *,
                                                     coord *, BOOLEAN_P));
-STATIC_DCL void FDECL(add_class, (char *, CHAR_P));
-STATIC_DCL void FDECL(setapplyclasses, (char *));
-STATIC_PTR boolean FDECL(check_jump, (genericptr_t, int, int));
-STATIC_DCL boolean FDECL(is_valid_jump_pos, (int, int, int, BOOLEAN_P));
-STATIC_DCL boolean FDECL(get_valid_jump_position, (int, int));
-STATIC_DCL boolean FDECL(get_valid_polearm_position, (int, int));
-STATIC_DCL boolean FDECL(find_poleable_mon, (coord *, int, int));
-
-#ifdef AMIGA
-void FDECL(amii_speaker, (struct obj *, char *, int));
-#endif
+static void FDECL(add_class, (char *, CHAR_P));
+static void FDECL(setapplyclasses, (char *));
+static boolean FDECL(check_jump, (genericptr_t, int, int));
+static boolean FDECL(is_valid_jump_pos, (int, int, int, BOOLEAN_P));
+static boolean FDECL(get_valid_jump_position, (int, int));
+static boolean FDECL(get_valid_polearm_position, (int, int));
+static boolean FDECL(find_poleable_mon, (coord *, int, int));
 
 static const char no_elbow_room[] =
     "don't have enough elbow-room to maneuver.";
 
-STATIC_OVL int
+static int
 use_camera(obj)
 struct obj *obj;
 {
@@ -86,7 +82,7 @@ struct obj *obj;
     return 1;
 }
 
-STATIC_OVL int
+static int
 use_towel(obj)
 struct obj *obj;
 {
@@ -172,7 +168,7 @@ struct obj *obj;
 }
 
 /* maybe give a stethoscope message based on floor objects */
-STATIC_OVL boolean
+static boolean
 its_dead(rx, ry, resp)
 int rx, ry, *resp;
 {
@@ -239,7 +235,7 @@ int rx, ry, *resp;
         int visglyph, corpseglyph;
 
         visglyph = glyph_at(rx, ry);
-        corpseglyph = obj_to_glyph(corpse);
+        corpseglyph = obj_to_glyph(corpse, rn2);
 
         if (Blind && (visglyph != corpseglyph))
             map_object(corpse, TRUE);
@@ -294,7 +290,7 @@ static const char hollow_str[] = "a hollow sound.  This must be a secret %s!";
    not take any time; however, unless it did, the stethoscope would be
    almost useless.  As a compromise, one use per turn is free, another
    uses up the turn; this makes curse status have a tangible effect. */
-STATIC_OVL int
+static int
 use_stethoscope(obj)
 register struct obj *obj;
 {
@@ -381,10 +377,27 @@ register struct obj *obj;
             newsym(mtmp->mx, mtmp->my);
         } else if (mtmp->mappearance) {
             const char *what = "thing";
+            boolean use_plural = FALSE;
+            struct obj dummyobj, *odummy;
 
-            switch (mtmp->m_ap_type) {
+            switch (M_AP_TYPE(mtmp)) {
             case M_AP_OBJECT:
-                what = simple_typename(mtmp->mappearance);
+                /* FIXME?
+                 *  we should probably be using object_from_map() here
+                 */
+                odummy = init_dummyobj(&dummyobj, mtmp->mappearance, 1L);
+                /* simple_typename() yields "fruit" for any named fruit;
+                   we want the same thing '//' or ';' shows: "slime mold"
+                   or "grape" or "slice of pizza" */
+                if (odummy->otyp == SLIME_MOLD
+                    && has_mcorpsenm(mtmp) && MCORPSENM(mtmp) != NON_PM) {
+                    odummy->spe = MCORPSENM(mtmp);
+                    what = simpleonames(odummy);
+                } else {
+                    what = simple_typename(odummy->otyp);
+                }
+                use_plural = (is_boots(odummy) || is_gloves(odummy)
+                              || odummy->otyp == LENSES);
                 break;
             case M_AP_MONSTER: /* ignore Hallucination here */
                 what = mons[mtmp->mappearance].mname;
@@ -394,7 +407,9 @@ register struct obj *obj;
                 break;
             }
             seemimic(mtmp);
-            pline("That %s is really %s.", what, mnm);
+            pline("%s %s %s really %s.",
+                  use_plural ? "Those" : "That", what,
+                  use_plural ? "are" : "is", mnm);
         } else if (flags.verbose && !canspotmon(mtmp)) {
             There("is %s there.", mnm);
         }
@@ -429,7 +444,7 @@ register struct obj *obj;
 
 static const char whistle_str[] = "produce a %s whistling sound.";
 
-STATIC_OVL void
+static void
 use_whistle(obj)
 struct obj *obj;
 {
@@ -449,7 +464,7 @@ struct obj *obj;
     }
 }
 
-STATIC_OVL void
+static void
 use_magic_whistle(obj)
 struct obj *obj;
 {
@@ -484,7 +499,7 @@ struct obj *obj;
                 }
                 /* mimic must be revealed before we know whether it
                    actually moves because line-of-sight may change */
-                if (mtmp->m_ap_type)
+                if (M_AP_TYPE(mtmp))
                     seemimic(mtmp);
                 omx = mtmp->mx, omy = mtmp->my;
                 mnexto(mtmp);
@@ -582,7 +597,7 @@ struct monst *mtmp;
 }
 
 /* ARGSUSED */
-STATIC_OVL int
+static int
 use_leash(obj)
 struct obj *obj;
 {
@@ -666,7 +681,7 @@ struct obj *obj;
             pline("This leash is not attached to that creature.");
         } else if (obj->cursed) {
             pline_The("leash would not come off!");
-            obj->bknown = 1;
+            set_bknown(obj, 1);
         } else {
             mtmp->mleashed = 0;
             obj->leashmon = 0;
@@ -806,7 +821,7 @@ beautiful()
 
 static const char look_str[] = "look %s.";
 
-STATIC_OVL int
+static int
 use_mirror(obj)
 struct obj *obj;
 {
@@ -825,6 +840,8 @@ struct obj *obj;
     if (obj->cursed && !rn2(2)) {
         if (!Blind)
             pline_The("%s fogs up and doesn't reflect!", mirror);
+        else
+            pline("Nothing seems to happen.");
         return 1;
     }
     if (!u.dx && !u.dy && !u.dz) {
@@ -845,19 +862,23 @@ struct obj *obj;
                     }
                     g.nomovemsg = 0; /* default, "you can move again" */
                 }
-            } else if (g.youmonst.data->mlet == S_VAMPIRE)
+            } else if (is_vampire(g.youmonst.data)
+                       || is_vampshifter(&g.youmonst)) {
                 You("don't have a reflection.");
-            else if (u.umonnum == PM_UMBER_HULK) {
+            } else if (u.umonnum == PM_UMBER_HULK) {
                 pline("Huh?  That doesn't look like you!");
                 make_confused(HConfusion + d(3, 4), FALSE);
-            } else if (Hallucination)
+            } else if (Hallucination) {
                 You(look_str, hcolor((char *) 0));
-            else if (Sick)
+            } else if (Sick) {
                 You(look_str, "peaked");
-            else if (u.uhs >= WEAK)
+            } else if (u.uhs >= WEAK) {
                 You(look_str, "undernourished");
-            else
+            } else if (Upolyd) {
+                You("look like %s.", an(mons[u.umonnum].mname));
+            } else {
                 You("look as %s as ever.", uvisage);
+            }
         }
         return 1;
     }
@@ -888,8 +909,8 @@ struct obj *obj;
     /* couldsee(mtmp->mx, mtmp->my) is implied by the fact that bhit()
        targetted it, so we can ignore possibility of X-ray vision */
     vis = canseemon(mtmp);
-/* ways to directly see monster (excludes X-ray vision, telepathy,
-   extended detection, type-specific warning) */
+    /* ways to directly see monster (excludes X-ray vision, telepathy,
+       extended detection, type-specific warning) */
 #define SEENMON (MONSEEN_NORMAL | MONSEEN_SEEINVIS | MONSEEN_INFRAVIS)
     how_seen = vis ? howmonseen(mtmp) : 0;
     /* whether monster is able to use its vision-based capabilities */
@@ -957,7 +978,8 @@ struct obj *obj;
             if (vis)
                 You("discern no obvious reaction from %s.", mon_nam(mtmp));
             else
-                You_feel("a bit silly gesturing the mirror in that direction.");
+                You_feel(
+                       "a bit silly gesturing the mirror in that direction.");
             do_react = FALSE;
         }
         if (do_react) {
@@ -979,7 +1001,7 @@ struct obj *obj;
     return 1;
 }
 
-STATIC_OVL void
+static void
 use_bell(optr)
 struct obj **optr;
 {
@@ -994,9 +1016,6 @@ struct obj **optr;
     You("ring %s.", the(xname(obj)));
 
     if (Underwater || (u.uswallow && ordinary)) {
-#ifdef AMIGA
-        amii_speaker(obj, "AhDhGqEqDhEhAqDqFhGw", AMII_MUFFLED_VOLUME);
-#endif
         pline("But the sound is muffled.");
 
     } else if (invoking && ordinary) {
@@ -1005,9 +1024,6 @@ struct obj **optr;
         learno = TRUE; /* help player figure out why */
 
     } else if (ordinary) {
-#ifdef AMIGA
-        amii_speaker(obj, "ahdhgqeqdhehaqdqfhgw", AMII_MUFFLED_VOLUME);
-#endif
         if (obj->cursed && !rn2(4)
             /* note: once any of them are gone, we stop all of them */
             && !(g.mvitals[PM_WOOD_NYMPH].mvflags & G_GONE)
@@ -1056,9 +1072,6 @@ struct obj **optr;
 
         } else if (invoking) {
             pline("%s an unsettling shrill sound...", Tobjnam(obj, "issue"));
-#ifdef AMIGA
-            amii_speaker(obj, "aefeaefeaefeaefeaefe", AMII_LOUDER_VOLUME);
-#endif
             obj->age = g.moves;
             learno = TRUE;
             wakem = TRUE;
@@ -1066,9 +1079,6 @@ struct obj **optr;
         } else if (obj->blessed) {
             int res = 0;
 
-#ifdef AMIGA
-            amii_speaker(obj, "ahahahDhEhCw", AMII_SOFT_VOLUME);
-#endif
             if (uchain) {
                 unpunish();
                 res = 1;
@@ -1092,9 +1102,6 @@ struct obj **optr;
             }
 
         } else { /* uncursed */
-#ifdef AMIGA
-            amii_speaker(obj, "AeFeaeFeAefegw", AMII_OKAY_VOLUME);
-#endif
             if (findit() != 0)
                 learno = TRUE;
             else
@@ -1111,7 +1118,7 @@ struct obj **optr;
         wake_nearby();
 }
 
-STATIC_OVL void
+static void
 use_candelabrum(obj)
 register struct obj *obj;
 {
@@ -1164,7 +1171,7 @@ register struct obj *obj;
     begin_burn(obj, FALSE);
 }
 
-STATIC_OVL void
+static void
 use_candle(optr)
 struct obj **optr;
 {
@@ -1321,7 +1328,7 @@ struct obj *obj;
     return FALSE;
 }
 
-STATIC_OVL void
+static void
 use_lamp(obj)
 struct obj *obj;
 {
@@ -1374,7 +1381,7 @@ struct obj *obj;
     }
 }
 
-STATIC_OVL void
+static void
 light_cocktail(optr)
 struct obj **optr;
 {
@@ -1497,7 +1504,7 @@ enum jump_trajectory {
 };
 
 /* callback routine for walk_path() */
-STATIC_PTR boolean
+static boolean
 check_jump(arg, x, y)
 genericptr arg;
 int x, y;
@@ -1530,7 +1537,7 @@ int x, y;
     return TRUE;
 }
 
-STATIC_OVL boolean
+static boolean
 is_valid_jump_pos(x, y, magic, showmsg)
 int x, y, magic;
 boolean showmsg;
@@ -1598,7 +1605,7 @@ boolean showmsg;
     return TRUE;
 }
 
-STATIC_OVL boolean
+static boolean
 get_valid_jump_position(x,y)
 int x,y;
 {
@@ -1607,7 +1614,7 @@ int x,y;
             && is_valid_jump_pos(x, y, g.jumping_is_magic, FALSE));
 }
 
-void
+static void
 display_jump_positions(state)
 int state;
 {
@@ -1804,7 +1811,7 @@ struct obj *corpse;
     return 1;
 }
 
-STATIC_OVL void
+static void
 use_tinning_kit(obj)
 struct obj *obj;
 {
@@ -1918,7 +1925,6 @@ struct obj *obj;
             if (Deaf) /* make_deaf() won't give feedback when already deaf */
                 pline("Nothing seems to happen.");
             make_deaf((HDeaf & TIMEOUT) + lcount, TRUE);
-            g.context.botl = TRUE;
             break;
         }
         return;
@@ -2045,6 +2051,8 @@ struct obj *obj;
         }
     }
 
+    if (did_attr || did_prop)
+        g.context.botl = TRUE;
     if (did_attr)
         pline("This makes you feel %s!",
               (did_prop + did_attr) == (trouble_count + unfixable_trbl)
@@ -2053,7 +2061,6 @@ struct obj *obj;
     else if (!did_prop)
         pline("Nothing seems to happen.");
 
-    g.context.botl = (did_attr || did_prop);
 #undef PROP_COUNT
 #undef ATTR_COUNT
 #undef prop2trbl
@@ -2105,7 +2112,7 @@ long timeout;
         and_vanish[0] = '\0';
         if ((mtmp->minvis && !See_invisible)
             || (mtmp->data->mlet == S_MIMIC
-                && mtmp->m_ap_type != M_AP_NOTHING))
+                && M_AP_TYPE(mtmp) != M_AP_NOTHING))
             suppress_see = TRUE;
 
         if (mtmp->mundetected) {
@@ -2180,7 +2187,7 @@ long timeout;
         newsym(cc.x, cc.y);
 }
 
-STATIC_OVL boolean
+static boolean
 figurine_location_checks(obj, cc, quietly)
 struct obj *obj;
 coord *cc;
@@ -2216,7 +2223,7 @@ boolean quietly;
     return TRUE;
 }
 
-STATIC_OVL void
+static void
 use_figurine(optr)
 struct obj **optr;
 {
@@ -2258,7 +2265,7 @@ struct obj **optr;
 
 static NEARDATA const char lubricables[] = { ALL_CLASSES, ALLOW_NONE, 0 };
 
-STATIC_OVL void
+static void
 use_grease(obj)
 struct obj *obj;
 {
@@ -2309,17 +2316,18 @@ struct obj *obj;
 }
 
 /* touchstones - by Ken Arnold */
-STATIC_OVL void
+static void
 use_stone(tstone)
 struct obj *tstone;
 {
+    static const char scritch[] = "\"scritch, scritch\"";
+    static const char allowall[3] = { COIN_CLASS, ALL_CLASSES, 0 };
+    static const char coins_gems[3] = { COIN_CLASS, GEM_CLASS, 0 };
     struct obj *obj;
     boolean do_scratch;
     const char *streak_color, *choices;
     char stonebuf[QBUFSZ];
-    static const char scritch[] = "\"scritch, scritch\"";
-    static const char allowall[3] = { COIN_CLASS, ALL_CLASSES, 0 };
-    static const char coins_gems[3] = { COIN_CLASS, GEM_CLASS, 0 };
+    int oclass;
 
     /* in case it was acquired while blinded */
     if (!Blind)
@@ -2364,7 +2372,14 @@ struct obj *tstone;
     do_scratch = FALSE;
     streak_color = 0;
 
-    switch (obj->oclass) {
+    oclass = obj->oclass;
+    /* prevent non-gemstone rings from being treated like gems */
+    if (oclass == RING_CLASS
+        && objects[obj->otyp].oc_material != GEMSTONE
+        && objects[obj->otyp].oc_material != MINERAL)
+        oclass = RANDOM_CLASS; /* something that's neither gem nor ring */
+
+    switch (oclass) {
     case GEM_CLASS: /* these have class-specific handling below */
     case RING_CLASS:
         if (tstone->otyp != TOUCHSTONE) {
@@ -2445,7 +2460,7 @@ reset_trapset()
 }
 
 /* Place a landmine/bear trap.  Helge Hafting */
-STATIC_OVL void
+static void
 use_trap(otmp)
 struct obj *otmp;
 {
@@ -2491,7 +2506,7 @@ struct obj *otmp;
     if (otmp == g.trapinfo.tobj && u.ux == g.trapinfo.tx 
                                 && u.uy == g.trapinfo.ty) {
         You("resume setting %s%s.", shk_your(buf, otmp),
-            defsyms[trap_to_defsym(what_trap(ttyp))].explanation);
+            defsyms[trap_to_defsym(what_trap(ttyp, rn2))].explanation);
         set_occupation(set_trap, occutext, 0);
         return;
     }
@@ -2516,7 +2531,8 @@ struct obj *otmp;
             chance = (rnl(10) > 5);
         You("aren't very skilled at reaching from %s.", mon_nam(u.usteed));
         Sprintf(buf, "Continue your attempt to set %s?",
-                the(defsyms[trap_to_defsym(what_trap(ttyp))].explanation));
+                the(defsyms[trap_to_defsym(what_trap(ttyp, rn2))]
+                    .explanation));
         if (yn(buf) == 'y') {
             if (chance) {
                 switch (ttyp) {
@@ -2527,7 +2543,7 @@ struct obj *otmp;
                 case BEAR_TRAP: /* drop it without arming it */
                     reset_trapset();
                     You("drop %s!",
-                        the(defsyms[trap_to_defsym(what_trap(ttyp))]
+                        the(defsyms[trap_to_defsym(what_trap(ttyp, rn2))]
                                 .explanation));
                     dropx(otmp);
                     return;
@@ -2539,13 +2555,12 @@ struct obj *otmp;
         }
     }
     You("begin setting %s%s.", shk_your(buf, otmp),
-        defsyms[trap_to_defsym(what_trap(ttyp))].explanation);
+        defsyms[trap_to_defsym(what_trap(ttyp, rn2))].explanation);
     set_occupation(set_trap, occutext, 0);
     return;
 }
 
-STATIC_PTR
-int
+static int
 set_trap()
 {
     struct obj *otmp = g.trapinfo.tobj;
@@ -2572,7 +2587,7 @@ set_trap()
         }
         if (!g.trapinfo.force_bungle)
             You("finish arming %s.",
-                the(defsyms[trap_to_defsym(what_trap(ttyp))].explanation));
+                the(defsyms[trap_to_defsym(what_trap(ttyp, rn2))].explanation));
         if (((otmp->cursed || Fumbling) && (rnl(10) > 5))
             || g.trapinfo.force_bungle)
             dotrap(ttmp,
@@ -2586,7 +2601,7 @@ set_trap()
     return 0;
 }
 
-STATIC_OVL int
+static int
 use_whip(obj)
 struct obj *obj;
 {
@@ -2676,7 +2691,6 @@ struct obj *obj;
         You("hit your %s with your bullwhip.", body_part(FOOT));
         Sprintf(buf, "killed %sself with %s bullwhip", uhim(), uhis());
         losehp(Maybe_Half_Phys(dam), buf, NO_KILLER_PREFIX);
-        g.context.botl = 1;
         return 1;
 
     } else if ((Fumbling || Glib) && !rn2(5)) {
@@ -2763,7 +2777,7 @@ struct obj *obj;
                 pline("%s welded to %s %s%c",
                       (otmp->quan == 1L) ? "It is" : "They are", mhis(mtmp),
                       mon_hand, !otmp->bknown ? '!' : '.');
-                otmp->bknown = 1;
+                set_bknown(otmp, 1);
                 gotit = FALSE; /* can't pull it free */
             }
             if (gotit) {
@@ -2830,7 +2844,7 @@ struct obj *obj;
             }
             wakeup(mtmp, TRUE);
         } else {
-            if (mtmp->m_ap_type && !Protection_from_shape_changers
+            if (M_AP_TYPE(mtmp) && !Protection_from_shape_changers
                 && !sensemon(mtmp))
                 stumble_onto_mimic(mtmp);
             else
@@ -2860,7 +2874,7 @@ static const char
     cant_reach[] = "can't reach that spot from here.";
 
 /* find pos of monster in range, if only one monster */
-boolean
+static boolean
 find_poleable_mon(pos, min_range, max_range)
 coord *pos;
 int min_range, max_range;
@@ -2904,7 +2918,7 @@ int min_range, max_range;
     return TRUE;
 }
 
-STATIC_OVL boolean
+static boolean
 get_valid_polearm_position(x, y)
 int x, y;
 {
@@ -2913,7 +2927,7 @@ int x, y;
             && distu(x, y) <= g.polearm_range_max);
 }
 
-void
+static void
 display_polearm_positions(state)
 int state;
 {
@@ -2936,7 +2950,7 @@ int state;
 }
 
 /* Distance attacks by pole-weapons */
-STATIC_OVL int
+static int
 use_pole(obj)
 struct obj *obj;
 {
@@ -3053,7 +3067,7 @@ struct obj *obj;
     return 1;
 }
 
-STATIC_OVL int
+static int
 use_cream_pie(obj)
 struct obj *obj;
 {
@@ -3091,7 +3105,7 @@ struct obj *obj;
     return 0;
 }
 
-STATIC_OVL int
+static int
 use_grapple(obj)
 struct obj *obj;
 {
@@ -3241,7 +3255,7 @@ struct obj *obj;
 #define BY_OBJECT ((struct monst *) 0)
 
 /* return 1 if the wand is broken, hence some time elapsed */
-STATIC_OVL int
+static int
 do_break_wand(obj)
 struct obj *obj;
 {
@@ -3466,7 +3480,7 @@ discard_broken_wand:
     return 1;
 }
 
-STATIC_OVL void
+static void
 add_class(cl, class)
 char *cl;
 char class;
@@ -3481,7 +3495,7 @@ char class;
 static const char tools[] = { TOOL_CLASS, WEAPON_CLASS, WAND_CLASS, 0 };
 
 /* augment tools[] if various items are carried */
-STATIC_OVL void
+static void
 setapplyclasses(class_list)
 char class_list[];
 {
@@ -3616,7 +3630,7 @@ doapply()
             if (!rn2(49)) {
                 if (!Blind) {
                     pline("%s %s.", Yobjnam2(obj, "glow"), hcolor("brown"));
-                    obj->bknown = 1;
+                    set_bknown(obj, 1);
                 }
                 unbless(obj);
             }
@@ -3725,25 +3739,34 @@ boolean is_horn;
 
     if (Stoned)
         unfixable_trbl++;
+    if (Slimed)
+        unfixable_trbl++;
     if (Strangled)
         unfixable_trbl++;
     if (Wounded_legs && !u.usteed)
         unfixable_trbl++;
-    if (Slimed)
-        unfixable_trbl++;
-    /* lycanthropy is undesirable, but it doesn't actually make you feel bad */
+    /* lycanthropy is undesirable, but it doesn't actually make you feel bad
+       so don't count it as a trouble which can't be fixed */
 
-    if (!is_horn || (Confusion & ~TIMEOUT))
+    /*
+     * Unicorn horn can fix these when they're timed but not when
+     * they aren't.  Potion of restore ability doesn't touch them,
+     * so they're always unfixable for the not-unihorn case.
+     * [Most of these are timed only, so always curable via horn.
+     * An exception is Stunned, which can be forced On by certain
+     * polymorph forms (stalker, bats).]
+     */
+    if (Sick && (!is_horn || (Sick & ~TIMEOUT) != 0L))
         unfixable_trbl++;
-    if (!is_horn || (Sick & ~TIMEOUT))
+    if (Stunned && (!is_horn || (HStun & ~TIMEOUT) != 0L))
         unfixable_trbl++;
-    if (!is_horn || (HHallucination & ~TIMEOUT))
+    if (Confusion && (!is_horn || (HConfusion & ~TIMEOUT) != 0L))
         unfixable_trbl++;
-    if (!is_horn || (Vomiting & ~TIMEOUT))
+    if (Hallucination && (!is_horn || (HHallucination & ~TIMEOUT) != 0L))
         unfixable_trbl++;
-    if (!is_horn || (HStun & ~TIMEOUT))
+    if (Vomiting && (!is_horn || (Vomiting & ~TIMEOUT) != 0L))
         unfixable_trbl++;
-    if (!is_horn || (HDeaf & ~TIMEOUT))
+    if (Deaf && (!is_horn || (HDeaf & ~TIMEOUT) != 0L))
         unfixable_trbl++;
 
     return unfixable_trbl;

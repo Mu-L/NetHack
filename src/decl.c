@@ -1,4 +1,4 @@
-/* NetHack 3.6	decl.c	$NHDT-Date: 1547025164 2019/01/09 09:12:44 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.141 $ */
+/* NetHack 3.6	decl.c	$NHDT-Date: 1571352532 2019/10/17 22:48:52 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.146 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2009. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -21,6 +21,7 @@ const schar ydir[10] = { 0, -1, -1, -1, 0, 1, 1, 1, 0, 0 };
 const schar zdir[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, -1 };
 
 NEARDATA struct flag flags;
+NEARDATA boolean has_strong_rngseed = FALSE;
 #ifdef SYSFLAGS
 NEARDATA struct sysflag sysflags;
 #endif
@@ -39,6 +40,7 @@ NEARDATA struct obj *uwep, *uarm, *uswapwep,
 #ifdef TEXTCOLOR
 /*
  *  This must be the same order as used for buzz() in zap.c.
+ *  (They're only used in mapglyph.c so probably shouldn't be here.)
  */
 const int zapcolors[NUM_ZAP] = {
     HI_ZAP,     /* 0 - missile */
@@ -47,8 +49,10 @@ const int zapcolors[NUM_ZAP] = {
     HI_ZAP,     /* 3 - sleep */
     CLR_BLACK,  /* 4 - death */
     CLR_WHITE,  /* 5 - lightning */
-    CLR_YELLOW, /* 6 - poison gas */
-    CLR_GREEN,  /* 7 - acid */
+    /* 3.6.3: poison gas zap used to be yellow and acid zap was green,
+       which conflicted with the corresponding dragon colors */
+    CLR_GREEN,  /* 6 - poison gas */
+    CLR_YELLOW, /* 7 - acid */
 };
 #endif /* text color */
 
@@ -92,7 +96,8 @@ const struct c_common_strings c_common_strings = { "Nothing happens.",
                                              "You can move again.",
                                              "Never mind.",
                                              "vision quickly clears.",
-                                             { "the", "your" } };
+                                             { "the", "your" },
+                                             { "mon", "you" } };
 
 /* NOTE: the order of these words exactly corresponds to the
    order of oc_material values #define'd in objclass.h. */
@@ -105,7 +110,7 @@ const char *materialnm[] = { "mysterious", "liquid",  "wax",        "organic",
 
 /* Global windowing data, defined here for multi-window-system support */
 NEARDATA winid WIN_MESSAGE, WIN_STATUS, WIN_MAP, WIN_INVEN;
-
+                                   
 #ifdef PREFIXES_IN_USE
 const char *fqn_prefix_names[PREFIX_COUNT] = {
     "hackdir",  "leveldir", "savedir",    "bonesdir",  "datadir",
@@ -217,8 +222,11 @@ const struct instance_globals g_init = {
     FALSE, /* blinit */
     FALSE, /* update_all */
     UNDEFINED_VALUES, /* valset */
+#ifdef STATUS_HILITES
     0, /* bl_hilite_moves */
+#endif
     UNDEFINED_VALUES, /* cond_hilites */
+    0, /* now_or_before_idx */
 
     /* cmd.c */
     UNDEFINED_VALUES, /* Cmd */
@@ -262,6 +270,8 @@ const struct instance_globals g_init = {
     0, /* doorindex */
     NULL, /* save_cm */
     0, /* done_money */
+    0L, /* domove_attempting */
+    0L, /* domove_succeeded */
     NULL, /* nomovemsg */
     DUMMY, /* plname */
     DUMMY, /* pl_character */
@@ -369,6 +379,7 @@ const struct instance_globals g_init = {
     UNDEFINED_VALUE, /* preferred_pet */
     NULL, /* mydogs */
     NULL, /* migrating_mons */
+    NULL, /* apelist */
     UNDEFINED_VALUES, /* mvitals */
 
     /* dokick.c */
@@ -380,8 +391,10 @@ const struct instance_globals g_init = {
     DUMMY, /* symset */
     0, /* currentgraphics */
     DUMMY, /* showsyms */
-    DUMMY, /* l_syms */
-    DUMMY, /* r_syms */
+    DUMMY, /* primary_syms */
+    DUMMY, /* rogue_syms */
+    DUMMY, /* ov_primary_syms */
+    DUMMY, /* ov_rogue_syms */
     DUMMY, /* warnsyms */
 
     /* dungeon.c */
@@ -412,9 +425,6 @@ const struct instance_globals g_init = {
     FALSE, /* chosen_symset_start */
     FALSE, /* chosen_symset_end */
     0, /* symset_which_set */
-#ifdef HOLD_LOCKFILE_OPEN
-    DUMMY, /* lftrack */
-#endif
     DUMMY, /* SAVEF */
 #ifdef MICRO
     DUMMY, /* SAVEP */
@@ -700,8 +710,16 @@ decl_globals_init()
     g.valuables[2].list = NULL;
     g.valuables[2].size = 0;
 
-    nhassert(g_init.magic == IVMAGIC);
-    nhassert(g_init.havestate == TRUE);
+    if (g_init.magic != IVMAGIC) {
+        printf("decl_globals_init: g_init.magic in unexpected state (%lx)\n",
+                g_init.magic);
+        exit(1);
+    }
+
+    if (g_init.havestate != TRUE) {
+        printf("decl_globals_init: g_init..havestate not TRUE\n");
+        exit(1);
+    }
 
     sfcap = default_sfinfo;
     sfrestinfo = default_sfinfo;

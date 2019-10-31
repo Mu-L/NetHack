@@ -1,18 +1,18 @@
-/* NetHack 3.6	dig.c	$NHDT-Date: 1544442710 2018/12/10 11:51:50 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.116 $ */
+/* NetHack 3.6	dig.c	$NHDT-Date: 1547421446 2019/01/13 23:17:26 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.117 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 
-STATIC_DCL boolean NDECL(rm_waslit);
-STATIC_DCL void FDECL(mkcavepos,
+static boolean NDECL(rm_waslit);
+static void FDECL(mkcavepos,
                       (XCHAR_P, XCHAR_P, int, BOOLEAN_P, BOOLEAN_P));
-STATIC_DCL void FDECL(mkcavearea, (BOOLEAN_P));
-STATIC_DCL int NDECL(dig);
-STATIC_DCL void FDECL(dig_up_grave, (coord *));
-STATIC_DCL int FDECL(adj_pit_checks, (coord *, char *));
-STATIC_DCL void FDECL(pit_flow, (struct trap *, SCHAR_P));
+static void FDECL(mkcavearea, (BOOLEAN_P));
+static int NDECL(dig);
+static void FDECL(dig_up_grave, (coord *));
+static int FDECL(adj_pit_checks, (coord *, char *));
+static void FDECL(pit_flow, (struct trap *, SCHAR_P));
 
 /* Indices returned by dig_typ() */
 enum dig_types {
@@ -24,7 +24,7 @@ enum dig_types {
     DIGTYP_TREE
 };
 
-STATIC_OVL boolean
+static boolean
 rm_waslit()
 {
     register xchar x, y;
@@ -42,7 +42,7 @@ rm_waslit()
  * boulders in the name of a nice effect.  Vision will get fixed up again
  * immediately after the effect is complete.
  */
-STATIC_OVL void
+static void
 mkcavepos(x, y, dist, waslit, rockit)
 xchar x, y;
 int dist;
@@ -85,7 +85,7 @@ boolean waslit, rockit;
     feel_newsym(x, y);
 }
 
-STATIC_OVL void
+static void
 mkcavearea(rockit)
 register boolean rockit;
 {
@@ -235,7 +235,7 @@ int x, y;
     return TRUE;
 }
 
-STATIC_OVL int
+static int
 dig(VOID_ARGS)
 {
     register struct rm *lev;
@@ -610,10 +610,16 @@ int ttyp;
                 You("dig a pit in the %s.", surface_type);
             if (shopdoor)
                 pay_for_damage("ruin", FALSE);
-        } else if (!madeby_obj && canseemon(madeby))
+        } else if (!madeby_obj && canseemon(madeby)) {
             pline("%s digs a pit in the %s.", Monnam(madeby), surface_type);
-        else if (cansee(x, y) && flags.verbose)
+        } else if (cansee(x, y) && flags.verbose) {
             pline("A pit appears in the %s.", surface_type);
+        }
+        /* in case we're digging down while encased in solid rock
+           which is blocking levitation or flight */
+        switch_terrain();
+        if (Levitation || Flying)
+            wont_fall = TRUE;
 
         if (at_u) {
             if (!wont_fall) {
@@ -642,6 +648,13 @@ int ttyp;
             pline("A hole appears in the %s.", surface_type);
 
         if (at_u) {
+            /* in case we're digging down while encased in solid rock
+               which is blocking levitation or flight */
+            switch_terrain();
+            if (Levitation || Flying)
+                wont_fall = TRUE;
+
+            /* check for leashed pet that can't fall right now */
             if (!u.ustuck && !wont_fall && !next_to_u()) {
                 You("are jerked back by your pet!");
                 wont_fall = TRUE;
@@ -880,7 +893,7 @@ coord *cc;
     return FALSE;
 }
 
-STATIC_OVL void
+static void
 dig_up_grave(cc)
 coord *cc;
 {
@@ -1580,7 +1593,7 @@ zap_dig()
  * you're zapping a wand of digging laterally while
  * down in the pit.
  */
-STATIC_OVL int
+static int
 adj_pit_checks(cc, msg)
 coord *cc;
 char *msg;
@@ -1671,7 +1684,7 @@ char *msg;
 /*
  * Ensure that all conjoined pits fill up.
  */
-STATIC_OVL void
+static void
 pit_flow(trap, filltyp)
 struct trap *trap;
 schar filltyp;

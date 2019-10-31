@@ -1,30 +1,30 @@
-/* NetHack 3.6	do_name.c	$NHDT-Date: 1546987367 2019/01/08 22:42:47 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.140 $ */
+/* NetHack 3.6	do_name.c	$NHDT-Date: 1560611967 2019/06/15 15:19:27 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.149 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 
-STATIC_DCL char *NDECL(nextmbuf);
-STATIC_DCL void FDECL(getpos_help, (BOOLEAN_P, const char *));
-STATIC_DCL int FDECL(CFDECLSPEC cmp_coord_distu, (const void *, const void *));
-STATIC_DCL boolean FDECL(gather_locs_interesting, (int, int, int));
-STATIC_DCL void FDECL(gather_locs, (coord **, int *, int));
-STATIC_DCL int FDECL(gloc_filter_floodfill_matcharea, (int, int));
-STATIC_DCL void FDECL(auto_describe, (int, int));
-STATIC_DCL void NDECL(do_mname);
-STATIC_DCL boolean FDECL(alreadynamed, (struct monst *, char *, char *));
-STATIC_DCL void FDECL(do_oname, (struct obj *));
-STATIC_PTR char *FDECL(docall_xname, (struct obj *));
-STATIC_DCL void NDECL(namefloorobj);
-STATIC_DCL char *FDECL(bogusmon, (char *,char *));
+static char *NDECL(nextmbuf);
+static void FDECL(getpos_help, (BOOLEAN_P, const char *));
+static int FDECL(CFDECLSPEC cmp_coord_distu, (const void *, const void *));
+static boolean FDECL(gather_locs_interesting, (int, int, int));
+static void FDECL(gather_locs, (coord **, int *, int));
+static int FDECL(gloc_filter_floodfill_matcharea, (int, int));
+static void FDECL(auto_describe, (int, int));
+static void NDECL(do_mname);
+static boolean FDECL(alreadynamed, (struct monst *, char *, char *));
+static void FDECL(do_oname, (struct obj *));
+static char *FDECL(docall_xname, (struct obj *));
+static void NDECL(namefloorobj);
+static char *FDECL(bogusmon, (char *,char *));
 
 extern const char what_is_an_unknown_object[]; /* from pager.c */
 
 #define NUMMBUF 5
 
 /* manage a pool of BUFSZ buffers, so callers don't have to */
-STATIC_OVL char *
+static char *
 nextmbuf()
 {
     static char NEARDATA bufs[NUMMBUF][BUFSZ];
@@ -51,9 +51,9 @@ boolean FDECL((*gp_getvalidf), (int, int));
 }
 
 static const char *const gloc_descr[NUM_GLOCS][4] = {
-    { "any monsters", "monster", "next monster", "monsters" },
-    { "any items", "item", "next object", "objects" },
-    { "any doors", "door", "next door or doorway", "doors or doorways" },
+    { "any monsters", "monster", "next/previous monster", "monsters" },
+    { "any items", "item", "next/previous object", "objects" },
+    { "any doors", "door", "next/previous door or doorway", "doors or doorways" },
     { "any unexplored areas", "unexplored area", "unexplored location",
       "unexplored locations" },
     { "anything interesting", "interesting thing", "anything interesting",
@@ -77,7 +77,7 @@ int gloc;
 {
     char sbuf[BUFSZ];
 
-    Sprintf(sbuf, "Use '%s' or '%s' to %s%s%s.",
+    Sprintf(sbuf, "Use '%s'/'%s' to %s%s%s.",
             k1, k2,
             iflags.getloc_usemenu ? "get a menu of "
                                   : "move the cursor to ",
@@ -87,7 +87,7 @@ int gloc;
 }
 
 /* the response for '?' help request in getpos() */
-STATIC_OVL void
+static void
 getpos_help(force, goal)
 boolean force;
 const char *goal;
@@ -216,7 +216,7 @@ const char *goal;
     destroy_nhwindow(tmpwin);
 }
 
-STATIC_OVL int
+static int
 cmp_coord_distu(a, b)
 const void *a;
 const void *b;
@@ -272,7 +272,7 @@ int glyph;
     return 0;
 }
 
-STATIC_OVL int
+static int
 gloc_filter_floodfill_matcharea(x, y)
 int x, y;
 {
@@ -332,7 +332,7 @@ gloc_filter_done()
     }
 }
 
-STATIC_OVL boolean
+static boolean
 gather_locs_interesting(x, y, gloc)
 int x, y, gloc;
 {
@@ -379,7 +379,7 @@ int x, y, gloc;
                     || IS_UNEXPLORED_LOC(x, y - 1)));
     case GLOC_VALID:
         if (getpos_getvalid)
-            return (getpos_getvalid(x,y));
+            return (*getpos_getvalid)(x,y);
         /*FALLTHRU*/
     case GLOC_INTERESTING:
         return gather_locs_interesting(x,y, GLOC_DOOR)
@@ -404,7 +404,7 @@ int x, y, gloc;
 }
 
 /* gather locations for monsters or objects shown on the map */
-STATIC_OVL void
+static void
 gather_locs(arr_p, cnt_p, gloc)
 coord **arr_p;
 int *cnt_p;
@@ -531,7 +531,7 @@ char *outbuf, cmode;
     return outbuf;
 }
 
-STATIC_OVL void
+static void
 auto_describe(cx, cy)
 int cx, cy;
 {
@@ -548,7 +548,7 @@ int cx, cy;
         custompline(SUPPRESS_HISTORY,
                     "%s%s%s%s%s", firstmatch, *tmpbuf ? " " : "", tmpbuf,
                     (iflags.autodescribe
-                     && getpos_getvalid && !getpos_getvalid(cx, cy))
+                     && getpos_getvalid && !(*getpos_getvalid)(cx, cy))
                       ? " (illegal)" : "",
                     (iflags.getloc_travelmode && !is_valid_travelpt(cx, cy))
                       ? " (no travel path)" : "");
@@ -1083,7 +1083,7 @@ const char *name;
 
 /* check whether user-supplied name matches or nearly matches an unnameable
    monster's name; if so, give an alternate reject message for do_mname() */
-STATIC_OVL boolean
+static boolean
 alreadynamed(mtmp, monnambuf, usrbuf)
 struct monst *mtmp;
 char *monnambuf, *usrbuf;
@@ -1113,10 +1113,10 @@ char *monnambuf, *usrbuf;
 }
 
 /* allow player to assign a name to some chosen monster */
-STATIC_OVL void
+static void
 do_mname()
 {
-    char buf[BUFSZ] = DUMMY, monnambuf[BUFSZ], qbuf[QBUFSZ];
+    char buf[BUFSZ], monnambuf[BUFSZ], qbuf[QBUFSZ];
     coord cc;
     int cx, cy;
     struct monst *mtmp = 0;
@@ -1128,9 +1128,9 @@ do_mname()
     cc.x = u.ux;
     cc.y = u.uy;
     if (getpos(&cc, FALSE, "the monster you want to name") < 0
-        || (cx = cc.x) < 0)
+        || !isok(cc.x, cc.y))
         return;
-    cy = cc.y;
+    cx = cc.x, cy = cc.y;
 
     if (cx == u.ux && cy == u.uy) {
         if (u.usteed && canspotmon(u.usteed)) {
@@ -1146,8 +1146,8 @@ do_mname()
     if (!mtmp
         || (!sensemon(mtmp)
             && (!(cansee(cx, cy) || see_with_infrared(mtmp))
-                || mtmp->mundetected || mtmp->m_ap_type == M_AP_FURNITURE
-                || mtmp->m_ap_type == M_AP_OBJECT
+                || mtmp->mundetected || M_AP_TYPE(mtmp) == M_AP_FURNITURE
+                || M_AP_TYPE(mtmp) == M_AP_OBJECT
                 || (mtmp->minvis && !See_invisible)))) {
         pline("I see no monster there.");
         return;
@@ -1155,6 +1155,12 @@ do_mname()
     /* special case similar to the one in lookat() */
     Sprintf(qbuf, "What do you want to call %s?",
             distant_monnam(mtmp, ARTICLE_THE, monnambuf));
+    buf[0] = '\0';
+#ifdef EDIT_GETLIN
+    /* if there's an existing name, make it be the default answer */
+    if (has_mname(mtmp))
+        Strcpy(buf, MNAME(mtmp));
+#endif
     getlin(qbuf, buf);
     if (!*buf || *buf == '\033')
         return;
@@ -1167,6 +1173,9 @@ do_mname()
      *
      * Don't say the name is being rejected if it happens to match
      * the existing name.
+     *
+     * TODO: should have an alternate message when the attempt is to
+     * remove existing name without assigning a new one.
      */
     if ((mtmp->data->geno & G_UNIQ) && !mtmp->ispriest) {
         if (!alreadynamed(mtmp, monnambuf, buf))
@@ -1188,12 +1197,12 @@ do_mname()
  * used with extreme care.  Applying a name to an object no longer
  * allocates a replacement object, so that old risk is gone.
  */
-STATIC_OVL
+static
 void
 do_oname(obj)
 register struct obj *obj;
 {
-    char *bufp, buf[BUFSZ] = DUMMY, bufcpy[BUFSZ], qbuf[QBUFSZ];
+    char *bufp, buf[BUFSZ], bufcpy[BUFSZ], qbuf[QBUFSZ];
     const char *aname;
     short objtyp;
 
@@ -1206,6 +1215,12 @@ register struct obj *obj;
     Sprintf(qbuf, "What do you want to name %s ",
             is_plural(obj) ? "these" : "this");
     (void) safe_qbuf(qbuf, qbuf, "?", obj, xname, simpleonames, "item");
+    buf[0] = '\0';
+#ifdef EDIT_GETLIN
+    /* if there's an existing name, make it be the default answer */
+    if (has_oname(obj))
+        Strcpy(buf, ONAME(obj));
+#endif
     getlin(qbuf, buf);
     if (!*buf || *buf == '\033')
         return;
@@ -1245,7 +1260,7 @@ register struct obj *obj;
         /* for "the Foo of Bar", only scuff "Foo of Bar" part */
         bufp = !strncmpi(bufcpy, "the ", 4) ? (buf + 4) : buf;
         do {
-            wipeout_text(bufp, rnd(2), (unsigned) 0);
+            wipeout_text(bufp, rn2_on_display_rng(2), (unsigned) 0);
         } while (!strcmp(buf, bufcpy));
         pline("While engraving, your %s slips.", body_part(HAND));
         display_nhwindow(WIN_MESSAGE, FALSE);
@@ -1412,7 +1427,7 @@ docallcmd()
 }
 
 /* for use by safe_qbuf() */
-STATIC_PTR char *
+static char *
 docall_xname(obj)
 struct obj *obj;
 {
@@ -1448,7 +1463,7 @@ void
 docall(obj)
 struct obj *obj;
 {
-    char buf[BUFSZ] = DUMMY, qbuf[QBUFSZ];
+    char buf[BUFSZ], qbuf[QBUFSZ];
     char **str1;
 
     if (!obj->dknown)
@@ -1461,12 +1476,19 @@ struct obj *obj;
     else
         (void) safe_qbuf(qbuf, "Call ", ":", obj,
                          docall_xname, simpleonames, "thing");
+    /* pointer to old name */
+    str1 = &(objects[obj->otyp].oc_uname);
+    buf[0] = '\0';
+#ifdef EDIT_GETLIN
+    /* if there's an existing name, make it be the default answer */
+    if (*str1)
+        Strcpy(buf, *str1);
+#endif
     getlin(qbuf, buf);
     if (!*buf || *buf == '\033')
         return;
 
     /* clear old name */
-    str1 = &(objects[obj->otyp].oc_uname);
     if (*str1)
         free((genericptr_t) *str1);
 
@@ -1485,7 +1507,7 @@ struct obj *obj;
     }
 }
 
-STATIC_OVL void
+static void
 namefloorobj()
 {
     coord cc;
@@ -1533,8 +1555,12 @@ namefloorobj()
         unames[0] = ((Upolyd ? u.mfemale : flags.female) && g.urole.name.f)
                      ? g.urole.name.f
                      : g.urole.name.m;
-        /* random rank title for hero's role */
-        unames[1] = rank_of(rnd(30), Role_switch, flags.female);
+        /* random rank title for hero's role
+
+           note: the 30 is hardcoded in xlev_to_rank, so should be
+           hardcoded here too */
+        unames[1] = rank_of(rn2_on_display_rng(30) + 1,
+                            Role_switch, flags.female);
         /* random fake monster */
         unames[2] = bogusmon(tmpbuf, (char *) 0);
         /* increased chance for fake monster */
@@ -1545,7 +1571,7 @@ namefloorobj()
         unames[5] = "Wibbly Wobbly";
         pline("%s %s to call you \"%s.\"",
               The(buf), use_plural ? "decide" : "decides",
-              unames[rn2(SIZE(unames))]);
+              unames[rn2_on_display_rng(SIZE(unames))]);
     } else if (!objtyp_is_callable(obj->otyp)) {
         pline("%s %s can't be assigned a type name.",
               use_plural ? "Those" : "That", buf);
@@ -1555,8 +1581,10 @@ namefloorobj()
     } else {
         docall(obj);
     }
-    if (fakeobj)
+    if (fakeobj) {
+        obj->where = OBJ_FREE; /* object_from_map() sets it to OBJ_FLOOR */
         dealloc_obj(obj);
+    }
 }
 
 static const char *const ghostnames[] = {
@@ -1918,14 +1946,41 @@ char *outbuf;
     return outbuf;
 }
 
+/* returns mon_nam(mon) relative to other_mon; normal name unless they're
+   the same, in which case the reference is to {him|her|it} self */
+char *
+mon_nam_too(mon, other_mon)
+struct monst *mon, *other_mon;
+{
+    char *outbuf;
+
+    if (mon != other_mon) {
+        outbuf = mon_nam(mon);
+    } else {
+        outbuf = nextmbuf();
+        switch (pronoun_gender(mon, FALSE)) {
+        case 0:
+            Strcpy(outbuf, "himself");
+            break;
+        case 1:
+            Strcpy(outbuf, "herself");
+            break;
+        default:
+            Strcpy(outbuf, "itself");
+            break;
+        }
+    }
+    return outbuf;
+}
+
 /* fake monsters used to be in a hard-coded array, now in a data file */
-STATIC_OVL char *
+static char *
 bogusmon(buf, code)
 char *buf, *code;
 {
     char *mname = buf;
 
-    get_rnd_text(BOGUSMONFILE, buf);
+    get_rnd_text(BOGUSMONFILE, buf, rn2_on_display_rng);
     /* strip prefix if present */
     if (!letter(*mname)) {
         if (code)
@@ -1952,7 +2007,7 @@ char *code;
         *code = '\0';
 
     do {
-        name = rn1(SPECIAL_PM + BOGUSMONSIZE - LOW_PM, LOW_PM);
+        name = rn2_on_display_rng(SPECIAL_PM + BOGUSMONSIZE - LOW_PM) + LOW_PM;
     } while (name < SPECIAL_PM
              && (type_is_pname(&mons[name]) || (mons[name].geno & G_NOGEN)));
 
@@ -2008,8 +2063,9 @@ const char *
 hcolor(colorpref)
 const char *colorpref;
 {
-    return (Hallucination || !colorpref) ? hcolors[rn2(SIZE(hcolors))]
-                                         : colorpref;
+    return (Hallucination || !colorpref)
+        ? hcolors[rn2_on_display_rng(SIZE(hcolors))]
+        : colorpref;
 }
 
 /* return a random real color unless hallucinating */

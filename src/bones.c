@@ -1,21 +1,23 @@
-/* NetHack 3.6	bones.c	$NHDT-Date: 1539653203 2018/10/16 01:26:43 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.73 $ */
+/* NetHack 3.6	bones.c	$NHDT-Date: 1571363147 2019/10/18 01:45:47 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.76 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985,1993. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 #include "lev.h"
+#include "sfproto.h"
+
 
 #ifdef MFLOPPY
 extern long bytes_counted;
 #endif
 
-STATIC_DCL boolean FDECL(no_bones_level, (d_level *));
-STATIC_DCL void FDECL(goodfruit, (int));
-STATIC_DCL void FDECL(resetobjs, (struct obj *, BOOLEAN_P));
-STATIC_DCL boolean FDECL(fixuporacle, (struct monst *));
+static boolean FDECL(no_bones_level, (d_level *));
+static void FDECL(goodfruit, (int));
+static void FDECL(resetobjs, (struct obj *, BOOLEAN_P));
+static boolean FDECL(fixuporacle, (struct monst *));
 
-STATIC_OVL boolean
+static boolean
 no_bones_level(lev)
 d_level *lev;
 {
@@ -40,7 +42,7 @@ d_level *lev;
  * ID is positive instead of negative).  This way, when we later save the
  * chain of fruit types, we know to only save the types that exist.
  */
-STATIC_OVL void
+static void
 goodfruit(id)
 int id;
 {
@@ -50,7 +52,7 @@ int id;
         f->fid = id;
 }
 
-STATIC_OVL void
+static void
 resetobjs(ochain, restore)
 struct obj *ochain;
 boolean restore;
@@ -82,6 +84,24 @@ boolean restore;
                 }
             } else if (has_oname(otmp)) {
                 sanitize_name(ONAME(otmp));
+            }
+            /* 3.6.3: set no_charge for partly eaten food in shop;
+               all other items become goods for sale if in a shop */
+            if (otmp->oclass == FOOD_CLASS && otmp->oeaten) {
+                struct obj *top;
+                char *p;
+                xchar ox, oy;
+
+                for (top = otmp; top->where == OBJ_CONTAINED;
+                     top = top->ocontainer)
+                    continue;
+                otmp->no_charge = (top->where == OBJ_FLOOR
+                                   && get_obj_location(top, &ox, &oy, 0)
+                                   /* can't use costly_spot() since its
+                                      result depends upon hero's location */
+                                   && inside_shop(ox, oy)
+                                   && *(p = in_rooms(ox, oy, SHOPBASE))
+                                   && tended_shop(&g.rooms[*p - ROOMOFFSET]));
             }
         } else { /* saving */
             /* do not zero out o_ids for ghost levels anymore */
@@ -212,8 +232,8 @@ char *namebuf;
 /* called by savebones(); also by finish_paybill(shk.c) */
 void
 drop_upon_death(mtmp, cont, x, y)
-struct monst *mtmp;
-struct obj *cont;
+struct monst *mtmp; /* monster if hero turned into one (other than ghost) */
+struct obj *cont; /* container if hero is turned into a statue */
 int x, y;
 {
     struct obj *otmp;
@@ -221,9 +241,13 @@ int x, y;
     u.twoweap = 0; /* ensure curse() won't cause swapwep to drop twice */
     while ((otmp = g.invent) != 0) {
         obj_extract_self(otmp);
-        obj_no_longer_held(otmp);
+        /* when turning into green slime, all gear remains held;
+           other types "arise from the dead" do aren't holding
+           equipment during their brief interval as a corpse */
+        if (!mtmp || is_undead(mtmp->data))
+            obj_no_longer_held(otmp);
 
-        otmp->owornmask = 0;
+        otmp->owornmask = 0L;
         /* lamps don't go out when dropped */
         if ((cont || artifact_light(otmp)) && obj_is_burning(otmp))
             end_burn(otmp, TRUE); /* smother in statue */
@@ -246,7 +270,7 @@ int x, y;
 
 /* possibly restore oracle's room and/or put her back inside it; returns
    False if she's on the wrong level and should be removed, True otherwise */
-STATIC_OVL boolean
+static boolean
 fixuporacle(oracle)
 struct monst *oracle;
 {
@@ -334,7 +358,7 @@ int how;
 time_t when;
 struct obj *corpse;
 {
-    int fd, x, y;
+    int x, y;
     struct trap *ttmp;
     struct monst *mtmp;
     struct permonst *mptr;
@@ -342,13 +366,14 @@ struct obj *corpse;
     struct cemetery *newbones;
     char c, *bonesid;
     char whynot[BUFSZ];
+    NHFILE *nhfp;
 
     /* caller has already checked `can_make_bones()' */
 
     clear_bypasses();
-    fd = open_bonesfile(&u.uz, &bonesid);
-    if (fd >= 0) {
-        (void) nhclose(fd);
+    nhfp = open_bonesfile(&u.uz, &bonesid);
+    if (nhfp) {
+        close_nhfile(nhfp);
         if (wizard) {
             if (yn("Bones file already exists.  Replace it?") == 'y') {
                 if (delete_bonesfile(&u.uz))
@@ -363,7 +388,7 @@ struct obj *corpse;
         return;
     }
 
-make_bones:
+ make_bones:
     unleash_all();
     /* in case these characters are not in their home bases */
     for (mtmp = fmon; mtmp; mtmp = mtmp->nmon) {
@@ -388,7 +413,7 @@ make_bones:
 
     /* check iron balls separately--maybe they're not carrying it */
     if (uball)
-        uball->owornmask = uchain->owornmask = 0;
+        uball->owornmask = uchain->owornmask = 0L;
 
     /* dispose of your possessions, usually cursed */
     if (u.ugrave_arise == (NON_PM - 1)) {
@@ -420,21 +445,21 @@ make_bones:
         g.in_mklev = TRUE; /* use <u.ux,u.uy> as-is */
         mtmp = makemon(&mons[u.ugrave_arise], u.ux, u.uy, NO_MINVENT);
         g.in_mklev = FALSE;
-        if (!mtmp) {
+        if (!mtmp) { /* arise-type might have been genocided */
             drop_upon_death((struct monst *) 0, (struct obj *) 0, u.ux, u.uy);
             u.ugrave_arise = NON_PM; /* in case caller cares */
             return;
         }
-        /* give mummy-from-hero a wrapping unless hero already
-           carries one; don't bother forcing it to become worn */
-        if (mtmp->data->mlet == S_MUMMY && !carrying(MUMMY_WRAPPING))
-            (void) mongets(mtmp, MUMMY_WRAPPING);
         mtmp = christen_monst(mtmp, g.plname);
         newsym(u.ux, u.uy);
         /* ["Your body rises from the dead as an <mname>..." used
            to be given here, but it has been moved to done() so that
            it gets delivered even when savebones() isn't called] */
         drop_upon_death(mtmp, (struct obj *) 0, u.ux, u.uy);
+        /* 'mtmp' now has hero's inventory; if 'mtmp' is a mummy, give it
+           a wrapping unless already carrying one */
+        if (mtmp->data->mlet == S_MUMMY && !m_carrying(mtmp, MUMMY_WRAPPING))
+            (void) mongets(mtmp, MUMMY_WRAPPING);
         m_dowear(mtmp, TRUE);
     }
     if (mtmp) {
@@ -496,8 +521,8 @@ make_bones:
     if (wizard)
         g.level.flags.wizard_bones = 1;
 
-    fd = create_bonesfile(&u.uz, &bonesid, whynot);
-    if (fd < 0) {
+    nhfp = create_bonesfile(&u.uz, &bonesid, whynot);
+    if (!nhfp) {
         if (wizard)
             pline1(whynot);
         /* bones file creation problems are silent to the player.
@@ -510,7 +535,10 @@ make_bones:
 
 #ifdef MFLOPPY /* check whether there is room */
     if (iflags.checkspace) {
-        savelev(fd, ledger_no(&u.uz), COUNT_SAVE);
+        int savemode = nhfp->mode;
+
+        nhfp->mode = COUNTING;
+        savelev(nhfp, ledger_no(&u.uz));
         /* savelev() initializes bytes_counted to 0, so it must come
          * first here even though it does not in the real save.  the
          * resulting extra bflush() at the end of savelev() may increase
@@ -521,31 +549,47 @@ make_bones:
          * this code would have to know the size of the version
          * information itself.
          */
-        store_version(fd);
-        store_savefileinfo(fd);
-        bwrite(fd, (genericptr_t) &c, sizeof c);
-        bwrite(fd, (genericptr_t) bonesid, (unsigned) c); /* DD.nnn */
-        savefruitchn(fd, COUNT_SAVE);
-        bflush(fd);
+        store_version(nhfp);
+        store_savefileinfo(nhfp);
+    	if (nhfp->structlevel) {
+            bwrite(nhfp->fd, (genericptr_t) &c, sizeof c);
+            bwrite(nhfp->fd, (genericptr_t) bonesid, (unsigned) c); /* DD.nnn */
+        }
+        if (nhfp->fieldlevel) {
+            sfo_char(nhfp, &c, "bones", "bones_count", 1);
+            sfo_char(nhfp, bonesid, "bones", "bonesid", (int) c);
+        }
+        savefruitchn(nhfp);
+        if (nhfp->structlevel)
+            bflush(nhfp->fd);
         if (bytes_counted > freediskspace(bones)) { /* not enough room */
             if (wizard)
                 pline("Insufficient space to create bones file.");
-            (void) nhclose(fd);
+	    close_nhfile(nhfp);
             cancel_bonesfile();
             return;
         }
         co_false(); /* make sure stuff before savelev() gets written */
+        nhfp->mode = savemode;
     }
 #endif /* MFLOPPY */
 
-    store_version(fd);
-    store_savefileinfo(fd);
-    bwrite(fd, (genericptr_t) &c, sizeof c);
-    bwrite(fd, (genericptr_t) bonesid, (unsigned) c); /* DD.nnn */
-    savefruitchn(fd, WRITE_SAVE | FREE_SAVE);
+    nhfp->mode = WRITING | FREEING;
+    store_version(nhfp);
+    store_savefileinfo(nhfp);
+    if (nhfp->structlevel) {
+        bwrite(nhfp->fd, (genericptr_t) &c, sizeof c);
+        bwrite(nhfp->fd, (genericptr_t) bonesid, (unsigned) c);	/* DD.nnn */
+        savefruitchn(nhfp);
+    }
+    if (nhfp->fieldlevel) {
+        sfo_char(nhfp, &c, "bones", "bones_count", 1);
+        sfo_char(nhfp, bonesid, "bones", "bonesid", (int) c); 	/* DD.nnn */
+        savefruitchn(nhfp);
+    }
     update_mlstmv(); /* update monsters for eventual restoration */
-    savelev(fd, ledger_no(&u.uz), WRITE_SAVE | FREE_SAVE);
-    bclose(fd);
+    savelev(nhfp, ledger_no(&u.uz));
+    close_nhfile(nhfp);
     commit_bonesfile(&u.uz);
     compress_bonesfile();
 }
@@ -553,8 +597,8 @@ make_bones:
 int
 getbones()
 {
-    register int fd;
-    register int ok;
+    int ok, i;
+    NHFILE *nhfp = (NHFILE *) 0;
     char c, *bonesid, oldbonesid[40]; /* was [10]; more should be safer */
 
     if (discover) /* save bones files for real games */
@@ -568,11 +612,18 @@ getbones()
         return 0;
     if (no_bones_level(&u.uz))
         return 0;
-    fd = open_bonesfile(&u.uz, &bonesid);
-    if (fd < 0)
-        return 0;
 
-    if (validate(fd, g.bones) != 0) {
+    nhfp = open_bonesfile(&u.uz, &bonesid);
+    if (!nhfp)
+        return 0;
+    if (nhfp && nhfp->structlevel && nhfp->fd < 0)
+        return 0;
+    if (nhfp && nhfp->fieldlevel) {
+        if (nhfp->style.deflt && !nhfp->fpdef)
+        return 0;
+    }
+
+    if (validate(nhfp, g.bones) != 0) {
         if (!wizard)
             pline("Discarding unuseable bones; no need to panic...");
         ok = FALSE;
@@ -580,13 +631,20 @@ getbones()
         ok = TRUE;
         if (wizard) {
             if (yn("Get bones?") == 'n') {
-                (void) nhclose(fd);
+                close_nhfile(nhfp);
                 compress_bonesfile();
                 return 0;
             }
         }
-        mread(fd, (genericptr_t) &c, sizeof c); /* length incl. '\0' */
-        mread(fd, (genericptr_t) oldbonesid, (unsigned) c); /* DD.nnn */
+        if (nhfp->structlevel) {
+            mread(nhfp->fd, (genericptr_t) &c, sizeof c); /* length incl. '\0' */
+            mread(nhfp->fd, (genericptr_t) oldbonesid, (unsigned) c); /* DD.nnn */
+        }
+        if (nhfp->fieldlevel) {
+            sfi_char(nhfp, &c, "bones", "bones_count", 1); /* length incl. '\0' */
+            for (i = 0; i < (int) c; ++i)
+                sfi_char(nhfp, &oldbonesid[i], "bones", "bonesid", 1);
+	}
         if (strcmp(bonesid, oldbonesid) != 0
             /* from 3.3.0 through 3.6.0, bones in the quest branch stored
                a bogus bonesid in the file; 3.6.1 fixed that, but for
@@ -608,7 +666,7 @@ getbones()
         } else {
             register struct monst *mtmp;
 
-            getlev(fd, 0, 0, TRUE);
+            getlev(nhfp, 0, 0, TRUE);
 
             /* Note that getlev() now keeps tabs on unique
              * monsters such as demon lords, and tracks the
@@ -634,7 +692,7 @@ getbones()
             resetobjs(g.level.buriedobjlist, TRUE);
         }
     }
-    (void) nhclose(fd);
+    close_nhfile(nhfp);
     sanitize_engravings();
     u.uroleplay.numbones++;
 

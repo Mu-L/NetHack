@@ -1,4 +1,4 @@
-/* NetHack 3.6	dungeon.c	$NHDT-Date: 1523308357 2018/04/09 21:12:37 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.87 $ */
+/* NetHack 3.6	dungeon.c	$NHDT-Date: 1562187890 2019/07/03 21:04:50 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.105 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -7,6 +7,8 @@
 #include "dgn_file.h"
 #include "dlb.h"
 #include "lev.h"
+#include "sfproto.h"
+
 
 #define DUNGEON_FILE "dungeon"
 
@@ -34,46 +36,46 @@ struct lchoice {
 };
 
 static void FDECL(Fread, (genericptr_t, int, int, dlb *));
-STATIC_DCL xchar FDECL(dname_to_dnum, (const char *));
-STATIC_DCL int FDECL(find_branch, (const char *, struct proto_dungeon *));
-STATIC_DCL xchar FDECL(parent_dnum, (const char *, struct proto_dungeon *));
-STATIC_DCL int FDECL(level_range, (XCHAR_P, int, int, int,
+static xchar FDECL(dname_to_dnum, (const char *));
+static int FDECL(find_branch, (const char *, struct proto_dungeon *));
+static xchar FDECL(parent_dnum, (const char *, struct proto_dungeon *));
+static int FDECL(level_range, (XCHAR_P, int, int, int,
                                    struct proto_dungeon *, int *));
-STATIC_DCL xchar FDECL(parent_dlevel, (const char *, struct proto_dungeon *));
-STATIC_DCL int FDECL(correct_branch_type, (struct tmpbranch *));
-STATIC_DCL branch *FDECL(add_branch, (int, int, struct proto_dungeon *));
-STATIC_DCL void FDECL(add_level, (s_level *));
-STATIC_DCL void FDECL(init_level, (int, int, struct proto_dungeon *));
-STATIC_DCL int FDECL(possible_places, (int, boolean *,
+static xchar FDECL(parent_dlevel, (const char *, struct proto_dungeon *));
+static int FDECL(correct_branch_type, (struct tmpbranch *));
+static branch *FDECL(add_branch, (int, int, struct proto_dungeon *));
+static void FDECL(add_level, (s_level *));
+static void FDECL(init_level, (int, int, struct proto_dungeon *));
+static int FDECL(possible_places, (int, boolean *,
                                        struct proto_dungeon *));
-STATIC_DCL xchar FDECL(pick_level, (boolean *, int));
-STATIC_DCL boolean FDECL(place_level, (int, struct proto_dungeon *));
-STATIC_DCL boolean FDECL(unplaced_floater, (struct dungeon *));
-STATIC_DCL boolean FDECL(unreachable_level, (d_level *, BOOLEAN_P));
-STATIC_DCL void FDECL(tport_menu, (winid, char *, struct lchoice *, d_level *,
+static xchar FDECL(pick_level, (boolean *, int));
+static boolean FDECL(place_level, (int, struct proto_dungeon *));
+static boolean FDECL(unplaced_floater, (struct dungeon *));
+static boolean FDECL(unreachable_level, (d_level *, BOOLEAN_P));
+static void FDECL(tport_menu, (winid, char *, struct lchoice *, d_level *,
                                    BOOLEAN_P));
-STATIC_DCL const char *FDECL(br_string, (int));
-STATIC_DCL char FDECL(chr_u_on_lvl, (d_level *));
-STATIC_DCL void FDECL(print_branch, (winid, int, int, int, BOOLEAN_P,
+static const char *FDECL(br_string, (int));
+static char FDECL(chr_u_on_lvl, (d_level *));
+static void FDECL(print_branch, (winid, int, int, int, BOOLEAN_P,
                                      struct lchoice *));
-STATIC_DCL mapseen *FDECL(load_mapseen, (int));
-STATIC_DCL void FDECL(save_mapseen, (int, mapseen *));
-STATIC_DCL mapseen *FDECL(find_mapseen, (d_level *));
-STATIC_DCL mapseen *FDECL(find_mapseen_by_str, (const char *));
-STATIC_DCL void FDECL(print_mapseen, (winid, mapseen *, int, int, BOOLEAN_P));
-STATIC_DCL boolean FDECL(interest_mapseen, (mapseen *));
-STATIC_DCL void FDECL(traverse_mapseenchn, (BOOLEAN_P, winid,
+static mapseen *FDECL(load_mapseen, (NHFILE *));
+static void FDECL(save_mapseen, (NHFILE *, mapseen *));
+static mapseen *FDECL(find_mapseen, (d_level *));
+static mapseen *FDECL(find_mapseen_by_str, (const char *));
+static void FDECL(print_mapseen, (winid, mapseen *, int, int, BOOLEAN_P));
+static boolean FDECL(interest_mapseen, (mapseen *));
+static void FDECL(traverse_mapseenchn, (BOOLEAN_P, winid,
                                             int, int, int *));
-STATIC_DCL const char *FDECL(seen_string, (XCHAR_P, const char *));
-STATIC_DCL const char *FDECL(br_string2, (branch *));
-STATIC_DCL const char *FDECL(shop_string, (int));
-STATIC_DCL char *FDECL(tunesuffix, (mapseen *, char *));
+static const char *FDECL(seen_string, (XCHAR_P, const char *));
+static const char *FDECL(br_string2, (branch *));
+static const char *FDECL(shop_string, (int));
+static char *FDECL(tunesuffix, (mapseen *, char *));
 
 #ifdef DEBUG
 #define DD g.dungeons[i]
-STATIC_DCL void NDECL(dumpit);
+static void NDECL(dumpit);
 
-STATIC_OVL void
+static void
 dumpit()
 {
     int i;
@@ -129,41 +131,68 @@ dumpit()
 
 /* Save the dungeon structures. */
 void
-save_dungeon(fd, perform_write, free_data)
-int fd;
+save_dungeon(nhfp, perform_write, free_data)
+NHFILE *nhfp;
 boolean perform_write, free_data;
 {
+    int i, count;
     branch *curr, *next;
     mapseen *curr_ms, *next_ms;
-    int count;
 
     if (perform_write) {
-        bwrite(fd, (genericptr_t) &g.n_dgns, sizeof g.n_dgns);
-        bwrite(fd, (genericptr_t) g.dungeons,
-               sizeof(dungeon) * (unsigned) g.n_dgns);
-        bwrite(fd, (genericptr_t) &g.dungeon_topology, sizeof g.dungeon_topology);
-        bwrite(fd, (genericptr_t) g.tune, sizeof tune);
-
+        if(nhfp->structlevel) {
+            bwrite(nhfp->fd, (genericptr_t) &g.n_dgns, sizeof g.n_dgns);
+            bwrite(nhfp->fd, (genericptr_t) g.dungeons,
+                   sizeof(dungeon) * (unsigned) g.n_dgns);
+            bwrite(nhfp->fd, (genericptr_t) &g.dungeon_topology, sizeof g.dungeon_topology);
+            bwrite(nhfp->fd, (genericptr_t) g.tune, sizeof tune);
+        }
+        if (nhfp->fieldlevel) {
+            sfo_int(nhfp, &g.n_dgns, "dungeon", "dungeon_count", 1);
+            for (i = 0; i < g.n_dgns; ++i)
+                sfo_dungeon(nhfp, &g.dungeons[i], "dungeon", "dungeon", 1);
+            sfo_dgn_topology(nhfp, &g.dungeon_topology, "dungeon", "g.dungeon_topology", 1);
+            for (i = 0; i < (int) sizeof tune; ++i)
+                sfo_char(nhfp, &g.tune[i], "dungeon", "tune", 1);
+        }
         for (count = 0, curr = g.branches; curr; curr = curr->next)
             count++;
-        bwrite(fd, (genericptr_t) &count, sizeof(count));
+        if (nhfp->structlevel)
+            bwrite(nhfp->fd, (genericptr_t) &count, sizeof(count));
+        if (nhfp->fieldlevel)
+            sfo_int(nhfp, &count, "dungeon", "branch_count", 1);
 
-        for (curr = g.branches; curr; curr = curr->next)
-            bwrite(fd, (genericptr_t) curr, sizeof(branch));
-
+        for (curr = g.branches; curr; curr = curr->next) {
+          if (nhfp->structlevel)
+              bwrite(nhfp->fd, (genericptr_t) curr, sizeof(branch));
+          if (nhfp->fieldlevel)
+              sfo_branch(nhfp, curr, "dungeon", "branch", 1);
+        }
         count = maxledgerno();
-        bwrite(fd, (genericptr_t) &count, sizeof count);
-        bwrite(fd, (genericptr_t) g.level_info,
-               (unsigned) count * sizeof(struct linfo));
-        bwrite(fd, (genericptr_t) &g.inv_pos, sizeof g.inv_pos);
-
+        if (nhfp->structlevel) { 
+            bwrite(nhfp->fd, (genericptr_t) &count, sizeof count);
+            bwrite(nhfp->fd, (genericptr_t) g.level_info,
+                   (unsigned) count * sizeof(struct linfo));
+            bwrite(nhfp->fd, (genericptr_t) &g.inv_pos, sizeof g.inv_pos);
+        }
+        if (nhfp->fieldlevel) {
+            sfo_int(nhfp, &count, "dungeon", "level_info_count", 1);
+            for (i = 0; i < count; ++i)
+                sfo_linfo(nhfp, &g.level_info[i], "dungeon", "g.level_info", 1);
+            sfo_nhcoord(nhfp, &g.inv_pos, "dungeon", "g.inv_pos", 1);
+        }
         for (count = 0, curr_ms = g.mapseenchn; curr_ms;
              curr_ms = curr_ms->next)
             count++;
-        bwrite(fd, (genericptr_t) &count, sizeof(count));
 
-        for (curr_ms = g.mapseenchn; curr_ms; curr_ms = curr_ms->next)
-            save_mapseen(fd, curr_ms);
+        if (nhfp->structlevel)
+            bwrite(nhfp->fd, (genericptr_t) &count, sizeof(count));
+        if (nhfp->fieldlevel)
+            sfo_int(nhfp, &count, "dungeon", "mapseen_count", 1);
+
+        for (curr_ms = g.mapseenchn; curr_ms; curr_ms = curr_ms->next) {
+            save_mapseen(nhfp, curr_ms);
+        }    
     }
 
     if (free_data) {
@@ -176,6 +205,8 @@ boolean perform_write, free_data;
             next_ms = curr_ms->next;
             if (curr_ms->custom)
                 free((genericptr_t) curr_ms->custom);
+            if (curr_ms->final_resting_place)
+                savecemetery(nhfp, &curr_ms->final_resting_place);
             free((genericptr_t) curr_ms);
         }
         g.mapseenchn = 0;
@@ -184,24 +215,40 @@ boolean perform_write, free_data;
 
 /* Restore the dungeon structures. */
 void
-restore_dungeon(fd)
-int fd;
+restore_dungeon(nhfp)
+NHFILE *nhfp;
 {
     branch *curr, *last;
     int count, i;
     mapseen *curr_ms, *last_ms;
 
-    mread(fd, (genericptr_t) &g.n_dgns, sizeof(g.n_dgns));
-    mread(fd, (genericptr_t) g.dungeons, sizeof(dungeon) * (unsigned) g.n_dgns);
-    mread(fd, (genericptr_t) &g.dungeon_topology, sizeof g.dungeon_topology);
-    mread(fd, (genericptr_t) g.tune, sizeof tune);
-
+    if (nhfp->structlevel) {
+        mread(nhfp->fd, (genericptr_t) &g.n_dgns, sizeof(g.n_dgns));
+        mread(nhfp->fd, (genericptr_t) g.dungeons, sizeof(dungeon) * (unsigned) g.n_dgns);
+        mread(nhfp->fd, (genericptr_t) &g.dungeon_topology, sizeof g.dungeon_topology);
+        mread(nhfp->fd, (genericptr_t) g.tune, sizeof tune);
+    }
+    if (nhfp->fieldlevel) {
+        sfi_int(nhfp, &g.n_dgns, "dungeon", "dungeon_count", 1);
+        for (i = 0; i < g.n_dgns; ++i)
+            sfi_dungeon(nhfp, &g.dungeons[i], "dungeon", "dungeon", 1);
+        sfi_dgn_topology(nhfp, &g.dungeon_topology, "dungeon", "g.dungeon_topology", 1);
+        for (i = 0; i < (int) sizeof tune; ++i)
+            sfi_char(nhfp, &g.tune[i], "dungeon", "tune", 1);
+    }
     last = g.branches = (branch *) 0;
 
-    mread(fd, (genericptr_t) &count, sizeof(count));
+    if (nhfp->structlevel)
+        mread(nhfp->fd, (genericptr_t) &count, sizeof(count));
+    if (nhfp->fieldlevel)
+        sfi_int(nhfp, &count, "dungeon", "branch_count", 1);
+
     for (i = 0; i < count; i++) {
         curr = (branch *) alloc(sizeof(branch));
-        mread(fd, (genericptr_t) curr, sizeof(branch));
+        if (nhfp->structlevel)
+            mread(nhfp->fd, (genericptr_t) curr, sizeof(branch));
+        if (nhfp->fieldlevel)
+            sfi_branch(nhfp, curr, "dungeon", "branch", 1);
         curr->next = (branch *) 0;
         if (last)
             last->next = curr;
@@ -210,18 +257,33 @@ int fd;
         last = curr;
     }
 
-    mread(fd, (genericptr_t) &count, sizeof(count));
+    if (nhfp->structlevel)
+        mread(nhfp->fd, (genericptr_t) &count, sizeof(count));
+    if (nhfp->fieldlevel)
+        sfi_int(nhfp, &count, "dungeon", "level_info_count", 1);
+
     if (count >= MAXLINFO)
         panic("level information count larger (%d) than allocated size",
               count);
-    mread(fd, (genericptr_t) g.level_info,
-          (unsigned) count * sizeof(struct linfo));
-    mread(fd, (genericptr_t) &g.inv_pos, sizeof g.inv_pos);
+    if (nhfp->structlevel)
+        mread(nhfp->fd, (genericptr_t) g.level_info,
+              (unsigned) count * sizeof(struct linfo));
+    if (nhfp->fieldlevel)
+        for (i = 0; i < count; ++i)
+            sfi_linfo(nhfp, &g.level_info[i], "dungeon", "g.level_info", 1);
 
-    mread(fd, (genericptr_t) &count, sizeof(count));
+    if (nhfp->structlevel) {
+        mread(nhfp->fd, (genericptr_t) &g.inv_pos, sizeof g.inv_pos);
+        mread(nhfp->fd, (genericptr_t) &count, sizeof(count));
+    }
+    if (nhfp->fieldlevel) {
+        sfi_nhcoord(nhfp, &g.inv_pos, "dungeon", "inv_pos", 1);
+        sfi_int(nhfp, &count, "dungeon", "mapseen_count", 1);
+    }
+
     last_ms = (mapseen *) 0;
     for (i = 0; i < count; i++) {
-        curr_ms = load_mapseen(fd);
+        curr_ms = load_mapseen(nhfp);
         curr_ms->next = (mapseen *) 0;
         if (last_ms)
             last_ms->next = curr_ms;
@@ -247,7 +309,7 @@ dlb *stream;
     }
 }
 
-STATIC_OVL xchar
+static xchar
 dname_to_dnum(s)
 const char *s;
 {
@@ -274,7 +336,7 @@ const char *s;
 }
 
 /* Find the branch that links the named dungeon. */
-STATIC_OVL int
+static int
 find_branch(s, pd)
 const char *s; /* dungeon name */
 struct proto_dungeon *pd;
@@ -307,7 +369,7 @@ struct proto_dungeon *pd;
  * Find the "parent" by searching the prototype branch list for the branch
  * listing, then figuring out to which dungeon it belongs.
  */
-STATIC_OVL xchar
+static xchar
 parent_dnum(s, pd)
 const char *s; /* dungeon name */
 struct proto_dungeon *pd;
@@ -339,7 +401,7 @@ struct proto_dungeon *pd;
  *       a negative random component means from the (adjusted) base to the
  *       end of the dungeon.
  */
-STATIC_OVL int
+static int
 level_range(dgn, base, randc, chain, pd, adjusted_base)
 xchar dgn;
 int base, randc, chain;
@@ -374,7 +436,7 @@ int *adjusted_base;
     return 1;
 }
 
-STATIC_OVL xchar
+static xchar
 parent_dlevel(s, pd)
 const char *s;
 struct proto_dungeon *pd;
@@ -401,7 +463,7 @@ struct proto_dungeon *pd;
 }
 
 /* Convert from the temporary branch type to the dungeon branch type. */
-STATIC_OVL int
+static int
 correct_branch_type(tbr)
 struct tmpbranch *tbr;
 {
@@ -475,7 +537,7 @@ boolean extract_first;
 }
 
 /* Add a dungeon branch to the branch list. */
-STATIC_OVL branch *
+static branch *
 add_branch(dgn, child_entry_level, pd)
 int dgn;
 int child_entry_level;
@@ -507,7 +569,7 @@ struct proto_dungeon *pd;
  * level that has a dungeon number less than the dungeon number of the
  * last entry.
  */
-STATIC_OVL void
+static void
 add_level(new_lev)
 s_level *new_lev;
 {
@@ -529,7 +591,7 @@ s_level *new_lev;
     }
 }
 
-STATIC_OVL void
+static void
 init_level(dgn, proto_index, pd)
 int dgn, proto_index;
 struct proto_dungeon *pd;
@@ -563,7 +625,7 @@ struct proto_dungeon *pd;
     new_level->next = (s_level *) 0;
 }
 
-STATIC_OVL int
+static int
 possible_places(idx, map, pd)
 int idx;      /* prototype index */
 boolean *map; /* array MAXLEVEL+1 in length */
@@ -595,7 +657,7 @@ struct proto_dungeon *pd;
 }
 
 /* Pick the nth TRUE entry in the given boolean array. */
-STATIC_OVL xchar
+static xchar
 pick_level(map, nth)
 boolean *map; /* an array MAXLEVEL+1 in size */
 int nth;
@@ -627,7 +689,7 @@ int d;
  * all possible places have been tried.  If all possible places have
  * been exhausted, return false.
  */
-STATIC_OVL boolean
+static boolean
 place_level(proto_index, pd)
 int proto_index;
 struct proto_dungeon *pd;
@@ -750,7 +812,7 @@ init_dungeons()
      */
     if (iflags.window_inited)
         clear_nhwindow(WIN_MAP);
-    if (!check_version(&vers_info, DUNGEON_FILE, TRUE))
+    if (!check_version(&vers_info, DUNGEON_FILE, TRUE, UTD_CHECKSIZES))
         panic("Dungeon description not valid.");
 
     /*
@@ -962,7 +1024,7 @@ init_dungeons()
         if (dunlevs_in_dungeon(&x->dlevel) > 1 - g.dungeons[i].depth_start)
             g.dungeons[i].depth_start -= 1;
         /* TODO: strip "dummy" out all the way here,
-           so that it's hidden from <ctrl/O> feedback. */
+           so that it's hidden from '#wizwhere' feedback. */
     }
 
 #ifdef DEBUG
@@ -1183,6 +1245,13 @@ void
 u_on_newpos(x, y)
 int x, y;
 {
+    if (!isok(x, y)) { /* validate location */
+        void VDECL((*func), (const char *, ...)) PRINTF_F(1, 2);
+
+        func = (x < 0 || y < 0 || x > COLNO - 1 || y > ROWNO - 1) ? panic
+               : impossible;
+        (*func)("u_on_newpos: trying to place hero off map <%d,%d>", x, y);
+    }
     u.ux = x;
     u.uy = y;
 #ifdef CLIPPING
@@ -1197,7 +1266,7 @@ int x, y;
         u.ux0 = u.ux, u.uy0 = u.uy;
 }
 
-/* place you on a random location */
+/* place you on a random location when arriving on a level */
 void
 u_on_rndspot(upflag)
 int upflag;
@@ -1225,6 +1294,9 @@ int upflag;
         place_lregion(g.dndest.lx, g.dndest.ly, g.dndest.hx, g.dndest.hy,
                       g.dndest.nlx, g.dndest.nly, g.dndest.nhx, g.dndest.nhy,
                       LR_DOWNTELE, (d_level *) 0);
+
+    /* might have just left solid rock and unblocked levitation */
+    switch_terrain();
 }
 
 /* place you on the special staircase */
@@ -1655,7 +1727,7 @@ const char *nam;
             *(eos(buf) - 6) = '\0';
         }
         /* hell is the old name, and wouldn't match; gehennom would match its
-           branch, yielding the castle level instead of the valley of the dead */
+           branch, yielding the castle level instead of valley of the dead */
         if (!strcmpi(nam, "gehennom") || !strcmpi(nam, "hell")) {
             if (In_V_tower(&u.uz))
                 nam = " to Vlad's tower"; /* branch to... */
@@ -1690,11 +1762,12 @@ const char *nam;
         if (idx >= 0) {
             idxtoo = (idx >> 8) & 0x00FF;
             idx &= 0x00FF;
-            if (/* either wizard mode, or else _both_ sides of branch seen */
-                wizard
-                || ((g.level_info[idx].flags & (FORGOTTEN | VISITED)) == VISITED
-                    && (g.level_info[idxtoo].flags & (FORGOTTEN | VISITED))
-                           == VISITED)) {
+            /* either wizard mode, or else _both_ sides of branch seen */
+            if (wizard
+                || (((g.level_info[idx].flags & (FORGOTTEN | VISITED))
+                     == VISITED)
+                    && ((g.level_info[idxtoo].flags & (FORGOTTEN | VISITED))
+                        == VISITED))) {
                 if (ledger_to_dnum(idxtoo) == u.uz.dnum)
                     idx = idxtoo;
                 dlev.dnum = ledger_to_dnum(idx);
@@ -1706,7 +1779,7 @@ const char *nam;
     return lev;
 }
 
-STATIC_OVL boolean
+static boolean
 unplaced_floater(dptr)
 struct dungeon *dptr;
 {
@@ -1722,7 +1795,7 @@ struct dungeon *dptr;
     return FALSE;
 }
 
-STATIC_OVL boolean
+static boolean
 unreachable_level(lvl_p, unplaced)
 d_level *lvl_p;
 boolean unplaced;
@@ -1773,7 +1846,7 @@ boolean unreachable;
 }
 
 /* Convert a branch type to a string usable by print_dungeon(). */
-STATIC_OVL const char *
+static const char *
 br_string(type)
 int type;
 {
@@ -1790,7 +1863,7 @@ int type;
     return " (unknown)";
 }
 
-STATIC_OVL char
+static char
 chr_u_on_lvl(dlev)
 d_level *dlev;
 {
@@ -1798,7 +1871,7 @@ d_level *dlev;
 }
 
 /* Print all child branches between the lower and upper bounds. */
-STATIC_OVL void
+static void
 print_branch(win, dnum, lower_bound, upper_bound, bymenu, lchoices_p)
 winid win;
 int dnum;
@@ -2083,7 +2156,7 @@ donamelevel()
 }
 
 /* find the particular mapseen object in the chain; may return null */
-STATIC_OVL mapseen *
+static mapseen *
 find_mapseen(lev)
 d_level *lev;
 {
@@ -2096,7 +2169,7 @@ d_level *lev;
     return mptr;
 }
 
-STATIC_OVL mapseen *
+static mapseen *
 find_mapseen_by_str(s)
 const char *s;
 {
@@ -2147,7 +2220,8 @@ int ledger_num;
     struct cemetery *bp, *bpnext;
 
     for (mptr = g.mapseenchn; mptr; mprev = mptr, mptr = mptr->next)
-        if (g.dungeons[mptr->lev.dnum].ledger_start + mptr->lev.dlevel == ledger_num)
+        if (g.dungeons[mptr->lev.dnum].ledger_start + mptr->lev.dlevel
+            == ledger_num)
             break;
 
     if (!mptr)
@@ -2172,59 +2246,107 @@ int ledger_num;
     }
 }
 
-STATIC_OVL void
-save_mapseen(fd, mptr)
-int fd;
+static void
+save_mapseen(nhfp, mptr)
+NHFILE *nhfp;
 mapseen *mptr;
 {
     branch *curr;
-    int brindx;
+    int i, brindx;
 
     for (brindx = 0, curr = g.branches; curr; curr = curr->next, ++brindx)
         if (curr == mptr->br)
             break;
-    bwrite(fd, (genericptr_t) &brindx, sizeof brindx);
+    if (nhfp->structlevel)
+        bwrite(nhfp->fd, (genericptr_t) &brindx, sizeof brindx);
+    if (nhfp->fieldlevel)
+        sfo_int(nhfp, &brindx, "mapseen", "branch_index", 1);
 
-    bwrite(fd, (genericptr_t) &mptr->lev, sizeof mptr->lev);
-    bwrite(fd, (genericptr_t) &mptr->feat, sizeof mptr->feat);
-    bwrite(fd, (genericptr_t) &mptr->flags, sizeof mptr->flags);
-    bwrite(fd, (genericptr_t) &mptr->custom_lth, sizeof mptr->custom_lth);
-    if (mptr->custom_lth)
-        bwrite(fd, (genericptr_t) mptr->custom, mptr->custom_lth);
-    bwrite(fd, (genericptr_t) &mptr->msrooms, sizeof mptr->msrooms);
-    savecemetery(fd, WRITE_SAVE, &mptr->final_resting_place);
+    if (nhfp->structlevel) {
+        bwrite(nhfp->fd, (genericptr_t) &mptr->lev, sizeof mptr->lev);
+        bwrite(nhfp->fd, (genericptr_t) &mptr->feat, sizeof mptr->feat);
+        bwrite(nhfp->fd, (genericptr_t) &mptr->flags, sizeof mptr->flags);
+        bwrite(nhfp->fd, (genericptr_t) &mptr->custom_lth, sizeof mptr->custom_lth);
+    }
+    if (nhfp->fieldlevel) {
+        sfo_d_level(nhfp, &mptr->lev, "mapseen", "d_level", 1);
+        sfo_mapseen_feat(nhfp, &mptr->feat, "mapseen", "feat", 1);
+        sfo_mapseen_flags(nhfp, &mptr->flags, "mapseen", "flags", 1);
+        sfo_unsigned(nhfp, &mptr->custom_lth, "mapseen", "custom_lth", 1);
+    }
+
+    if (mptr->custom_lth) {
+        if (nhfp->structlevel) {
+            bwrite(nhfp->fd, (genericptr_t) mptr->custom, mptr->custom_lth);
+        }
+        if (nhfp->fieldlevel) {
+            for (i = 0; i < (int) mptr->custom_lth; ++i)
+                sfo_char(nhfp, &mptr->custom[i], "mapseen", "custom", 1);
+        }
+    }
+    if (nhfp->structlevel) {
+        bwrite(nhfp->fd, (genericptr_t) &mptr->msrooms, sizeof mptr->msrooms);
+    }
+    if (nhfp->fieldlevel) {
+        for (i = 0; i < ((MAXNROFROOMS + 1) * 2); ++i)
+            sfo_mapseen_rooms(nhfp, &mptr->msrooms[i], "mapseen", "msrooms", 1);
+    }
+    savecemetery(nhfp, &mptr->final_resting_place);
 }
 
-STATIC_OVL mapseen *
-load_mapseen(fd)
-int fd;
+static mapseen *
+load_mapseen(nhfp)
+NHFILE *nhfp;
 {
-    int branchnum, brindx;
+    int i, branchnum, brindx;
     mapseen *load;
     branch *curr;
 
     load = (mapseen *) alloc(sizeof *load);
 
-    mread(fd, (genericptr_t) &branchnum, sizeof branchnum);
+    if (nhfp->structlevel)
+        mread(nhfp->fd, (genericptr_t) &branchnum, sizeof branchnum);
+    if (nhfp->fieldlevel)
+        sfi_int(nhfp, &branchnum, "mapseen", "branch_index", 1);
     for (brindx = 0, curr = g.branches; curr; curr = curr->next, ++brindx)
         if (brindx == branchnum)
             break;
     load->br = curr;
 
-    mread(fd, (genericptr_t) &load->lev, sizeof load->lev);
-    mread(fd, (genericptr_t) &load->feat, sizeof load->feat);
-    mread(fd, (genericptr_t) &load->flags, sizeof load->flags);
-    mread(fd, (genericptr_t) &load->custom_lth, sizeof load->custom_lth);
+    if (nhfp->structlevel) {
+        mread(nhfp->fd, (genericptr_t) &load->lev, sizeof load->lev);
+        mread(nhfp->fd, (genericptr_t) &load->feat, sizeof load->feat);
+        mread(nhfp->fd, (genericptr_t) &load->flags, sizeof load->flags);
+        mread(nhfp->fd, (genericptr_t) &load->custom_lth, sizeof load->custom_lth);
+    }
+    if (nhfp->fieldlevel) {
+        sfi_d_level(nhfp, &load->lev, "mapseen", "d_level", 1);
+        sfi_mapseen_feat(nhfp, &load->feat, "mapseen", "feat", 1);
+        sfi_mapseen_flags(nhfp, &load->flags, "mapseen", "flags", 1);
+        sfi_unsigned(nhfp, &load->custom_lth, "mapseen", "custom_lth", 1);
+    }
+
     if (load->custom_lth) {
         /* length doesn't include terminator (which isn't saved & restored) */
         load->custom = (char *) alloc(load->custom_lth + 1);
-        mread(fd, (genericptr_t) load->custom, load->custom_lth);
+        if (nhfp->structlevel) {
+            mread(nhfp->fd, (genericptr_t) load->custom, load->custom_lth);
+        }
+        if (nhfp->fieldlevel) {
+            for (i = 0; i < (int) load->custom_lth; ++i)
+                sfi_char(nhfp, &load->custom[i], "mapseen", "custom", 1);
+        }
         load->custom[load->custom_lth] = '\0';
     } else
         load->custom = 0;
-    mread(fd, (genericptr_t) &load->msrooms, sizeof load->msrooms);
-    restcemetery(fd, &load->final_resting_place);
-
+    if (nhfp->structlevel) {
+        mread(nhfp->fd, (genericptr_t) &load->msrooms, sizeof load->msrooms);
+    }
+    if (nhfp->fieldlevel) {
+        for (i = 0; i < ((MAXNROFROOMS + 1) * 2); ++i)
+            sfi_mapseen_rooms(nhfp, &load->msrooms[i], "mapseen", "msrooms", 1);
+    }
+    restcemetery(nhfp, &load->final_resting_place);
     return load;
 }
 
@@ -2346,7 +2468,7 @@ d_level *lev;
   /* || (feat).water || (feat).ice || (feat).lava */
 
 /* returns true if this level has something interesting to print out */
-STATIC_OVL boolean
+static boolean
 interest_mapseen(mptr)
 mapseen *mptr;
 {
@@ -2356,7 +2478,8 @@ mapseen *mptr;
         return FALSE;
     /* level is of interest if it has an auto-generated annotation */
     if (mptr->flags.oracle || mptr->flags.bigroom || mptr->flags.roguelevel
-        || mptr->flags.castle || mptr->flags.valley || mptr->flags.msanctum
+        || mptr->flags.castle || mptr->flags.valley
+        || mptr->flags.msanctum || mptr->flags.vibrating_square
         || mptr->flags.quest_summons || mptr->flags.questing)
         return TRUE;
     /* when in Sokoban, list all sokoban levels visited; when not in it,
@@ -2387,9 +2510,10 @@ mapseen *mptr;
 void
 recalc_mapseen()
 {
-    mapseen *mptr;
+    mapseen *mptr, *oth_mptr;
     struct monst *mtmp;
     struct cemetery *bp, **bonesaddr;
+    struct trap *t;
     unsigned i, ridx;
     int x, y, ltyp, count, atmp;
 
@@ -2430,7 +2554,7 @@ recalc_mapseen()
     mptr->flags.roguelevel = Is_rogue_level(&u.uz);
     mptr->flags.oracle = 0; /* recalculated during room traversal below */
     mptr->flags.castletune = 0;
-    /* flags.castle, flags.valley, flags.msanctum retain previous value */
+    /* flags.castle retains previous value */
     mptr->flags.forgot = 0;
     /* flags.quest_summons disabled once quest finished */
     mptr->flags.quest_summons = (at_dgn_entrance("The Quest")
@@ -2440,6 +2564,7 @@ recalc_mapseen()
                                       || g.quest_status.leader_is_dead));
     mptr->flags.questing = (on_level(&u.uz, &qstart_level)
                             && g.quest_status.got_quest);
+    /* flags.msanctum, .valley, and .vibrating_square handled below */
 
     /* track rooms the hero is in */
     for (i = 0; i < SIZE(u.urooms); ++i) {
@@ -2508,7 +2633,7 @@ recalc_mapseen()
                 if (ltyp == DRAWBRIDGE_UP)
                     ltyp = db_under_typ(levl[x][y].drawbridgemask);
                 if ((mtmp = m_at(x, y)) != 0
-                    && mtmp->m_ap_type == M_AP_FURNITURE && canseemon(mtmp))
+                    && M_AP_TYPE(mtmp) == M_AP_FURNITURE && canseemon(mtmp))
                     ltyp = cmap_to_type(mtmp->mappearance);
                 g.lastseentyp[x][y] = ltyp;
             }
@@ -2620,6 +2745,46 @@ recalc_mapseen()
         }
     }
 
+    /* Moloch's Sanctum and the Valley of the Dead are normally given an
+       automatic annotation when you enter a temple attended by a priest,
+       but it is possible for the priest to be killed prior to that; we
+       assume that both of those levels only contain one altar, so add the
+       annotation if that altar has been mapped (seen or magic mapping) */
+    if (Is_valley(&u.uz)) {
+        /* don't clear valley if naltar==0; maybe altar got destroyed? */
+        if (mptr->feat.naltar > 0)
+            mptr->flags.valley = 1;
+
+    /* Sanctum and Gateway-to-Sanctum are mutually exclusive automatic
+       annotations but handling that is tricky because they're stored
+       with data for different levels */
+    } else if (Is_sanctum(&u.uz)) {
+        if (mptr->feat.naltar > 0)
+            mptr->flags.msanctum = 1;
+
+        if (mptr->flags.msanctum) {
+            d_level invocat_lvl;
+
+            invocat_lvl = u.uz;
+            invocat_lvl.dlevel -= 1;
+            if ((oth_mptr = find_mapseen(&invocat_lvl)) != 0)
+                oth_mptr->flags.vibrating_square = 0;
+        }
+    } else if (Invocation_lev(&u.uz)) {
+        /* annotate vibrating square's level if vibr_sqr 'trap' has been
+           found or if that trap is gone (indicating that invocation has
+           happened) provided that the sanctum's annotation hasn't been
+           added (either hero hasn't descended to that level yet or hasn't
+           mapped its temple) */
+        for (t = g.ftrap; t; t = t->ntrap)
+            if (t->ttyp == VIBRATING_SQUARE)
+                break;
+        mptr->flags.vibrating_square = t ? t->tseen
+                      /* no trap implies that invocation has been performed */
+                             : ((oth_mptr = find_mapseen(&sanctum_level)) == 0
+                                || !oth_mptr->flags.msanctum);
+    }
+
     if (g.level.bonesinfo && !mptr->final_resting_place) {
         /* clone the bonesinfo so we aren't dependent upon this
            level being in memory */
@@ -2644,8 +2809,7 @@ recalc_mapseen()
 }
 
 /*ARGUSED*/
-/* valley and sanctum levels get automatic annotation once temple is entered
- */
+/* valley and sanctum levels get automatic annotation once temple is entered */
 void
 mapseen_temple(priest)
 struct monst *priest UNUSED; /* currently unused; might be useful someday */
@@ -2702,7 +2866,7 @@ int reason; /* how hero died; used when disclosing end-of-game level */
 }
 
 /* display endgame levels or non-endgame levels, not both */
-STATIC_OVL void
+static void
 traverse_mapseenchn(viewendgame, win, why, reason, lastdun_p)
 boolean viewendgame;
 winid win;
@@ -2724,7 +2888,7 @@ int why, reason, *lastdun_p;
     }
 }
 
-STATIC_OVL const char *
+static const char *
 seen_string(x, obj)
 xchar x;
 const char *obj;
@@ -2746,7 +2910,7 @@ const char *obj;
 }
 
 /* better br_string */
-STATIC_OVL const char *
+static const char *
 br_string2(br)
 branch *br;
 {
@@ -2801,7 +2965,7 @@ int indx;
     return outbuf;
 }
 
-STATIC_OVL const char *
+static const char *
 shop_string(rtype)
 int rtype;
 {
@@ -2853,7 +3017,7 @@ int rtype;
 
 /* if player knows about the mastermind tune, append it to Castle annotation;
    if drawbridge has been destroyed, flags.castletune will be zero */
-STATIC_OVL char *
+static char *
 tunesuffix(mptr, outbuf)
 mapseen *mptr;
 char *outbuf;
@@ -2894,7 +3058,7 @@ char *outbuf;
             Sprintf(eos(buf), "%s%s", COMMA, (nam)); \
     } while (0)
 
-STATIC_OVL void
+static void
 print_mapseen(win, mptr, final, how, printdun)
 winid win;
 mapseen *mptr;
@@ -3030,6 +3194,8 @@ boolean printdun;
         Sprintf(buf, "%sThe castle%s.", PREFIX, tunesuffix(mptr, tmpbuf));
     } else if (mptr->flags.valley) {
         Sprintf(buf, "%sValley of the Dead.", PREFIX);
+    } else if (mptr->flags.vibrating_square) {
+        Sprintf(buf, "%sGateway to Moloch's Sanctum.", PREFIX);
     } else if (mptr->flags.msanctum) {
         Sprintf(buf, "%sMoloch's Sanctum.", PREFIX);
     }

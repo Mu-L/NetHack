@@ -1,4 +1,4 @@
-/* NetHack 3.6	hack.h	$NHDT-Date: 1525012595 2018/04/29 14:36:35 $  $NHDT-Branch: master $:$NHDT-Revision: 1.82 $ */
+/* NetHack 3.6	hack.h	$NHDT-Date: 1559227823 2019/05/30 14:50:23 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.105 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2017. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -17,10 +17,7 @@
 #define OFF 0
 #define BOLT_LIM 8        /* from this distance ranged attacks will be made */
 #define MAX_CARR_CAP 1000 /* so that boulders can be heavier */
-#define DUMMY \
-    {         \
-        0     \
-    }
+#define DUMMY { 0 }       /* array initializer, letting [1..N-1] default */
 
 /* The UNDEFINED macros are used to initialize variables whose
    initialized value is not relied upon.
@@ -34,11 +31,11 @@
 /* symbolic names for capacity levels */
 enum encumbrance_types {
     UNENCUMBERED = 0,
-    SLT_ENCUMBER, /* Burdened */
-    MOD_ENCUMBER, /* Stressed */
-    HVY_ENCUMBER, /* Strained */
-    EXT_ENCUMBER, /* Overtaxed */
-    OVERLOADED    /* Overloaded */
+    SLT_ENCUMBER = 1, /* Burdened */
+    MOD_ENCUMBER = 2, /* Stressed */
+    HVY_ENCUMBER = 3, /* Strained */
+    EXT_ENCUMBER = 4, /* Overtaxed */
+    OVERLOADED   = 5  /* Overloaded */
 };
 
 /* weight increment of heavy iron ball */
@@ -55,13 +52,13 @@ enum encumbrance_types {
 
 /* hunger states - see hu_stat in eat.c */
 enum hunger_state_types {
-    SATIATED = 0,
-    NOT_HUNGRY,
-    HUNGRY,
-    WEAK,
-    FAINTING,
-    FAINTED,
-    STARVED
+    SATIATED   = 0,
+    NOT_HUNGRY = 1,
+    HUNGRY     = 2,
+    WEAK       = 3,
+    FAINTING   = 4,
+    FAINTED    = 5,
+    STARVED    = 6
 };
 
 /* Macros for how a rumor was delivered in outrumor() */
@@ -72,13 +69,13 @@ enum hunger_state_types {
 
 /* Macros for why you are no longer riding */
 enum dismount_types {
-    DISMOUNT_GENERIC = 0,
-    DISMOUNT_FELL,
-    DISMOUNT_THROWN,
-    DISMOUNT_POLY,
-    DISMOUNT_ENGULFED,
-    DISMOUNT_BONES,
-    DISMOUNT_BYCHOICE
+    DISMOUNT_GENERIC  = 0,
+    DISMOUNT_FELL     = 1,
+    DISMOUNT_THROWN   = 2,
+    DISMOUNT_POLY     = 3,
+    DISMOUNT_ENGULFED = 4,
+    DISMOUNT_BONES    = 5,
+    DISMOUNT_BYCHOICE = 6
 };
 
 /* Special returns from mapglyph() */
@@ -99,25 +96,25 @@ enum dismount_types {
 
 /* alteration types--keep in synch with costly_alteration(mkobj.c) */
 enum cost_alteration_types {
-    COST_CANCEL = 0,   /* standard cancellation */
-    COST_DRAIN,    /* drain life upon an object */
-    COST_UNCHRG,   /* cursed charging */
-    COST_UNBLSS,   /* unbless (devalues holy water) */
-    COST_UNCURS,   /* uncurse (devalues unholy water) */
-    COST_DECHNT,   /* disenchant weapons or armor */
-    COST_DEGRD,    /* removal of rustproofing, dulling via engraving */
-    COST_DILUTE,   /* potion dilution */
-    COST_ERASE,    /* scroll or spellbook blanking */
-    COST_BURN,     /* dipped into flaming oil */
-    COST_NUTRLZ,   /* neutralized via unicorn horn */
-    COST_DSTROY,   /* wand breaking (bill first, useup later) */
-    COST_SPLAT,    /* cream pie to own face (ditto) */
-    COST_BITE,     /* start eating food */
-    COST_OPEN,     /* open tin */
-    COST_BRKLCK,   /* break box/chest's lock */
-    COST_RUST,     /* rust damage */
-    COST_ROT,      /* rotting attack */
-    COST_CORRODE   /* acid damage */
+    COST_CANCEL  =  0, /* standard cancellation */
+    COST_DRAIN   =  1, /* drain life upon an object */
+    COST_UNCHRG  =  2, /* cursed charging */
+    COST_UNBLSS  =  3, /* unbless (devalues holy water) */
+    COST_UNCURS  =  4, /* uncurse (devalues unholy water) */
+    COST_DECHNT  =  5, /* disenchant weapons or armor */
+    COST_DEGRD   =  6, /* removal of rustproofing, dulling via engraving */
+    COST_DILUTE  =  7, /* potion dilution */
+    COST_ERASE   =  8, /* scroll or spellbook blanking */
+    COST_BURN    =  9, /* dipped into flaming oil */
+    COST_NUTRLZ  = 10, /* neutralized via unicorn horn */
+    COST_DSTROY  = 11, /* wand breaking (bill first, useup later) */
+    COST_SPLAT   = 12, /* cream pie to own face (ditto) */
+    COST_BITE    = 13, /* start eating food */
+    COST_OPEN    = 14, /* open tin */
+    COST_BRKLCK  = 15, /* break box/chest's lock */
+    COST_RUST    = 16, /* rust damage */
+    COST_ROT     = 17, /* rotting attack */
+    COST_CORRODE = 18 /* acid damage */
 };
 
 /* bitmask flags for corpse_xname();
@@ -132,9 +129,9 @@ enum cost_alteration_types {
 /* getpos() return values */
 enum getpos_retval {
     LOOK_TRADITIONAL = 0, /* '.' -- ask about "more info?" */
-    LOOK_QUICK,           /* ',' -- skip "more info?" */
-    LOOK_ONCE,            /* ';' -- skip and stop looping */
-    LOOK_VERBOSE          /* ':' -- show more info w/o asking */
+    LOOK_QUICK       = 1, /* ',' -- skip "more info?" */
+    LOOK_ONCE        = 2, /* ';' -- skip and stop looping */
+    LOOK_VERBOSE     = 3  /* ':' -- show more info w/o asking */
 };
 
 /*
@@ -143,22 +140,22 @@ enum getpos_retval {
  * code assume that PANIC separates the deaths from the non-deaths.
  */
 enum game_end_types {
-    DIED = 0,
-    CHOKING,
-    POISONING,
-    STARVING,
-    DROWNING,
-    BURNING,
-    DISSOLVED,
-    CRUSHING,
-    STONING,
-    TURNED_SLIME,
-    GENOCIDED,
-    PANICKED,
-    TRICKED,
-    QUIT,
-    ESCAPED,
-    ASCENDED
+    DIED         =  0,
+    CHOKING      =  1,
+    POISONING    =  2,
+    STARVING     =  3,
+    DROWNING     =  4,
+    BURNING      =  5,
+    DISSOLVED    =  6,
+    CRUSHING     =  7,
+    STONING      =  8,
+    TURNED_SLIME =  9,
+    GENOCIDED    = 10,
+    PANICKED     = 11,
+    TRICKED      = 12,
+    QUIT         = 13,
+    ESCAPED      = 14,
+    ASCENDED     = 15
 };
 
 typedef struct strbuf {
@@ -218,21 +215,28 @@ typedef struct {
 
 /* types of calls to bhit() */
 enum bhit_call_types {
-    ZAPPED_WAND = 0,
-    THROWN_WEAPON,
-    THROWN_TETHERED_WEAPON,
-    KICKED_WEAPON,
-    FLASHED_LIGHT,
-    INVIS_BEAM
+    ZAPPED_WAND   = 0,
+    THROWN_WEAPON = 1,
+    THROWN_TETHERED_WEAPON = 2,
+    KICKED_WEAPON = 3,
+    FLASHED_LIGHT = 4,
+    INVIS_BEAM    = 5
 };
 
 /* attack mode for hmon() */
 enum hmon_atkmode_types {
-    HMON_MELEE = 0, /* hand-to-hand */
-    HMON_THROWN,    /* normal ranged (or spitting while poly'd) */
-    HMON_KICKED,    /* alternate ranged */
-    HMON_APPLIED,   /* polearm, treated as ranged */
-    HMON_DRAGGED    /* attached iron ball, pulled into mon */
+    HMON_MELEE   = 0, /* hand-to-hand */
+    HMON_THROWN  = 1, /* normal ranged (or spitting while poly'd) */
+    HMON_KICKED  = 2, /* alternate ranged */
+    HMON_APPLIED = 3, /* polearm, treated as ranged */
+    HMON_DRAGGED = 4  /* attached iron ball, pulled into mon */
+};
+
+enum saveformats {
+    invalid = 0,
+    historical = 1,     /* entire struct, binary, as-is */
+    lendian = 2,        /* each field, binary, little-endian */
+    ascii = 3           /* each field, ascii text (just proof of concept) */
 };
 
 /* sortloot() return type; needed before extern.h */
@@ -278,24 +282,25 @@ typedef struct sortloot_item Loot;
 #include "extern.h"
 #endif /* USE_TRAMPOLI */
 
-/* flags to control makemon() */
+/* flags to control makemon(); goodpos() uses some plus has some of its own */
 #define NO_MM_FLAGS 0x00000 /* use this rather than plain 0 */
-#define NO_MINVENT 0x00001  /* suppress minvent when creating mon */
-#define MM_NOWAIT 0x00002   /* don't set STRAT_WAITMASK flags */
-#define MM_NOCOUNTBIRTH \
-    0x00004 /* don't increment born counter (for revival) */
-#define MM_IGNOREWATER 0x00008 /* ignore water when positioning */
-#define MM_ADJACENTOK \
-    0x00010               /* it is acceptable to use adjacent coordinates */
-#define MM_ANGRY  0x00020  /* monster is created angry */
-#define MM_NONAME 0x00040 /* monster is not christened */
-#define MM_EGD    0x00100    /* add egd structure */
-#define MM_EPRI   0x00200   /* add epri structure */
-#define MM_ESHK   0x00400   /* add eshk structure */
-#define MM_EMIN   0x00800   /* add emin structure */
-#define MM_EDOG   0x01000   /* add edog structure */
-#define MM_ASLEEP 0x02000   /* monsters should be generated asleep */
-#define MM_NOGRP  0x04000   /* suppress creation of monster groups */
+#define NO_MINVENT  0x00001 /* suppress minvent when creating mon */
+#define MM_NOWAIT   0x00002 /* don't set STRAT_WAITMASK flags */
+#define MM_NOCOUNTBIRTH 0x00004 /* don't increment born count (for revival) */
+#define MM_IGNOREWATER  0x00008 /* ignore water when positioning */
+#define MM_ADJACENTOK   0x00010 /* acceptable to use adjacent coordinates */
+#define MM_ANGRY    0x00020 /* monster is created angry */
+#define MM_NONAME   0x00040 /* monster is not christened */
+#define MM_EGD      0x00100 /* add egd structure */
+#define MM_EPRI     0x00200 /* add epri structure */
+#define MM_ESHK     0x00400 /* add eshk structure */
+#define MM_EMIN     0x00800 /* add emin structure */
+#define MM_EDOG     0x01000 /* add edog structure */
+#define MM_ASLEEP   0x02000 /* monsters should be generated asleep */
+#define MM_NOGRP    0x04000 /* suppress creation of monster groups */
+/* if more MM_ flag masks are added, skip or renumber the GP_ one(s) */
+#define GP_ALLOW_XY 0x08000 /* [actually used by enexto() to decide whether
+                             * to make an extra call to goodpos()]          */
 
 /* flags for make_corpse() and mkcorpstat() */
 #define CORPSTAT_NONE 0x00
@@ -327,27 +332,27 @@ typedef struct sortloot_item Loot;
 #define ALL_FINISHED 0x01 /* called routine already finished the job */
 
 /* flags to control query_objlist() */
-#define BY_NEXTHERE 0x1       /* follow objlist by nexthere field */
-#define AUTOSELECT_SINGLE 0x2 /* if only 1 object, don't ask */
-#define USE_INVLET 0x4        /* use object's invlet */
-#define INVORDER_SORT 0x8     /* sort objects by packorder */
-#define SIGNAL_NOMENU 0x10    /* return -1 rather than 0 if none allowed */
-#define SIGNAL_ESCAPE 0x20    /* return -2 rather than 0 for ESC */
-#define FEEL_COCKATRICE 0x40  /* engage cockatrice checks and react */
-#define INCLUDE_HERO 0x80     /* show hero among engulfer's inventory */
+#define BY_NEXTHERE     0x01   /* follow objlist by nexthere field */
+#define AUTOSELECT_SINGLE 0x02 /* if only 1 object, don't ask */
+#define USE_INVLET      0x04   /* use object's invlet */
+#define INVORDER_SORT   0x08   /* sort objects by packorder */
+#define SIGNAL_NOMENU   0x10   /* return -1 rather than 0 if none allowed */
+#define SIGNAL_ESCAPE   0x20   /* return -2 rather than 0 for ESC */
+#define FEEL_COCKATRICE 0x40   /* engage cockatrice checks and react */
+#define INCLUDE_HERO    0x80   /* show hero among engulfer's inventory */
 
 /* Flags to control query_category() */
 /* BY_NEXTHERE used by query_category() too, so skip 0x01 */
-#define UNPAID_TYPES 0x02
-#define GOLD_TYPES 0x04
-#define WORN_TYPES 0x08
-#define ALL_TYPES 0x10
-#define BILLED_TYPES 0x20
-#define CHOOSE_ALL 0x40
-#define BUC_BLESSED 0x80
-#define BUC_CURSED 0x100
+#define UNPAID_TYPES 0x002
+#define GOLD_TYPES   0x004
+#define WORN_TYPES   0x008
+#define ALL_TYPES    0x010
+#define BILLED_TYPES 0x020
+#define CHOOSE_ALL   0x040
+#define BUC_BLESSED  0x080
+#define BUC_CURSED   0x100
 #define BUC_UNCURSED 0x200
-#define BUC_UNKNOWN 0x400
+#define BUC_UNKNOWN  0x400
 #define BUC_ALLBKNOWN (BUC_BLESSED | BUC_CURSED | BUC_UNCURSED)
 #define BUCX_TYPES (BUC_ALLBKNOWN | BUC_UNKNOWN)
 #define ALL_TYPES_SELECTED -2
@@ -401,14 +406,14 @@ typedef struct sortloot_item Loot;
 
 /* Macros for explosion types */
 enum explosion_types {
-    EXPL_DARK = 0,
-    EXPL_NOXIOUS,
-    EXPL_MUDDY,
-    EXPL_WET,
-    EXPL_MAGICAL,
-    EXPL_FIERY,
-    EXPL_FROSTY,
-    EXPL_MAX
+    EXPL_DARK    = 0,
+    EXPL_NOXIOUS = 1,
+    EXPL_MUDDY   = 2,
+    EXPL_WET     = 3,
+    EXPL_MAGICAL = 4,
+    EXPL_FIERY   = 5,
+    EXPL_FROSTY  = 6,
+    EXPL_MAX     = 7
 };
 
 /* enlightenment control flags */
@@ -436,28 +441,29 @@ enum explosion_types {
 #define PLINE_NOREPEAT   1
 #define OVERRIDE_MSGTYPE 2
 #define SUPPRESS_HISTORY 4
+#define URGENT_MESSAGE   8
 
 /* Macros for messages referring to hands, eyes, feet, etc... */
 enum bodypart_types {
-    ARM = 0,
-    EYE,
-    FACE,
-    FINGER,
-    FINGERTIP,
-    FOOT,
-    HAND,
-    HANDED,
-    HEAD,
-    LEG,
-    LIGHT_HEADED,
-    NECK,
-    SPINE,
-    TOE,
-    HAIR,
-    BLOOD,
-    LUNG,
-    NOSE,
-    STOMACH
+    ARM       =  0,
+    EYE       =  1,
+    FACE      =  2,
+    FINGER    =  3,
+    FINGERTIP =  4,
+    FOOT      =  5,
+    HAND      =  6,
+    HANDED    =  7,
+    HEAD      =  8,
+    LEG       =  9,
+    LIGHT_HEADED = 10,
+    NECK      = 11,
+    SPINE     = 12,
+    TOE       = 13,
+    HAIR      = 14,
+    BLOOD     = 15,
+    LUNG      = 16,
+    NOSE      = 17,
+    STOMACH   = 18
 };
 
 /* indices for some special tin types */
@@ -471,6 +477,7 @@ enum bodypart_types {
 #define POTION_OCCUPANT_CHANCE(n) (13 + 2 * (n))
 #define WAND_BACKFIRE_CHANCE 100
 #define BALL_IN_MON (u.uswallow && uball && uball->where == OBJ_FREE)
+#define CHAIN_IN_MON (u.uswallow && uchain && uchain->where == OBJ_FREE)
 #define NODIAG(monnum) ((monnum) == PM_GRID_BUG)
 
 /* Flags to control menus */
@@ -533,27 +540,6 @@ enum bodypart_types {
 #define getuid() 1
 #define getlogin() ((char *) 0)
 #endif /* MICRO */
-
-#if defined(OVERLAY)
-#define USE_OVLx
-#define STATIC_DCL extern
-#define STATIC_OVL
-#define STATIC_VAR
-
-#else /* !OVERLAY */
-
-#define STATIC_DCL static
-#define STATIC_OVL static
-#define STATIC_VAR static
-
-#endif /* OVERLAY */
-
-/* Macro for a few items that are only static if we're not overlaid.... */
-#if defined(USE_TRAMPOLI) || defined(USE_OVLx)
-#define STATIC_PTR
-#else
-#define STATIC_PTR static
-#endif
 
 /* The function argument to qsort() requires a particular
  * calling convention under WINCE which is not the default

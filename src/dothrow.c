@@ -1,4 +1,4 @@
-/* NetHack 3.6	dothrow.c	$NHDT-Date: 1545597420 2018/12/23 20:37:00 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.155 $ */
+/* NetHack 3.6	dothrow.c	$NHDT-Date: 1569276989 2019/09/23 22:16:29 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.161 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2013. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -7,18 +7,18 @@
 
 #include "hack.h"
 
-STATIC_DCL int FDECL(throw_obj, (struct obj *, int));
-STATIC_DCL boolean FDECL(ok_to_throw, (int *));
-STATIC_DCL void NDECL(autoquiver);
-STATIC_DCL int FDECL(gem_accept, (struct monst *, struct obj *));
-STATIC_DCL void FDECL(tmiss, (struct obj *, struct monst *, BOOLEAN_P));
-STATIC_DCL int FDECL(throw_gold, (struct obj *));
-STATIC_DCL void FDECL(check_shop_obj, (struct obj *, XCHAR_P, XCHAR_P,
+static int FDECL(throw_obj, (struct obj *, int));
+static boolean FDECL(ok_to_throw, (int *));
+static void NDECL(autoquiver);
+static int FDECL(gem_accept, (struct monst *, struct obj *));
+static void FDECL(tmiss, (struct obj *, struct monst *, BOOLEAN_P));
+static int FDECL(throw_gold, (struct obj *));
+static void FDECL(check_shop_obj, (struct obj *, XCHAR_P, XCHAR_P,
                                        BOOLEAN_P));
-STATIC_DCL void FDECL(breakmsg, (struct obj *, BOOLEAN_P));
-STATIC_DCL boolean FDECL(toss_up, (struct obj *, BOOLEAN_P));
-STATIC_DCL void FDECL(sho_obj_return_to_u, (struct obj * obj));
-STATIC_DCL boolean FDECL(mhurtle_step, (genericptr_t, int, int));
+static void FDECL(breakmsg, (struct obj *, BOOLEAN_P));
+static boolean FDECL(toss_up, (struct obj *, BOOLEAN_P));
+static void FDECL(sho_obj_return_to_u, (struct obj * obj));
+static boolean FDECL(mhurtle_step, (genericptr_t, int, int));
 
 static NEARDATA const char toss_objs[] = { ALLOW_COUNT, COIN_CLASS,
                                            ALL_CLASSES, WEAPON_CLASS, 0 };
@@ -29,7 +29,7 @@ static NEARDATA const char bullets[] = { ALLOW_COUNT, COIN_CLASS, ALL_CLASSES,
 /* g.thrownobj (decl.c) tracks an object until it lands */
 
 /* Throw the selected object, asking for direction */
-STATIC_OVL int
+static int
 throw_obj(obj, shotlimit)
 struct obj *obj;
 int shotlimit;
@@ -232,7 +232,7 @@ int shotlimit;
 }
 
 /* common to dothrow() and dofire() */
-STATIC_OVL boolean
+static boolean
 ok_to_throw(shotlimit_p)
 int *shotlimit_p; /* (see dothrow()) */
 {
@@ -380,8 +380,12 @@ dofire()
                 You("have nothing appropriate for your quiver.");
         }
         /* if autoquiver is disabled or has failed, prompt for missile;
-           fill quiver with it if it's not wielded */
+           fill quiver with it if it's not wielded or worn */
         if (!obj) {
+            /* in case we're using ^A to repeat prior 'f' command, don't
+               use direction of previous throw as getobj()'s choice here */
+            g.in_doagain = 0;
+            /* choose something from inventory, then usually quiver it */
             obj = getobj(uslinging() ? bullets : toss_objs, "throw");
             /* Q command doesn't allow gold in quiver */
             if (obj && !obj->owornmask && obj->oclass != COIN_CLASS)
@@ -725,12 +729,11 @@ int x, y;
     }
 
     /* FIXME:
-     * Each trap should really trigger on the recoil if
-     * it would trigger during normal movement. However,
-     * not all the possible side-effects of this are
-     * tested [as of 3.4.0] so we trigger those that
-     * we have tested, and offer a message for the
-     * ones that we have not yet tested.
+     * Each trap should really trigger on the recoil if it would
+     * trigger during normal movement. However, not all the possible
+     * side-effects of this are tested [as of 3.4.0] so we trigger
+     * those that we have tested, and offer a message for the ones
+     * that we have not yet tested.
      */
     if ((ttmp = t_at(x, y)) != 0) {
         if (stopping_short) {
@@ -764,7 +767,7 @@ int x, y;
     return TRUE;
 }
 
-STATIC_OVL boolean
+static boolean
 mhurtle_step(arg, x, y)
 genericptr_t arg;
 int x, y;
@@ -885,7 +888,7 @@ int dx, dy, range;
     return;
 }
 
-STATIC_OVL void
+static void
 check_shop_obj(obj, x, y, broken)
 struct obj *obj;
 xchar x, y;
@@ -924,7 +927,7 @@ boolean broken;
  *
  * Returns FALSE if the object is gone.
  */
-STATIC_OVL boolean
+static boolean
 toss_up(obj, hitsroof)
 struct obj *obj;
 boolean hitsroof;
@@ -1035,7 +1038,7 @@ boolean hitsroof;
         } else if (petrifier && !Stone_resistance
                    && !(poly_when_stoned(g.youmonst.data)
                         && polymon(PM_STONE_GOLEM))) {
-        petrify:
+ petrify:
             g.killer.format = KILLED_BY;
             Strcpy(g.killer.name, "elementary physics"); /* "what goes up..." */
             You("turn to stone.");
@@ -1066,7 +1069,7 @@ struct obj *obj;
 }
 
 /* the currently thrown object is returning to you (not for boomerangs) */
-STATIC_OVL void
+static void
 sho_obj_return_to_u(obj)
 struct obj *obj;
 {
@@ -1074,7 +1077,7 @@ struct obj *obj;
     if ((u.dx || u.dy) && (g.bhitpos.x != u.ux || g.bhitpos.y != u.uy)) {
         int x = g.bhitpos.x - u.dx, y = g.bhitpos.y - u.dy;
 
-        tmp_at(DISP_FLASH, obj_to_glyph(obj));
+        tmp_at(DISP_FLASH, obj_to_glyph(obj, rn2_on_display_rng));
         while (isok(x,y) && (x != u.ux || y != u.uy)) {
             tmp_at(x, y);
             delay_output();
@@ -1093,18 +1096,19 @@ long wep_mask; /* used to re-equip returning boomerang */
 boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
 {
     register struct monst *mon;
-    register int range, urange;
-    boolean crossbowing, impaired = (Confusion || Stunned || Blind
-                                     || Hallucination || Fumbling);
-    boolean tethered_weapon = (obj->otyp == AKLYS && (wep_mask & W_WEP) != 0);
+    int range, urange;
+    boolean crossbowing, clear_thrownobj = FALSE,
+            impaired = (Confusion || Stunned || Blind
+                        || Hallucination || Fumbling),
+            tethered_weapon = (obj->otyp == AKLYS && (wep_mask & W_WEP) != 0);
 
     g.notonhead = FALSE; /* reset potentially stale value */
     if ((obj->cursed || obj->greased) && (u.dx || u.dy) && !rn2(7)) {
         boolean slipok = TRUE;
 
-        if (ammo_and_launcher(obj, uwep))
+        if (ammo_and_launcher(obj, uwep)) {
             pline("%s!", Tobjnam(obj, "misfire"));
-        else {
+        } else {
             /* only slip if it's greased or meant to be thrown */
             if (obj->greased || throwing_weapon(obj))
                 /* BUG: this message is grammatically incorrect if obj has
@@ -1137,18 +1141,24 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
 
     g.thrownobj = obj;
     g.thrownobj->was_thrown = 1;
+    iflags.returning_missile = ((obj->oartifact == ART_MJOLLNIR
+                                 && Role_if(PM_VALKYRIE))
+                                || tethered_weapon) ? (genericptr_t) obj
+                                                    : (genericptr_t) 0;
+    /* NOTE:  No early returns after this point or returning_missile
+       will be left with a stale pointer. */
 
     if (u.uswallow) {
         mon = u.ustuck;
         g.bhitpos.x = mon->mx;
         g.bhitpos.y = mon->my;
         if (tethered_weapon)
-            tmp_at(DISP_TETHER, obj_to_glyph(obj));
+            tmp_at(DISP_TETHER, obj_to_glyph(obj, rn2_on_display_rng));
     } else if (u.dz) {
         if (u.dz < 0
             /* Mjollnir must we wielded to be thrown--caller verifies this;
                aklys must we wielded as primary to return when thrown */
-            && ((Role_if(PM_VALKYRIE) && obj->oartifact == ART_MJOLLNIR) || tethered_weapon)
+            && iflags.returning_missile
             && !impaired) {
             pline("%s the %s and returns to your hand!", Tobjnam(obj, "hit"),
                   ceiling(u.ux, u.uy));
@@ -1168,8 +1178,8 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
         } else {
             hitfloor(obj, TRUE);
         }
-        g.thrownobj = (struct obj *) 0;
-        return;
+        clear_thrownobj = TRUE;
+        goto throwit_return;
 
     } else if (obj->otyp == BOOMERANG && !Underwater) {
         if (Is_airlevel(&u.uz) || Levitation)
@@ -1183,13 +1193,13 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
                 setworn(obj, wep_mask);
                 u.twoweap = twoweap;
             }
-            g.thrownobj = (struct obj *) 0;
-            return;
+            clear_thrownobj = TRUE;
+            goto throwit_return;
         }
     } else {
         /* crossbow range is independent of strength */
-        crossbowing =
-            (ammo_and_launcher(obj, uwep) && weapon_type(uwep) == P_CROSSBOW);
+        crossbowing = (ammo_and_launcher(obj, uwep)
+                       && weapon_type(uwep) == P_CROSSBOW);
         urange = (crossbowing ? 18 : (int) ACURRSTR) / 2;
         /* balls are easy to throw or at least roll;
          * also, this insures the maximum range of a ball is greater
@@ -1259,7 +1269,7 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
                we're about to return */
             if (tethered_weapon)
                 tmp_at(DISP_END, 0);
-            return;
+            goto throwit_return;
         }
     }
 
@@ -1267,8 +1277,8 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
         boolean obj_gone;
 
         if (mon->isshk && obj->where == OBJ_MINVENT && obj->ocarry == mon) {
-            g.thrownobj = (struct obj *) 0;
-            return; /* alert shk caught it */
+            clear_thrownobj = TRUE;
+            goto throwit_return; /* alert shk caught it */
         }
         (void) snuff_candle(obj);
         g.notonhead = (g.bhitpos.x != mon->mx || g.bhitpos.y != mon->my);
@@ -1283,33 +1293,24 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
             hot_pursuit(mon);
 
         if (obj_gone)
-            g.thrownobj = 0;
+            g.thrownobj = (struct obj *) 0;
     }
 
     if (!g.thrownobj) {
         /* missile has already been handled */
-        if (tethered_weapon) tmp_at(DISP_END, 0);
-    } else if (u.uswallow) {
-        if (tethered_weapon) {
+        if (tethered_weapon)
             tmp_at(DISP_END, 0);
-            pline("%s returns to your hand!", The(xname(g.thrownobj)));
-            g.thrownobj = addinv(g.thrownobj);
-            (void) encumber_msg();
-            /* in case addinv() autoquivered */
-            if (g.thrownobj->owornmask & W_QUIVER)
-                setuqwep((struct obj *) 0);
-            setuwep(g.thrownobj);
-        } else {
-            /* ball is not picked up by monster */
-            if (obj != uball)
-                (void) mpickobj(u.ustuck, obj);
-            g.thrownobj = (struct obj *) 0;
-        }
+    } else if (u.uswallow && !iflags.returning_missile) {
+ swallowit:
+        if (obj != uball)
+            (void) mpickobj(u.ustuck, obj); /* clears 'g.thrownobj' */
+        else
+            clear_thrownobj = TRUE;
+        goto throwit_return;
     } else {
         /* Mjollnir must we wielded to be thrown--caller verifies this;
            aklys must we wielded as primary to return when thrown */
-        if ((obj->oartifact == ART_MJOLLNIR && Role_if(PM_VALKYRIE))
-            || tethered_weapon) {
+        if (iflags.returning_missile) { /* Mjollnir or aklys */
             if (rn2(100)) {
                 if (tethered_weapon)
                     tmp_at(DISP_END, BACKTRACK);
@@ -1349,16 +1350,17 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
                         losehp(Maybe_Half_Phys(dmg), killer_xname(obj),
                                KILLED_BY);
                     }
-                    if (ship_object(obj, u.ux, u.uy, FALSE)) {
-                        g.thrownobj = (struct obj *) 0;
-                        return;
-                    }
-                    dropy(obj);
+
+                    if (u.uswallow)
+                        goto swallowit;
+                    if (!ship_object(obj, u.ux, u.uy, FALSE))
+                        dropy(obj);
                 }
-                g.thrownobj = (struct obj *) 0;
-                return;
+                clear_thrownobj = TRUE;
+                goto throwit_return;
             } else {
-                if (tethered_weapon) tmp_at(DISP_END, 0);
+                if (tethered_weapon)
+                    tmp_at(DISP_END, 0);
                 /* when this location is stepped on, the weapon will be
                    auto-picked up due to 'obj->was_thrown' of 1;
                    addinv() prevents thrown Mjollnir from being placed
@@ -1367,23 +1369,29 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
                    explicitly rewield the weapon to get throw-and-return
                    capability back anyway, quivered or not shouldn't matter */
                 pline("%s to return!", Tobjnam(obj, "fail"));
+
+                if (u.uswallow)
+                    goto swallowit;
                 /* continue below with placing 'obj' at target location */
             }
         }
 
-        if (!IS_SOFT(levl[g.bhitpos.x][g.bhitpos.y].typ) && breaktest(obj)) {
-            tmp_at(DISP_FLASH, obj_to_glyph(obj));
+        if ((!IS_SOFT(levl[g.bhitpos.x][g.bhitpos.y].typ) && breaktest(obj))
+            /* venom [via #monster to spit while poly'd] fails breaktest()
+               but we want to force breakage even when location IS_SOFT() */
+            || obj->oclass == VENOM_CLASS) {
+            tmp_at(DISP_FLASH, obj_to_glyph(obj, rn2_on_display_rng));
             tmp_at(g.bhitpos.x, g.bhitpos.y);
             delay_output();
             tmp_at(DISP_END, 0);
             breakmsg(obj, cansee(g.bhitpos.x, g.bhitpos.y));
             breakobj(obj, g.bhitpos.x, g.bhitpos.y, TRUE, TRUE);
-            g.thrownobj = (struct obj *) 0;
-            return;
+            clear_thrownobj = TRUE;
+            goto throwit_return;
         }
         if (flooreffects(obj, g.bhitpos.x, g.bhitpos.y, "fall")) {
-            g.thrownobj = (struct obj *) 0;
-            return;
+            clear_thrownobj = TRUE;
+            goto throwit_return;
         }
         obj_no_longer_held(obj);
         if (mon && mon->isshk && is_pick(obj)) {
@@ -1392,13 +1400,13 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
             if (*u.ushops || obj->unpaid)
                 check_shop_obj(obj, g.bhitpos.x, g.bhitpos.y, FALSE);
             (void) mpickobj(mon, obj); /* may merge and free obj */
-            g.thrownobj = (struct obj *) 0;
-            return;
+            clear_thrownobj = TRUE;
+            goto throwit_return;
         }
         (void) snuff_candle(obj);
         if (!mon && ship_object(obj, g.bhitpos.x, g.bhitpos.y, FALSE)) {
-            g.thrownobj = (struct obj *) 0;
-            return;
+            clear_thrownobj = TRUE;
+            goto throwit_return;
         }
         g.thrownobj = (struct obj *) 0;
         place_object(obj, g.bhitpos.x, g.bhitpos.y);
@@ -1421,10 +1429,15 @@ boolean twoweap; /* used to restore twoweapon mode if wielded weapon returns */
         if (obj_sheds_light(obj))
             g.vision_full_recalc = 1;
     }
+
+ throwit_return:
+    iflags.returning_missile = (genericptr_t) 0;
+    if (clear_thrownobj)
+        g.thrownobj = (struct obj *) 0;
+    return;
 }
 
-/* an object may hit a monster; various factors adjust the chance of hitting
- */
+/* an object may hit a monster; various factors adjust chance of hitting */
 int
 omon_adj(mon, obj, mon_notices)
 struct monst *mon;
@@ -1468,7 +1481,7 @@ boolean mon_notices;
 }
 
 /* thrown object misses target monster */
-STATIC_OVL void
+static void
 tmiss(obj, mon, maybe_wakeup)
 struct obj *obj;
 struct monst *mon;
@@ -1481,7 +1494,7 @@ boolean maybe_wakeup;
        An attentive player will still notice that this is different from
        an arrow just landing short of any target (no message in that case),
        so will realize that there is a valid target here anyway. */
-    if (!canseemon(mon) || (mon->m_ap_type && mon->m_ap_type != M_AP_MONSTER))
+    if (!canseemon(mon) || (M_AP_TYPE(mon) && M_AP_TYPE(mon) != M_AP_MONSTER))
         pline("%s %s.", The(missile), otense(obj, "miss"));
     else
         miss(missile, mon);
@@ -1523,7 +1536,7 @@ register struct obj *obj; /* g.thrownobj or g.kickedobj or uwep */
      * No bonuses for fleeing or stunned targets (they don't dodge
      *    melee blows as readily, but dodging arrows is hard anyway).
      * Not affected by traps, etc.
-     * Certain items which don't in themselves do damage ignore tmp.
+     * Certain items which don't in themselves do damage ignore 'tmp'.
      * Distance and monster size affect chance to hit.
      */
     tmp = -1 + Luck + find_mac(mon) + u.uhitinc
@@ -1779,7 +1792,7 @@ register struct obj *obj; /* g.thrownobj or g.kickedobj or uwep */
     return 0;
 }
 
-STATIC_OVL int
+static int
 gem_accept(mon, obj)
 register struct monst *mon;
 register struct obj *obj;
@@ -1846,7 +1859,7 @@ register struct obj *obj;
     (void) mpickobj(mon, obj); /* may merge and free obj */
     ret = 1;
 
-nopick:
+ nopick:
     if (!Blind)
         pline1(buf);
     if (!tele_restrict(mon))
@@ -1893,6 +1906,7 @@ xchar x, y;          /* object location (ox, oy may not be right) */
 boolean from_invent; /* thrown or dropped by player; maybe on shop bill */
 {
     boolean in_view = Blind ? FALSE : (from_invent || cansee(x, y));
+
     if (!breaktest(obj))
         return 0;
     breakmsg(obj, in_view);
@@ -2053,7 +2067,7 @@ struct obj *obj;
     }
 }
 
-STATIC_OVL void
+static void
 breakmsg(obj, in_view)
 struct obj *obj;
 boolean in_view;
@@ -2095,7 +2109,7 @@ boolean in_view;
     }
 }
 
-STATIC_OVL int
+static int
 throw_gold(obj)
 struct obj *obj;
 {

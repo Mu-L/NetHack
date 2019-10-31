@@ -1,4 +1,4 @@
-/* NetHack 3.6	mklev.c	$NHDT-Date: 1511681724 2017/11/26 07:35:24 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.47 $ */
+/* NetHack 3.6	mklev.c	$NHDT-Date: 1562455089 2019/07/06 23:18:09 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.63 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Alex Smith, 2017. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -9,31 +9,31 @@
 /* croom->lx etc are schar (width <= int), so % arith ensures that */
 /* conversion of result to int is reasonable */
 
-STATIC_DCL void FDECL(mkfount, (int, struct mkroom *));
-STATIC_DCL void FDECL(mksink, (struct mkroom *));
-STATIC_DCL void FDECL(mkaltar, (struct mkroom *));
-STATIC_DCL void FDECL(mkgrave, (struct mkroom *));
-STATIC_DCL void NDECL(makevtele);
-STATIC_DCL void NDECL(clear_level_structures);
-STATIC_DCL void NDECL(makelevel);
-STATIC_DCL boolean FDECL(bydoor, (XCHAR_P, XCHAR_P));
-STATIC_DCL struct mkroom *FDECL(find_branch_room, (coord *));
-STATIC_DCL struct mkroom *FDECL(pos_to_room, (XCHAR_P, XCHAR_P));
-STATIC_DCL boolean FDECL(place_niche, (struct mkroom *, int *, int *, int *));
-STATIC_DCL void FDECL(makeniche, (int));
-STATIC_DCL void NDECL(make_niches);
-STATIC_PTR int FDECL(CFDECLSPEC do_comp, (const genericptr,
+static void FDECL(mkfount, (int, struct mkroom *));
+static void FDECL(mksink, (struct mkroom *));
+static void FDECL(mkaltar, (struct mkroom *));
+static void FDECL(mkgrave, (struct mkroom *));
+static void NDECL(makevtele);
+static void NDECL(clear_level_structures);
+static void NDECL(makelevel);
+static boolean FDECL(bydoor, (XCHAR_P, XCHAR_P));
+static struct mkroom *FDECL(find_branch_room, (coord *));
+static struct mkroom *FDECL(pos_to_room, (XCHAR_P, XCHAR_P));
+static boolean FDECL(place_niche, (struct mkroom *, int *, int *, int *));
+static void FDECL(makeniche, (int));
+static void NDECL(make_niches);
+static int FDECL(CFDECLSPEC do_comp, (const genericptr,
                                           const genericptr));
-STATIC_DCL void FDECL(dosdoor, (XCHAR_P, XCHAR_P, struct mkroom *, int));
-STATIC_DCL void FDECL(join, (int, int, BOOLEAN_P));
-STATIC_DCL void FDECL(do_room_or_subroom, (struct mkroom *, int, int,
+static void FDECL(dosdoor, (XCHAR_P, XCHAR_P, struct mkroom *, int));
+static void FDECL(join, (int, int, BOOLEAN_P));
+static void FDECL(do_room_or_subroom, (struct mkroom *, int, int,
                                            int, int, BOOLEAN_P,
                                            SCHAR_P, BOOLEAN_P, BOOLEAN_P));
-STATIC_DCL void NDECL(makerooms);
-STATIC_DCL void FDECL(finddpos, (coord *, XCHAR_P, XCHAR_P,
+static void NDECL(makerooms);
+static void FDECL(finddpos, (coord *, XCHAR_P, XCHAR_P,
                                  XCHAR_P, XCHAR_P));
-STATIC_DCL void FDECL(mkinvpos, (XCHAR_P, XCHAR_P, int));
-STATIC_DCL void FDECL(mk_knox_portal, (XCHAR_P, XCHAR_P));
+static void FDECL(mkinvpos, (XCHAR_P, XCHAR_P, int));
+static void FDECL(mk_knox_portal, (XCHAR_P, XCHAR_P));
 
 #define create_vault() create_room(-1, -1, 2, 2, -1, -1, VAULT, TRUE)
 #define init_vault() g.vault_x = -1
@@ -41,7 +41,7 @@ STATIC_DCL void FDECL(mk_knox_portal, (XCHAR_P, XCHAR_P));
 
 /* Args must be (const genericptr) so that qsort will always be happy. */
 
-STATIC_PTR int CFDECLSPEC
+static int CFDECLSPEC
 do_comp(vx, vy)
 const genericptr vx;
 const genericptr vy;
@@ -63,7 +63,7 @@ const genericptr vy;
 #endif /* LINT */
 }
 
-STATIC_OVL void
+static void
 finddpos(cc, xl, yl, xh, yh)
 coord *cc;
 xchar xl, yl, xh, yh;
@@ -87,7 +87,7 @@ xchar xl, yl, xh, yh;
     /* cannot find something reasonable -- strange */
     x = xl;
     y = yh;
-gotit:
+ gotit:
     cc->x = x;
     cc->y = y;
     return;
@@ -97,14 +97,15 @@ void
 sort_rooms()
 {
 #if defined(SYSV) || defined(DGUX)
-    qsort((genericptr_t) g.rooms, (unsigned) g.nroom, sizeof(struct mkroom),
-          do_comp);
+#define CAST_nroom (unsigned) g.nroom
 #else
-    qsort((genericptr_t) g.rooms, g.nroom, sizeof(struct mkroom), do_comp);
+#define CAST_nroom g.nroom /*as-is*/
 #endif
+    qsort((genericptr_t) g.rooms, CAST_nroom, sizeof (struct mkroom), do_comp);
+#undef CAST_nroom
 }
 
-STATIC_OVL void
+static void
 do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, is_room)
 register struct mkroom *croom;
 int lowx, lowy;
@@ -216,7 +217,7 @@ boolean special;
     g.nsubroom++;
 }
 
-STATIC_OVL void
+static void
 makerooms()
 {
     boolean tried_vault = FALSE;
@@ -237,7 +238,7 @@ makerooms()
     return;
 }
 
-STATIC_OVL void
+static void
 join(a, b, nxcor)
 register int a, b;
 boolean nxcor;
@@ -377,7 +378,7 @@ register struct mkroom *aroom;
     g.doors[aroom->fdoor].y = y;
 }
 
-STATIC_OVL void
+static void
 dosdoor(x, y, aroom, type)
 register xchar x, y;
 struct mkroom *aroom;
@@ -444,7 +445,7 @@ int type;
     add_door(x, y, aroom);
 }
 
-STATIC_OVL boolean
+static boolean
 place_niche(aroom, dy, xx, yy)
 register struct mkroom *aroom;
 int *dy, *xx, *yy;
@@ -477,7 +478,7 @@ static NEARDATA const char *trap_engravings[TRAPNUM] = {
     (char *) 0,      (char *) 0,    (char *) 0,    (char *) 0, (char *) 0,
 };
 
-STATIC_OVL void
+static void
 makeniche(trap_type)
 int trap_type;
 {
@@ -542,7 +543,7 @@ int trap_type;
     }
 }
 
-STATIC_OVL void
+static void
 make_niches()
 {
     int ct = rnd((g.nroom >> 1) + 1), dep = depth(&u.uz);
@@ -561,7 +562,7 @@ make_niches()
     }
 }
 
-STATIC_OVL void
+static void
 makevtele()
 {
     makeniche(TELEP_TRAP);
@@ -572,7 +573,7 @@ makevtele()
  * special) but it's easier to put it all in one place than make sure
  * each type initializes what it needs to separately.
  */
-STATIC_OVL void
+static void
 clear_level_structures()
 {
     static struct rm zerorm = { cmap_to_glyph(S_stone),
@@ -580,6 +581,10 @@ clear_level_structures()
     register int x, y;
     register struct rm *lev;
 
+    /* note:  normally we'd start at x=1 because map column #0 isn't used
+       (except for placing vault guard at <0,0> when removed from the map
+       but not from the level); explicitly reset column #0 along with the
+       rest so that we start the new level with a completely clean slate */
     for (x = 0; x < COLNO; x++) {
         lev = &levl[x][0];
         for (y = 0; y < ROWNO; y++) {
@@ -634,11 +639,12 @@ clear_level_structures()
     xdnstair = ydnstair = xupstair = yupstair = 0;
     g.sstairs.sx = g.sstairs.sy = 0;
     xdnladder = ydnladder = xupladder = yupladder = 0;
+    g.dnstairs_room = g.upstairs_room = g.sstairs_room = (struct mkroom *) 0;
     g.made_branch = FALSE;
     clear_regions();
 }
 
-STATIC_OVL void
+static void
 makelevel()
 {
     register struct mkroom *croom, *troom;
@@ -726,13 +732,14 @@ makelevel()
     /* make a secret treasure vault, not connected to the rest */
     if (do_vault()) {
         xchar w, h;
+
         debugpline0("trying to make a vault...");
         w = 1;
         h = 1;
         if (check_room(&g.vault_x, &w, &g.vault_y, &h, TRUE)) {
-        fill_vault:
-            add_room(g.vault_x, g.vault_y, g.vault_x + w, g.vault_y + h, TRUE, VAULT,
-                     FALSE);
+ fill_vault:
+            add_room(g.vault_x, g.vault_y, g.vault_x + w, g.vault_y + h,
+                     TRUE, VAULT, FALSE);
             g.level.flags.has_vault = 1;
             ++room_threshold;
             fill_room(&g.rooms[g.nroom - 1], FALSE);
@@ -783,7 +790,7 @@ makelevel()
             mkroom(COCKNEST);
     }
 
-skip0:
+ skip0:
     /* Place multi-dungeon branch. */
     place_branch(branchp, 0, 0);
 
@@ -846,6 +853,7 @@ skip0:
         if (!rn2(27 + 3 * abs(depth(&u.uz)))) {
             char buf[BUFSZ];
             const char *mesg = random_engraving(buf);
+
             if (mesg) {
                 do {
                     x = somex(croom);
@@ -857,7 +865,7 @@ skip0:
             }
         }
 
-    skip_nonrogue:
+ skip_nonrogue:
         if (!rn2(3)) {
             (void) mkobj_at(0, somex(croom), somey(croom), TRUE);
             tryct = 0;
@@ -980,6 +988,9 @@ mklev()
     struct mkroom *croom;
     int ridx;
 
+    reseed_random(rn2);
+    reseed_random(rn2_on_display_rng);
+
     init_mapseen(&u.uz);
     if (getbones())
         return;
@@ -1007,6 +1018,16 @@ mklev()
        entered; g.rooms[].orig_rtype always retains original rtype value */
     for (ridx = 0; ridx < SIZE(g.rooms); ridx++)
         g.rooms[ridx].orig_rtype = g.rooms[ridx].rtype;
+
+    /* something like this usually belongs in clear_level_structures()
+       but these aren't saved and restored so might not retain their
+       values for the life of the current level; reset them to default
+       now so that they never do and no one will be tempted to introduce
+       a new use of them for anything on this level */
+    g.dnstairs_room = g.upstairs_room = g.sstairs_room = (struct mkroom *) 0;
+
+    reseed_random(rn2);
+    reseed_random(rn2_on_display_rng);
 }
 
 void
@@ -1075,7 +1096,7 @@ struct mkroom *croom;
 }
 
 /* Find an unused room for a branch location. */
-STATIC_OVL struct mkroom *
+static struct mkroom *
 find_branch_room(mp)
 coord *mp;
 {
@@ -1106,7 +1127,7 @@ coord *mp;
 }
 
 /* Find the room for (x,y).  Return null if not in a room. */
-STATIC_OVL struct mkroom *
+static struct mkroom *
 pos_to_room(x, y)
 xchar x, y;
 {
@@ -1180,7 +1201,7 @@ xchar x, y; /* location */
     g.made_branch = TRUE;
 }
 
-STATIC_OVL boolean
+static boolean
 bydoor(x, y)
 register xchar x, y;
 {
@@ -1251,6 +1272,7 @@ struct mkroom *croom;
 coord *tm;
 {
     register int kind;
+    struct trap *t;
     unsigned lvl = level_difficulty();
     coord m;
 
@@ -1359,7 +1381,11 @@ coord *tm;
                  || (avoid_boulder && sobj_at(BOULDER, m.x, m.y)));
     }
 
-    (void) maketrap(m.x, m.y, kind);
+    t = maketrap(m.x, m.y, kind);
+    /* we should always get type of trap we're asking for (occupied() test
+       should prevent cases where that might not happen) but be paranoid */
+    kind = t ? t->ttyp : NO_TRAP;
+
     if (kind == WEB)
         (void) makemon(&mons[PM_GIANT_SPIDER], m.x, m.y, NO_MM_FLAGS);
 
@@ -1384,8 +1410,13 @@ coord *tm;
        lethal, and tend not to generate on shallower levels anyway.
        Finally, pits are excluded because it's weird to see an item
        in a pit and yet not be able to identify that the pit is there. */
-    if (lvl <= (unsigned) rnd(4)
+    if (kind != NO_TRAP && lvl <= (unsigned) rnd(4)
         && kind != SQKY_BOARD && kind != RUST_TRAP
+        /* rolling boulder trap might not have a boulder if there was no
+           viable path (such as when placed in the corner of a room), in
+           which case tx,ty==launch.x,y; no boulder => no dead predecessor */
+        && !(kind == ROLLING_BOULDER_TRAP
+             && t->launch.x == t->tx && t->launch.y == t->ty)
         && !is_pit(kind) && kind < HOLE) {
         /* Object generated by the trap; initially NULL, stays NULL if
            we fail to generate an object or if the trap doesn't
@@ -1531,7 +1562,7 @@ struct mkroom *croom;
     levl[x][y].ladder = up ? LA_UP : LA_DOWN;
 }
 
-STATIC_OVL void
+static void
 mkfount(mazeflag, croom)
 int mazeflag;
 struct mkroom *croom;
@@ -1557,7 +1588,7 @@ struct mkroom *croom;
     g.level.flags.nfountains++;
 }
 
-STATIC_OVL void
+static void
 mksink(croom)
 struct mkroom *croom;
 {
@@ -1577,7 +1608,7 @@ struct mkroom *croom;
     g.level.flags.nsinks++;
 }
 
-STATIC_OVL void
+static void
 mkaltar(croom)
 struct mkroom *croom;
 {
@@ -1660,22 +1691,30 @@ struct mkroom *croom;
 #define y_maze_min 2
 
 /*
- * Major level transmutation: add a set of stairs (to the Sanctum) after
- * an earthquake that leaves behind a a new topology, centered at g.inv_pos.
+ * Major level transmutation:  add a set of stairs (to the Sanctum) after
+ * an earthquake that leaves behind a new topology, centered at inv_pos.
  * Assumes there are no rooms within the invocation area and that g.inv_pos
  * is not too close to the edge of the map.  Also assume the hero can see,
  * which is guaranteed for normal play due to the fact that sight is needed
- * to read the Book of the Dead.
+ * to read the Book of the Dead.  [That assumption is not valid; it is
+ * possible that "the Book reads the hero" rather than vice versa if
+ * attempted while blind (in order to make blind-from-birth conduct viable).]
  */
 void
 mkinvokearea()
 {
     int dist;
-    xchar xmin = g.inv_pos.x, xmax = g.inv_pos.x;
-    xchar ymin = g.inv_pos.y, ymax = g.inv_pos.y;
+    xchar xmin = g.inv_pos.x, xmax = g.inv_pos.x,
+          ymin = g.inv_pos.y, ymax = g.inv_pos.y;
     register xchar i;
 
+    /* slightly odd if levitating, but not wrong */
     pline_The("floor shakes violently under you!");
+    /*
+     * TODO:
+     *  Suppress this message if player has dug out all the walls
+     *  that would otherwise be affected.
+     */
     pline_The("walls around you begin to bend and crumble!");
     display_nhwindow(WIN_MESSAGE, TRUE);
 
@@ -1720,7 +1759,7 @@ mkinvokearea()
 /* Change level topology.  Boulders in the vicinity are eliminated.
  * Temporarily overrides vision in the name of a nice effect.
  */
-STATIC_OVL void
+static void
 mkinvpos(x, y, dist)
 xchar x, y;
 int dist;
@@ -1734,8 +1773,7 @@ int dist;
     /* clip at existing map borders if necessary */
     if (!within_bounded_area(x, y, x_maze_min + 1, y_maze_min + 1,
                              g.x_maze_max - 1, g.y_maze_max - 1)) {
-        /* only outermost 2 columns and/or rows may be truncated due to edge
-         */
+        /* outermost 2 columns and/or rows may be truncated due to edge */
         if (dist < (7 - 2))
             panic("mkinvpos: <%d,%d> (%d) off map edge!", x, y, dist);
         return;
@@ -1818,7 +1856,7 @@ int dist;
  *
  * Ludios will remain isolated until the branch is corrected by this function.
  */
-STATIC_OVL void
+static void
 mk_knox_portal(x, y)
 xchar x, y;
 {

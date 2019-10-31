@@ -1,15 +1,15 @@
-/* NetHack 3.6	teleport.c	$NHDT-Date: 1546655319 2019/01/05 02:28:39 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.83 $ */
+/* NetHack 3.6	teleport.c	$NHDT-Date: 1570227405 2019/10/04 22:16:45 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.93 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #include "hack.h"
 
-STATIC_DCL boolean FDECL(tele_jump_ok, (int, int, int, int));
-STATIC_DCL boolean FDECL(teleok, (int, int, BOOLEAN_P));
-STATIC_DCL void NDECL(vault_tele);
-STATIC_DCL boolean FDECL(rloc_pos_ok, (int, int, struct monst *));
-STATIC_DCL void FDECL(mvault_tele, (struct monst *));
+static boolean FDECL(tele_jump_ok, (int, int, int, int));
+static boolean FDECL(teleok, (int, int, BOOLEAN_P));
+static void NDECL(vault_tele);
+static boolean FDECL(rloc_pos_ok, (int, int, struct monst *));
+static void FDECL(mvault_tele, (struct monst *));
 
 /*
  * Is (x,y) a good position of mtmp?  If mtmp is NULL, then is (x,y) good
@@ -36,7 +36,8 @@ unsigned gpflags;
      * which could be co-located and thus get restricted a bit too much.
      * oh well.
      */
-    if (mtmp != &g.youmonst && x == u.ux && y == u.uy
+    if (x == u.ux && y == u.uy
+        && mtmp != &g.youmonst && (mtmp != u.ustuck || !u.uswallow)
         && (!u.usteed || mtmp != u.usteed))
         return FALSE;
 
@@ -58,16 +59,26 @@ unsigned gpflags;
 
         mdat = mtmp->data;
         if (is_pool(x, y) && !ignorewater) {
+            /* [what about Breathless?] */
             if (mtmp == &g.youmonst)
-                return (Levitation || Flying || Wwalking || Swimming
-                        || Amphibious);
+                return (Swimming || Amphibious
+                        || (!Is_waterlevel(&u.uz)
+                            /* water on the Plane of Water has no surface
+                               so there's no way to be on or above that */
+                            && (Levitation || Flying || Wwalking)));
             else
-                return (is_floater(mdat) || is_flyer(mdat) || is_swimmer(mdat)
-                        || is_clinger(mdat));
+                return (is_swimmer(mdat)
+                        || (!Is_waterlevel(&u.uz)
+                            && (is_floater(mdat) || is_flyer(mdat)
+                                || is_clinger(mdat))));
         } else if (mdat->mlet == S_EEL && rn2(13) && !ignorewater) {
             return FALSE;
         } else if (is_lava(x, y)) {
-            if (mtmp == &g.youmonst)
+            /* 3.6.3: floating eye can levitate over lava but it avoids
+               that due the effect of the heat causing it to dry out */
+            if (mdat == &mons[PM_FLOATING_EYE])
+                return FALSE;
+            else if (mtmp == &g.youmonst)
                 return (Levitation || Flying
                         || (Fire_resistance && Wwalking && uarmf
                             && uarmf->oerodeproof)
@@ -105,30 +116,39 @@ coord *cc;
 register xchar xx, yy;
 struct permonst *mdat;
 {
-    return enexto_core(cc, xx, yy, mdat, 0);
+    return enexto_core(cc, xx, yy, mdat, NO_MM_FLAGS);
 }
 
 boolean
 enexto_core(cc, xx, yy, mdat, entflags)
 coord *cc;
-register xchar xx, yy;
+xchar xx, yy;
 struct permonst *mdat;
 unsigned entflags;
 {
 #define MAX_GOOD 15
     coord good[MAX_GOOD], *good_ptr;
     int x, y, range, i;
-    int xmin, xmax, ymin, ymax;
+    int xmin, xmax, ymin, ymax, rangemax;
     struct monst fakemon; /* dummy monster */
+    boolean allow_xx_yy = (boolean) ((entflags & GP_ALLOW_XY) != 0);
 
+    entflags &= ~GP_ALLOW_XY;
     if (!mdat) {
         debugpline0("enexto() called with null mdat");
         /* default to player's original monster type */
         mdat = &mons[u.umonster];
     }
     fakemon = cg.zeromonst;
-    set_mon_data(&fakemon, mdat, -1); /* set up for goodpos */
+    set_mon_data(&fakemon, mdat); /* set up for goodpos */
 
+    /* used to use 'if (range > ROWNO && range > COLNO) return FALSE' below,
+       so effectively 'max(ROWNO, COLNO)' which performs useless iterations
+       (possibly many iterations if <xx,yy> is in the center of the map) */
+    xmax = max(xx - 1, (COLNO - 1) - xx);
+    ymax = max(yy - 0, (ROWNO - 1) - yy);
+    rangemax = max(xmax, ymax);
+    /* setup: no suitable spots yet, first iteration checks adjacent spots */
     good_ptr = good;
     range = 1;
     /*
@@ -141,7 +161,7 @@ unsigned entflags;
         ymin = max(0, yy - range);
         ymax = min(ROWNO - 1, yy + range);
 
-        for (x = xmin; x <= xmax; x++)
+        for (x = xmin; x <= xmax; x++) {
             if (goodpos(x, ymin, &fakemon, entflags)) {
                 good_ptr->x = x;
                 good_ptr->y = ymin;
@@ -149,38 +169,46 @@ unsigned entflags;
                 if (good_ptr++ == &good[MAX_GOOD - 1])
                     goto full;
             }
-        for (x = xmin; x <= xmax; x++)
             if (goodpos(x, ymax, &fakemon, entflags)) {
                 good_ptr->x = x;
                 good_ptr->y = ymax;
-                /* beware of accessing beyond segment boundaries.. */
                 if (good_ptr++ == &good[MAX_GOOD - 1])
                     goto full;
             }
-        for (y = ymin + 1; y < ymax; y++)
+        }
+        /* 3.6.3: this used to use 'ymin+1' which left top row unchecked */
+        for (y = ymin; y < ymax; y++) {
             if (goodpos(xmin, y, &fakemon, entflags)) {
                 good_ptr->x = xmin;
                 good_ptr->y = y;
-                /* beware of accessing beyond segment boundaries.. */
                 if (good_ptr++ == &good[MAX_GOOD - 1])
                     goto full;
             }
-        for (y = ymin + 1; y < ymax; y++)
             if (goodpos(xmax, y, &fakemon, entflags)) {
                 good_ptr->x = xmax;
                 good_ptr->y = y;
-                /* beware of accessing beyond segment boundaries.. */
                 if (good_ptr++ == &good[MAX_GOOD - 1])
                     goto full;
             }
-        range++;
+        }
+    } while (++range <= rangemax && good_ptr == good);
 
-        /* return if we've grown too big (nothing is valid) */
-        if (range > ROWNO && range > COLNO)
+    /* return False if we exhausted 'range' without finding anything */
+    if (good_ptr == good) {
+        /* 3.6.3: earlier versions didn't have the option to try <xx,yy>,
+           and left 'cc' uninitialized when returning False */
+        cc->x = xx, cc->y = yy;
+        /* if every spot other than <xx,yy> has failed, try <xx,yy> itself */
+        if (allow_xx_yy && goodpos(xx, yy, &fakemon, entflags)) {
+            return TRUE; /* 'cc' is set */
+        } else {
+            debugpline3("enexto(\"%s\",%d,%d) failed", mdat->mname, xx, yy);
             return FALSE;
-    } while (good_ptr == good);
+        }
+    }
 
-full:
+ full:
+    /* we've got between 1 and SIZE(good) candidates; choose one */
     i = rn2((int) (good_ptr - good));
     cc->x = good[i].x;
     cc->y = good[i].y;
@@ -192,7 +220,7 @@ full:
  * need to be augmented to allow deliberate passage in wizard mode, but
  * only for explicitly chosen destinations.)
  */
-STATIC_OVL boolean
+static boolean
 tele_jump_ok(x1, y1, x2, y2)
 int x1, y1, x2, y2;
 {
@@ -227,7 +255,7 @@ int x1, y1, x2, y2;
     return TRUE;
 }
 
-STATIC_OVL boolean
+static boolean
 teleok(x, y, trapok)
 register int x, y;
 boolean trapok;
@@ -249,6 +277,7 @@ register int nux, nuy;
 boolean allow_drag;
 {
     boolean ball_active, ball_still_in_range;
+    struct monst *vault_guard = vault_occupied(u.urooms) ? findgd() : 0;
 
     if (u.utraptype == TT_BURIEDBALL) {
         /* unearth it */
@@ -273,9 +302,9 @@ boolean allow_drag;
      * rock in the way), in which case it teleports the ball on its own.
      */
     if (ball_active) {
-        if (!carried(uball) && distmin(nux, nuy, uball->ox, uball->oy) <= 2)
+        if (!carried(uball) && distmin(nux, nuy, uball->ox, uball->oy) <= 2) {
             ball_still_in_range = TRUE; /* don't have to move the ball */
-        else {
+        } else {
             /* have to move the ball */
             if (!allow_drag || distmin(u.ux, u.uy, nux, nuy) > 1) {
                 /* we should not have dist > 1 and allow_drag at the same
@@ -312,8 +341,13 @@ boolean allow_drag;
             boolean cause_delay;
 
             if (drag_ball(nux, nuy, &bc_control, &ballx, &bally, &chainx,
-                          &chainy, &cause_delay, allow_drag))
+                          &chainy, &cause_delay, allow_drag)) {
                 move_bc(0, bc_control, ballx, bally, chainx, chainy);
+            } else {
+                /* dragging fails if hero is encumbered beyond 'burdened' */
+                allow_drag = FALSE; /* teleport b&c to hero's new spot */
+                unplacebc(); /* to match placebc() below */
+            }
         }
     }
     /* must set u.ux, u.uy after drag_ball(), which may need to know
@@ -351,6 +385,21 @@ boolean allow_drag;
         else
             g.telescroll = 0; /* no discovery by scrolltele()'s caller */
     }
+    /* sequencing issue:  we want guard's alarm, if any, to occur before
+       room entry message, if any, so need to check for vault exit prior
+       to spoteffects; but spoteffects() sets up new value for u.urooms
+       and vault code depends upon that value, so we need to fake it */
+    if (vault_guard) {
+        char save_urooms[5]; /* [sizeof u.urooms] */
+
+        Strcpy(save_urooms, u.urooms);
+        Strcpy(u.urooms, in_rooms(u.ux, u.uy, VAULT));
+        /* if hero has left vault, make guard notice */
+        if (!vault_occupied(u.urooms))
+            uleftvault(vault_guard);
+        Strcpy(u.urooms, save_urooms); /* reset prior to spoteffects() */
+    }
+    /* possible shop entry message comes after guard's shrill whistle */
     spoteffects(TRUE);
     invocation_message();
 }
@@ -373,7 +422,7 @@ boolean allow_drag;
         return FALSE;
 }
 
-STATIC_OVL void
+static void
 vault_tele()
 {
     register struct mkroom *croom = search_special(VAULT);
@@ -407,7 +456,7 @@ boolean force_it;
             return FALSE;
         } else {
             Your("leash goes slack.");
-        release_it:
+ release_it:
             m_unleash(mtmp, FALSE);
             return TRUE;
         }
@@ -459,7 +508,7 @@ struct obj *scroll;
             Strcpy(whobuf, "you");
             if (u.usteed)
                 Sprintf(eos(whobuf), " and %s", mon_nam(u.usteed));
-            pline("To what position do %s want to be teleported?", whobuf);
+            pline("Where do %s want to be teleported?", whobuf);
             cc.x = u.ux;
             cc.y = u.uy;
             if (getpos(&cc, TRUE, "the desired position") < 0)
@@ -776,7 +825,7 @@ level_tele()
                 schar destlev;
                 xchar destdnum;
 
-            levTport_menu:
+ levTport_menu:
                 destlev = 0;
                 destdnum = 0;
                 newlev = (int) print_dungeon(TRUE, &destlev, &destdnum);
@@ -844,7 +893,7 @@ level_tele()
         if (In_quest(&u.uz) && newlev > 0)
             newlev = newlev + g.dungeons[u.uz.dnum].depth_start - 1;
     } else { /* involuntary level tele */
-    random_levtport:
+ random_levtport:
         newlev = random_teleport_level();
         if (newlev == depth(&u.uz)) {
             You1(shudder_for_moment);
@@ -1054,7 +1103,7 @@ unsigned trflags;
 }
 
 /* check whether monster can arrive at location <x,y> via Tport (or fall) */
-STATIC_OVL boolean
+static boolean
 rloc_pos_ok(x, y, mtmp)
 register int x, y; /* coordinates of candidate location */
 struct monst *mtmp;
@@ -1127,7 +1176,7 @@ register int x, y;
     register int oldx = mtmp->mx, oldy = mtmp->my;
     boolean resident_shk = mtmp->isshk && inhishop(mtmp);
 
-    if (x == mtmp->mx && y == mtmp->my && m_at(x,y) == mtmp)
+    if (x == mtmp->mx && y == mtmp->my && m_at(x, y) == mtmp)
         return; /* that was easy */
 
     if (oldx) { /* "pick up" monster */
@@ -1148,11 +1197,11 @@ register int x, y;
 
     if (u.ustuck == mtmp) {
         if (u.uswallow) {
-            u.ux = x;
-            u.uy = y;
+            u_on_newpos(mtmp->mx, mtmp->my);
             docrt();
-        } else
-            u.ustuck = 0;
+        } else if (distu(mtmp->mx, mtmp->my) > 2) {
+           unstuck(mtmp);
+        }
     }
 
     newsym(x, y);      /* update new location */
@@ -1213,16 +1262,16 @@ boolean suppress_impossible;
         impossible("rloc(): couldn't relocate monster");
     return FALSE;
 
-found_xy:
+ found_xy:
     rloc_to(mtmp, x, y);
     return TRUE;
 }
 
-STATIC_OVL void
+static void
 mvault_tele(mtmp)
 struct monst *mtmp;
 {
-    register struct mkroom *croom = search_special(VAULT);
+    struct mkroom *croom = search_special(VAULT);
     coord c;
 
     if (croom && somexy(croom, &c) && goodpos(c.x, c.y, mtmp, 0)) {
@@ -1306,8 +1355,9 @@ int in_sight;
                 get_level(&tolevel, depth(&u.uz) + 1);
             }
         } else if (tt == MAGIC_PORTAL) {
-            if (In_endgame(&u.uz)
-                && (mon_has_amulet(mtmp) || is_home_elemental(mtmp->data))) {
+            if (In_endgame(&u.uz) && (mon_has_amulet(mtmp)
+                                      || is_home_elemental(mtmp->data)
+                                      || rn2(7))) {
                 if (in_sight && mtmp->data->mlet != S_ELEMENTAL) {
                     pline("%s seems to shimmer for a moment.", Monnam(mtmp));
                     seetrap(trap);
@@ -1402,6 +1452,9 @@ register struct obj *obj;
                                            g.dndest.nhx, g.dndest.nhy)));
 
     if (flooreffects(obj, tx, ty, "fall")) {
+        /* update old location since flooreffects() couldn't;
+           unblock_point() for boulder handled by obj_extract_self() */
+        newsym(otx, oty);
         return FALSE;
     } else if (otx == 0 && oty == 0) {
         ; /* fell through a trap door; no update of old loc needed */
@@ -1418,6 +1471,7 @@ register struct obj *obj;
         newsym(otx, oty); /* update old location */
     }
     place_object(obj, tx, ty);
+    /* note: block_point() for boulder handled by place_object() */
     newsym(tx, ty);
     return TRUE;
 }

@@ -1,4 +1,4 @@
-/* NetHack 3.6	you.h	$NHDT-Date: 1450231172 2015/12/16 01:59:32 $  $NHDT-Branch: NetHack-3.6.0 $:$NHDT-Revision: 1.30 $ */
+/* NetHack 3.6	you.h	$NHDT-Date: 1547514642 2019/01/15 01:10:42 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.35 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2016. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -59,8 +59,7 @@ struct u_achieve {
     Bitfield(bell, 1);    /* touched Bell */
     Bitfield(book, 1);    /* touched Book */
     Bitfield(menorah, 1); /* touched Candelabrum */
-    Bitfield(enter_gehennom,
-             1);           /* entered Gehennom (or Valley) by any means */
+    Bitfield(enter_gehennom,1); /* entered Gehennom (or Valley) by any means */
     Bitfield(ascended, 1); /* not quite the same as u.uevent.ascended */
     Bitfield(mines_luckstone, 1); /* got a luckstone at end of mines */
     Bitfield(finish_sokoban, 1);  /* obtained the sokoban prize */
@@ -260,12 +259,12 @@ struct Align {
 extern const struct Align aligns[]; /* table of available alignments */
 
 enum utraptypes {
-    TT_BEARTRAP = 0,
-    TT_PIT,
-    TT_WEB,
-    TT_LAVA,
-    TT_INFLOOR,
-    TT_BURIEDBALL
+    TT_BEARTRAP   = 0,
+    TT_PIT        = 1,
+    TT_WEB        = 2,
+    TT_LAVA       = 3,
+    TT_INFLOOR    = 4,
+    TT_BURIEDBALL = 5
 };
 
 /*** Information about the player ***/
@@ -392,6 +391,7 @@ struct you {
     xchar skill_record[P_SKILL_LIMIT]; /* skill advancements */
     struct skills weapon_skills[P_NUM_SKILLS];
     boolean twoweap;         /* KMH -- Using two-weapon combat */
+    short mcham;             /* vampire mndx if shapeshifted to bat/cloud */
 
 }; /* end of `struct you' */
 

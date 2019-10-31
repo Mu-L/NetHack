@@ -1,4 +1,4 @@
-/* NetHack 3.6	allmain.c	$NHDT-Date: 1539804859 2018/10/17 19:34:19 $  $NHDT-Branch: keni-makedefsm $:$NHDT-Revision: 1.89 $ */
+/* NetHack 3.6	allmain.c	$NHDT-Date: 1555552624 2019/04/18 01:57:04 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.100 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -13,11 +13,11 @@
 #endif
 
 #ifdef POSITIONBAR
-STATIC_DCL void NDECL(do_positionbar);
+static void NDECL(do_positionbar);
 #endif
-STATIC_DCL void FDECL(regen_hp, (int));
-STATIC_DCL void FDECL(interrupt_multi, (const char *));
-STATIC_DCL void FDECL(debug_fields, (const char *));
+static void FDECL(regen_hp, (int));
+static void FDECL(interrupt_multi, (const char *));
+static void FDECL(debug_fields, (const char *));
 
 void
 early_init()
@@ -108,21 +108,24 @@ boolean resuming;
                 g.context.mon_moving = FALSE;
 
                 if (!monscanmove && g.youmonst.movement < NORMAL_SPEED) {
-                    /* both you and the monsters are out of steam this round
-                     */
-                    /* set up for a new turn */
+                    /* both hero and monsters are out of steam this round */
                     struct monst *mtmp;
+
+                    /* set up for a new turn */
                     mcalcdistress(); /* adjust monsters' trap, blind, etc */
 
-                    /* reallocate movement rations to monsters */
+                    /* reallocate movement rations to monsters; don't need
+                       to skip dead monsters here because they will have
+                       been purged at end of their previous round of moving */
                     for (mtmp = fmon; mtmp; mtmp = mtmp->nmon)
                         mtmp->movement += mcalcmove(mtmp);
 
-                    if (!rn2(u.uevent.udemigod
-                                 ? 25
-                                 : (depth(&u.uz) > depth(&stronghold_level))
-                                       ? 50
-                                       : 70))
+                    /* occasionally add another monster; since this takes
+                       place after movement has been allotted, the new
+                       monster effectively loses its first turn */
+                    if (!rn2(u.uevent.udemigod ? 25
+                             : (depth(&u.uz) > depth(&stronghold_level)) ? 50
+                               : 70))
                         (void) makemon((struct permonst *) 0, 0, 0,
                                        NO_MM_FLAGS);
 
@@ -133,11 +136,11 @@ boolean resuming;
                     } else {
                         moveamt = g.youmonst.data->mmove;
 
-                        if (Very_fast) { /* speed boots or potion */
+                        if (Very_fast) { /* speed boots, potion, or spell */
                             /* gain a free action on 2/3 of turns */
                             if (rn2(3) != 0)
                                 moveamt += NORMAL_SPEED;
-                        } else if (Fast) {
+                        } else if (Fast) { /* intrinsic */
                             /* gain a free action on 1/3 of turns */
                             if (rn2(3) == 0)
                                 moveamt += NORMAL_SPEED;
@@ -183,7 +186,7 @@ boolean resuming;
                     if (u.ublesscnt)
                         u.ublesscnt--;
                     if (flags.time && !g.context.run)
-                        g.context.botl = 1;
+                        iflags.time_botl = TRUE;
 
                     /* One possible result of prayer is healing.  Whether or
                      * not you get healed depends on your current hit points.
@@ -209,8 +212,10 @@ boolean resuming;
                                                    : g.moves % 10)) {
                             if (Upolyd && u.mh > 1) {
                                 u.mh--;
+                                g.context.botl = TRUE;
                             } else if (!Upolyd && u.uhp > 1) {
                                 u.uhp--;
+                                g.context.botl = TRUE;
                             } else {
                                 You("pass out from exertion!");
                                 exercise(A_CON, FALSE);
@@ -228,7 +233,7 @@ boolean resuming;
                             (int) (ACURR(A_WIS) + ACURR(A_INT)) / 15 + 1, 1);
                         if (u.uen > u.uenmax)
                             u.uen = u.uenmax;
-                        g.context.botl = 1;
+                        g.context.botl = TRUE;
                         if (u.uen == u.uenmax)
                             interrupt_multi("You feel full of energy.");
                     }
@@ -236,6 +241,7 @@ boolean resuming;
                     if (!u.uinvulnerable) {
                         if (Teleportation && !rn2(85)) {
                             xchar old_ux = u.ux, old_uy = u.uy;
+
                             tele();
                             if (u.ux != old_ux || u.uy != old_uy) {
                                 if (!next_to_u()) {
@@ -315,14 +321,16 @@ boolean resuming;
                         }
                     }
                 }
-            } while (g.youmonst.movement
-                     < NORMAL_SPEED); /* hero can't move loop */
+            } while (g.youmonst.movement < NORMAL_SPEED); /* hero can't move */
 
             /******************************************/
             /* once-per-hero-took-time things go here */
             /******************************************/
 
-            status_eval_next_unhilite();
+#ifdef STATUS_HILITES
+            if (iflags.hilite_delta)
+                status_eval_next_unhilite();
+#endif
             if (g.context.bypasses)
                 clear_bypasses();
             if ((u.uhave.amulet || Clairvoyant) && !In_endgame(&u.uz)
@@ -360,6 +368,9 @@ boolean resuming;
         }
         if (g.context.botl || g.context.botlx) {
             bot();
+            curs_on_u();
+        } else if (iflags.time_botl) {
+            timebot();
             curs_on_u();
         }
 
@@ -410,7 +421,7 @@ boolean resuming;
                 /* lookaround may clear multi */
                 g.context.move = 0;
                 if (flags.time)
-                    g.context.botl = 1;
+                    g.context.botl = TRUE;
                 continue;
             }
             if (g.context.mv) {
@@ -432,7 +443,7 @@ boolean resuming;
             deferred_goto(); /* after rhack() */
         /* !g.context.move here: multiple movement command stopped */
         else if (flags.time && (!g.context.move || !g.context.mv))
-            g.context.botl = 1;
+            g.context.botl = TRUE;
 
         if (g.vision_full_recalc)
             vision_recalc(0); /* vision! */
@@ -440,14 +451,15 @@ boolean resuming;
         if ((!g.context.run || flags.runmode == RUN_TPORT)
             && (g.multi && (!g.context.travel ? !(g.multi % 7) : !(g.moves % 7L)))) {
             if (flags.time && g.context.run)
-                g.context.botl = 1;
+                g.context.botl = TRUE;
+            /* [should this be flush_screen() instead?] */
             display_nhwindow(WIN_MAP, FALSE);
         }
     }
 }
 
 /* maybe recover some lost health (or lose some when an eel out of water) */
-STATIC_OVL void
+static void
 regen_hp(wtcap)
 int wtcap;
 {
@@ -470,7 +482,7 @@ int wtcap;
                 heal = 1;
         }
         if (heal) {
-            g.context.botl = 1;
+            g.context.botl = TRUE;
             u.mh += heal;
             reached_full = (u.mh == u.mhmax);
         }
@@ -502,7 +514,7 @@ int wtcap;
                 heal = 1;
 
             if (heal) {
-                g.context.botl = 1;
+                g.context.botl = TRUE;
                 u.uhp += heal;
                 if (u.uhp > u.uhpmax)
                     u.uhp = u.uhpmax;
@@ -523,7 +535,7 @@ stop_occupation()
         if (!maybe_finished_meal(TRUE))
             You("stop %s.", g.occtxt);
         g.occupation = 0;
-        g.context.botl = 1; /* in case u.uhs changed */
+        g.context.botl = TRUE; /* in case u.uhs changed */
         nomul(0);
         pushch(0);
     } else if (g.multi >= 0) {
@@ -535,11 +547,11 @@ void
 display_gamewindows()
 {
     WIN_MESSAGE = create_nhwindow(NHW_MESSAGE);
-#ifdef STATUS_HILITES
-    status_initialize(0);
-#else
-    WIN_STATUS = create_nhwindow(NHW_STATUS);
-#endif
+    if (VIA_WINDOWPORT()) {
+        status_initialize(0);
+    } else {
+        WIN_STATUS = create_nhwindow(NHW_STATUS);
+    }
     WIN_MAP = create_nhwindow(NHW_MAP);
     WIN_INVEN = create_nhwindow(NHW_MENU);
     /* in case of early quit where WIN_INVEN could be destroyed before
@@ -576,7 +588,7 @@ newgame()
     gameDiskPrompt();
 #endif
 
-    g.context.botlx = 1;
+    g.context.botlx = TRUE;
     g.context.ident = 1;
     g.context.stethoscope_move = -1L;
     g.context.warnlevel = 1;
@@ -678,7 +690,7 @@ boolean new_game; /* false => restoring an old game */
 }
 
 #ifdef POSITIONBAR
-STATIC_DCL void
+static void
 do_positionbar()
 {
     static char pbar[COLNO];
@@ -733,7 +745,7 @@ do_positionbar()
 }
 #endif
 
-STATIC_DCL void
+static void
 interrupt_multi(msg)
 const char *msg;
 {
@@ -865,7 +877,7 @@ enum earlyarg e_arg;
  *                    optimization so that display output
  *                    can be debugged without buffering.
  */
-void
+static void
 debug_fields(opts)
 const char *opts;
 {

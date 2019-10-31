@@ -1,4 +1,4 @@
-/* NetHack 3.6	invent.c	$NHDT-Date: 1547025166 2019/01/09 09:12:46 $  $NHDT-Branch: NetHack-3.6.2-beta01 $:$NHDT-Revision: 1.250 $ */
+/* NetHack 3.6	invent.c	$NHDT-Date: 1571436003 2019/10/18 22:00:03 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.265 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Derek S. Ray, 2015. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -13,31 +13,31 @@
 #define CONTAINED_SYM '>' /* designator for inside a container */
 #define HANDS_SYM '-'
 
-STATIC_DCL void FDECL(loot_classify, (Loot *, struct obj *));
-STATIC_DCL char *FDECL(loot_xname, (struct obj *));
-STATIC_DCL int FDECL(CFDECLSPEC sortloot_cmp, (const genericptr,
+static void FDECL(loot_classify, (Loot *, struct obj *));
+static char *FDECL(loot_xname, (struct obj *));
+static int FDECL(CFDECLSPEC sortloot_cmp, (const genericptr,
                                                const genericptr));
-STATIC_DCL void NDECL(reorder_invent);
-STATIC_DCL void FDECL(noarmor, (BOOLEAN_P));
-STATIC_DCL void FDECL(invdisp_nothing, (const char *, const char *));
-STATIC_DCL boolean FDECL(worn_wield_only, (struct obj *));
-STATIC_DCL boolean FDECL(only_here, (struct obj *));
-STATIC_DCL void FDECL(compactify, (char *));
-STATIC_DCL boolean FDECL(taking_off, (const char *));
-STATIC_DCL boolean FDECL(putting_on, (const char *));
-STATIC_PTR int FDECL(ckvalidcat, (struct obj *));
-STATIC_PTR int FDECL(ckunpaid, (struct obj *));
-STATIC_PTR char *FDECL(safeq_xprname, (struct obj *));
-STATIC_PTR char *FDECL(safeq_shortxprname, (struct obj *));
-STATIC_DCL char FDECL(display_pickinv, (const char *, const char *,
+static void NDECL(reorder_invent);
+static void FDECL(noarmor, (BOOLEAN_P));
+static void FDECL(invdisp_nothing, (const char *, const char *));
+static boolean FDECL(worn_wield_only, (struct obj *));
+static boolean FDECL(only_here, (struct obj *));
+static void FDECL(compactify, (char *));
+static boolean FDECL(taking_off, (const char *));
+static boolean FDECL(putting_on, (const char *));
+static int FDECL(ckvalidcat, (struct obj *));
+static int FDECL(ckunpaid, (struct obj *));
+static char *FDECL(safeq_xprname, (struct obj *));
+static char *FDECL(safeq_shortxprname, (struct obj *));
+static char FDECL(display_pickinv, (const char *, const char *,
                                         const char *, BOOLEAN_P, long *));
-STATIC_DCL char FDECL(display_used_invlets, (CHAR_P));
-STATIC_DCL boolean FDECL(this_type_only, (struct obj *));
-STATIC_DCL void NDECL(dounpaid);
-STATIC_DCL struct obj *FDECL(find_unpaid, (struct obj *, struct obj **));
-STATIC_DCL void FDECL(menu_identify, (int));
-STATIC_DCL boolean FDECL(tool_in_use, (struct obj *));
-STATIC_DCL char FDECL(obj_to_let, (struct obj *));
+static char FDECL(display_used_invlets, (CHAR_P));
+static boolean FDECL(this_type_only, (struct obj *));
+static void NDECL(dounpaid);
+static struct obj *FDECL(find_unpaid, (struct obj *, struct obj **));
+static void FDECL(menu_identify, (int));
+static boolean FDECL(tool_in_use, (struct obj *));
+static char FDECL(obj_to_let, (struct obj *));
 
 /* wizards can wish for venom, which will become an invisible inventory
  * item without this.  putting it in inv_order would mean venom would
@@ -51,7 +51,7 @@ STATIC_DCL char FDECL(obj_to_let, (struct obj *));
 static const char venom_inv[] = { VENOM_CLASS, 0 }; /* (constant) */
 
 /* sortloot() classification; called at most once [per sort] for each object */
-STATIC_OVL void
+static void
 loot_classify(sort_item, obj)
 Loot *sort_item;
 struct obj *obj;
@@ -139,8 +139,10 @@ struct obj *obj;
             case DRUM_OF_EARTHQUAKE:
             case HORN_OF_PLENTY: /* not a musical instrument */
                 k = 3; /* instrument or unknown horn of plenty */
+                break;
             default:
                 k = 4; /* 'other' tool */
+                break;
             }
         break;
     case FOOD_CLASS:
@@ -209,7 +211,7 @@ struct obj *obj;
 }
 
 /* sortloot() formatting routine; for alphabetizing, not shown to user */
-STATIC_OVL char *
+static char *
 loot_xname(obj)
 struct obj *obj;
 {
@@ -293,7 +295,7 @@ struct obj *obj;
 }
 
 /* qsort comparison routine for sortloot() */
-STATIC_OVL int CFDECLSPEC
+static int CFDECLSPEC
 sortloot_cmp(vptr1, vptr2)
 const genericptr vptr1;
 const genericptr vptr2;
@@ -620,7 +622,7 @@ register struct obj *otmp;
 #define inv_rank(o) ((o)->invlet ^ 040)
 
 /* sort the inventory; used by addinv() and doorganize() */
-STATIC_OVL void
+static void
 reorder_invent()
 {
     struct obj *otmp, *prev, *next;
@@ -715,7 +717,8 @@ struct obj **potmp, **pobj;
             otmp->age = ((otmp->age * otmp->quan) + (obj->age * obj->quan))
                         / (otmp->quan + obj->quan);
 
-        otmp->quan += obj->quan;
+        if (!otmp->globby)
+            otmp->quan += obj->quan;
         /* temporary special case for gold objects!!!! */
         if (otmp->oclass == COIN_CLASS)
             otmp->owt = weight(otmp), otmp->bknown = 0;
@@ -1343,7 +1346,7 @@ register int x, y;
 }
 
 /* compact a string of inventory letters by dashing runs of letters */
-STATIC_OVL void
+static void
 compactify(buf)
 register char *buf;
 {
@@ -1390,7 +1393,7 @@ struct obj *obj;
 }
 
 /* match the prompt for either 'T' or 'R' command */
-STATIC_OVL boolean
+static boolean
 taking_off(action)
 const char *action;
 {
@@ -1398,7 +1401,7 @@ const char *action;
 }
 
 /* match the prompt for either 'W' or 'P' command */
-STATIC_OVL boolean
+static boolean
 putting_on(action)
 const char *action;
 {
@@ -1855,7 +1858,7 @@ struct obj *otmp;
         pline(silly_thing_to, word);
 }
 
-STATIC_PTR int
+static int
 ckvalidcat(otmp)
 struct obj *otmp;
 {
@@ -1863,7 +1866,7 @@ struct obj *otmp;
     return (int) allow_category(otmp);
 }
 
-STATIC_PTR int
+static int
 ckunpaid(otmp)
 struct obj *otmp;
 {
@@ -1881,19 +1884,19 @@ boolean
 is_worn(otmp)
 struct obj *otmp;
 {
-    return (otmp->owornmask & (W_ARMOR | W_ACCESSORY | W_SADDLE | W_WEAPON))
+    return (otmp->owornmask & (W_ARMOR | W_ACCESSORY | W_SADDLE | W_WEAPONS))
             ? TRUE
             : FALSE;
 }
 
 /* extra xprname() input that askchain() can't pass through safe_qbuf() */
-STATIC_VAR struct xprnctx {
+static struct xprnctx {
     char let;
     boolean dot;
 } safeq_xprn_ctx;
 
 /* safe_qbuf() -> short_oname() callback */
-STATIC_PTR char *
+static char *
 safeq_xprname(obj)
 struct obj *obj;
 {
@@ -1902,7 +1905,7 @@ struct obj *obj;
 }
 
 /* alternate safe_qbuf() -> short_oname() callback */
-STATIC_PTR char *
+static char *
 safeq_shortxprname(obj)
 struct obj *obj;
 {
@@ -2280,7 +2283,7 @@ struct obj *otmp;
 }
 
 /* menu of unidentified objects; select and identify up to id_limit of them */
-STATIC_OVL void
+static void
 menu_identify(id_limit)
 int id_limit;
 {
@@ -2392,8 +2395,28 @@ learn_unseen_invent()
     update_inventory();
 }
 
+/* persistent inventory window is maintained by interface code;
+   'update_inventory' used to be a macro for
+   (*windowprocs.win_update_inventory) but the restore hackery
+   was getting out of hand; this is now a central call point */
+void
+update_inventory()
+{
+    if (g.restoring)
+        return;
+
+    /*
+     * Ought to check (windowprocs.wincap2 & WC2_PERM_INVENT) here....
+     *
+     * We currently don't skip this call when iflags.perm_invent is False
+     * because curses uses that to disable a previous perm_invent window
+     * (after toggle via 'O'; perhaps the options code should handle that).
+     */
+    (*windowprocs.win_update_inventory)();
+}
+
 /* should of course only be called for things in invent */
-STATIC_OVL char
+static char
 obj_to_let(obj)
 struct obj *obj;
 {
@@ -2483,7 +2506,7 @@ ddoinv()
  * next unpaid object is returned.  This routine recursively follows
  * containers.
  */
-STATIC_OVL struct obj *
+static struct obj *
 find_unpaid(list, last_found)
 struct obj *list, **last_found;
 {
@@ -2521,7 +2544,7 @@ free_pickinv_cache()
  * inventory and return a count as well as a letter. If out_cnt is not null,
  * any count returned from the menu selection is placed here.
  */
-STATIC_OVL char
+static char
 display_pickinv(lets, xtra_choice, query, want_reply, out_cnt)
 register const char *lets;
 const char *xtra_choice; /* "fingers", pick hands rather than an object */
@@ -2539,12 +2562,12 @@ long *out_cnt;
     menu_item *selected;
     unsigned sortflags;
     Loot *sortedinvent, *srtinv;
-    boolean wizid = FALSE;
+    boolean wizid = (wizard && iflags.override_ID), gotsomething = FALSE;
 
     if (lets && !*lets)
         lets = 0; /* simplify tests: (lets) instead of (lets && *lets) */
 
-    if (iflags.perm_invent && (lets || xtra_choice)) {
+    if (iflags.perm_invent && (lets || xtra_choice || wizid)) {
         /* partial inventory in perm_invent setting; don't operate on
            full inventory window, use an alternate one instead; create
            the first time needed and keep it for re-use as needed later */
@@ -2636,6 +2659,7 @@ long *out_cnt;
             add_menu(win, NO_GLYPH, &any, 0, 0, ATR_NONE,
                      "(all items are permanently identified already)",
                      MENU_UNSELECTED);
+            gotsomething = TRUE;
         } else {
             any.a_obj = &wizid_fakeobj;
             Sprintf(prompt, "select %s to permanently identify",
@@ -2643,13 +2667,14 @@ long *out_cnt;
             /* wiz_identify stuffed the wiz_identify command character (^I)
                into iflags.override_ID for our use as an accelerator;
                it could be ambiguous if player has assigned a letter to
-               the #wizidentify command */
+               the #wizidentify command, so include it as a group accelator
+               but use '_' as the primary selector */
             if (unid_cnt > 1)
                 Sprintf(eos(prompt), " (%s for all)",
                         visctrl(iflags.override_ID));
             add_menu(win, NO_GLYPH, &any, '_', iflags.override_ID, ATR_NONE,
                      prompt, MENU_UNSELECTED);
-            wizid = TRUE;
+            gotsomething = TRUE;
         }
    } else if (xtra_choice) {
         /* wizard override ID and xtra_choice are mutually exclusive */
@@ -2659,6 +2684,7 @@ long *out_cnt;
         any.a_char = HANDS_SYM; /* '-' */
         add_menu(win, NO_GLYPH, &any, HANDS_SYM, 0, ATR_NONE,
                  xtra_choice, MENU_UNSELECTED);
+        gotsomething = TRUE;
     }
  nextclass:
     classcount = 0;
@@ -2681,8 +2707,10 @@ long *out_cnt;
                 any.a_obj = otmp;
             else
                 any.a_char = ilet;
-            add_menu(win, obj_to_glyph(otmp), &any, ilet, 0, ATR_NONE,
-                     doname(otmp), MENU_UNSELECTED);
+            add_menu(win, obj_to_glyph(otmp, rn2_on_display_rng), &any, ilet,
+                     wizid ? def_oc_syms[(int) otmp->oclass].sym : 0,
+                     ATR_NONE, doname(otmp), MENU_UNSELECTED);
+            gotsomething = TRUE;
         }
     }
     if (flags.sortpack) {
@@ -2700,13 +2728,14 @@ long *out_cnt;
         any.a_char = '*';
         add_menu(win, NO_GLYPH, &any, '*', 0, ATR_NONE,
                  "(list everything)", MENU_UNSELECTED);
+        gotsomething = TRUE;
     }
     unsortloot(&sortedinvent);
     /* for permanent inventory where we intend to show everything but
        nothing has been listed (because there isn't anyhing to list;
-       recognized via any.a_char still being zero; the n==0 case above
-       gets skipped for perm_invent), put something into the menu */
-    if (iflags.perm_invent && !lets && !any.a_char) {
+       the n==0 case above gets skipped for perm_invent), put something
+       into the menu */
+    if (iflags.perm_invent && !lets && !gotsomething) {
         any = cg.zeroany;
         add_menu(win, NO_GLYPH, &any, 0, 0, 0,
                  not_carrying_anything, MENU_UNSELECTED);
@@ -2721,6 +2750,10 @@ long *out_cnt;
         if (wizid) {
             int i;
 
+            /* identifying items will update perm_invent, calling this
+               routine recursively, and we don't want the nested call
+               to filter on unID'd items */
+            iflags.override_ID = 0;
             ret = '\0';
             for (i = 0; i < n; ++i) {
                 otmp = selected[i].item.a_obj;
@@ -2763,7 +2796,7 @@ boolean want_reply;
  * Show what is current using inventory letters.
  *
  */
-STATIC_OVL char
+static char
 display_used_invlets(avoidlet)
 char avoidlet;
 {
@@ -2795,7 +2828,8 @@ char avoidlet;
                         classcount++;
                     }
                     any.a_char = ilet;
-                    add_menu(win, obj_to_glyph(otmp), &any, ilet, 0, ATR_NONE,
+                    add_menu(win, obj_to_glyph(otmp, rn2_on_display_rng),
+                             &any, ilet, 0, ATR_NONE,
                              doname(otmp), MENU_UNSELECTED);
                 }
             }
@@ -2917,37 +2951,39 @@ int *bcp, *ucp, *ccp, *xcp, *ocp;
 
 /* count everything inside a container, or just shop-owned items inside */
 long
-count_contents(container, nested, quantity, everything)
+count_contents(container, nested, quantity, everything, newdrop)
 struct obj *container;
 boolean nested, /* include contents of any nested containers */
     quantity,   /* count all vs count separate stacks */
-    everything; /* all objects vs only unpaid objects */
+    everything, /* all objects vs only unpaid objects */
+    newdrop;    /* on floor, but hero-owned items haven't been marked
+                 * no_charge yet and shop-owned items are still marked
+                 * unpaid -- used when asking the player whether to sell */
 {
     struct obj *otmp, *topc;
     boolean shoppy = FALSE;
     long count = 0L;
 
-    if (!everything) {
+    if (!everything && !newdrop) {
+        xchar x, y;
+
         for (topc = container; topc->where == OBJ_CONTAINED;
              topc = topc->ocontainer)
             continue;
-        if (topc->where == OBJ_FLOOR) {
-            xchar x, y;
-
-            (void) get_obj_location(topc, &x, &y, CONTAINED_TOO);
+        if (topc->where == OBJ_FLOOR && get_obj_location(topc, &x, &y, 0))
             shoppy = costly_spot(x, y);
-        }
     }
     for (otmp = container->cobj; otmp; otmp = otmp->nobj) {
         if (nested && Has_contents(otmp))
-            count += count_contents(otmp, nested, quantity, everything);
+            count += count_contents(otmp, nested, quantity, everything,
+                                    newdrop);
         if (everything || otmp->unpaid || (shoppy && !otmp->no_charge))
             count += quantity ? otmp->quan : 1L;
     }
     return count;
 }
 
-STATIC_OVL void
+static void
 dounpaid()
 {
     winid win;
@@ -3049,7 +3085,7 @@ dounpaid()
 }
 
 
-STATIC_OVL boolean
+static boolean
 this_type_only(obj)
 struct obj *obj;
 {
@@ -3348,6 +3384,21 @@ boolean picked_some;
     if (u.uswallow && u.ustuck) {
         struct monst *mtmp = u.ustuck;
 
+        /*
+         * FIXME?
+         *  Engulfer's inventory can include worn items (specific case is
+         *  Juiblex being created with an amulet as random defensive item)
+         *  which will be flagged as "(being worn)".  This code includes
+         *  such a worn item under the header "Contents of <mon>'s stomach",
+         *  a nifty trick for how/where to wear stuff.  The situation is
+         *  rare enough to turn a blind eye.
+         *
+         *  3.6.3:  Pickup has been changed to decline to pick up a worn
+         *  item from inside an engulfer, but if player tries, it just
+         *  says "you can't" without giving a reason why (which would be
+         *  something along the lines of "because it's worn on the outside
+         *  so is unreachable from in here...").
+         */
         Sprintf(fbuf, "Contents of %s %s", s_suffix(mon_nam(mtmp)),
                 mbodypart(mtmp, STOMACH));
         /* Skip "Contents of " by using fbuf index 12 */
@@ -3566,11 +3617,8 @@ register struct obj *otmp, *obj;
     if (obj->oclass == COIN_CLASS)
         return TRUE;
 
-    if (obj->unpaid != otmp->unpaid || obj->spe != otmp->spe
-        || obj->cursed != otmp->cursed || obj->blessed != otmp->blessed
-        || obj->no_charge != otmp->no_charge || obj->obroken != otmp->obroken
-        || obj->otrapped != otmp->otrapped || obj->lamplit != otmp->lamplit
-        || obj->bypass != otmp->bypass)
+    if (obj->bypass != otmp->bypass
+        || obj->cursed != otmp->cursed || obj->blessed != otmp->blessed)
         return FALSE;
 
     if (obj->globby)
@@ -3578,6 +3626,11 @@ register struct obj *otmp, *obj;
     /* Checks beyond this point either aren't applicable to globs
      * or don't inhibit their merger.
      */
+
+    if (obj->unpaid != otmp->unpaid || obj->spe != otmp->spe
+        || obj->no_charge != otmp->no_charge || obj->obroken != otmp->obroken
+        || obj->otrapped != otmp->otrapped || obj->lamplit != otmp->lamplit)
+        return FALSE;
 
     if (obj->oclass == FOOD_CLASS
         && (obj->oeaten != otmp->oeaten || obj->orotten != otmp->orotten))
@@ -3672,7 +3725,7 @@ doprwep()
 }
 
 /* caller is responsible for checking !wearing_armor() */
-STATIC_OVL void
+static void
 noarmor(report_uskin)
 boolean report_uskin;
 {
@@ -3761,7 +3814,7 @@ dopramulet()
     return 0;
 }
 
-STATIC_OVL boolean
+static boolean
 tool_in_use(obj)
 struct obj *obj;
 {
@@ -3844,13 +3897,13 @@ long numused;
  * Conversion from a class to a string for printing.
  * This must match the object class order.
  */
-STATIC_VAR NEARDATA const char *names[] = {
+static NEARDATA const char *names[] = {
     0, "Illegal objects", "Weapons", "Armor", "Rings", "Amulets", "Tools",
     "Comestibles", "Potions", "Scrolls", "Spellbooks", "Wands", "Coins",
     "Gems/Stones", "Boulders/Statues", "Iron balls", "Chains", "Venoms"
 };
-STATIC_VAR NEARDATA const char oth_symbols[] = { CONTAINED_SYM, '\0' };
-STATIC_VAR NEARDATA const char *oth_names[] = { "Bagged/Boxed items" };
+static NEARDATA const char oth_symbols[] = { CONTAINED_SYM, '\0' };
+static NEARDATA const char *oth_names[] = { "Bagged/Boxed items" };
 
 char *
 let_to_name(let, unpaid, showsym)
@@ -3996,8 +4049,11 @@ doorganize() /* inventory organizer by Del Lamb */
     const char *adj_type;
     boolean ever_mind = FALSE, collect;
 
-    if (!g.invent) {
-        You("aren't carrying anything to adjust.");
+    /* when no invent, or just gold in '$' slot, there's nothing to adjust */
+    if (!g.invent || (g.invent->oclass == COIN_CLASS
+                    && g.invent->invlet == GOLD_SYM && !g.invent->nobj)) {
+        You("aren't carrying anything %s.",
+            !g.invent ? "to adjust" : "adjustable");
         return 0;
     }
 
@@ -4207,7 +4263,7 @@ doorganize() /* inventory organizer by Del Lamb */
 }
 
 /* common to display_minventory and display_cinventory */
-STATIC_OVL void
+static void
 invdisp_nothing(hdr, txt)
 const char *hdr, *txt;
 {
@@ -4230,7 +4286,7 @@ const char *hdr, *txt;
 }
 
 /* query_objlist callback: return things that are worn or wielded */
-STATIC_OVL boolean
+static boolean
 worn_wield_only(obj)
 struct obj *obj;
 {
@@ -4286,12 +4342,17 @@ char *title;
          * displaying 'weapon in claw', etc. properly.
          */
         g.youmonst.data = mon->data;
+        /* in case inside a shop, don't append "for sale" prices */
+        iflags.suppress_price++;
 
         n = query_objlist(title ? title : tmp, &(mon->minvent),
                           (INVORDER_SORT | (incl_hero ? INCLUDE_HERO : 0)),
                           &selected, pickings,
                           do_all ? allow_all : worn_wield_only);
-        set_uasmon();
+
+        iflags.suppress_price--;
+        /* was 'set_uasmon();' but that potentially has side-effects */
+        g.youmonst.data = &mons[u.umonnum]; /* most basic part of set_uasmon */
     } else {
         invdisp_nothing(title ? title : tmp, "(none)");
         n = 0;
@@ -4338,7 +4399,7 @@ register struct obj *obj;
 }
 
 
-STATIC_OVL boolean
+static boolean
 only_here(obj)
 struct obj *obj;
 {
