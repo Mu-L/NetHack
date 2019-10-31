@@ -50,9 +50,10 @@ fixes30.pl08   fixes30.pl09   fixes30.pl10   fixes31.1      fixes31.2
 fixes31.3      fixes32.0      fixes32.1      fixes32.2      fixes32.3
 fixes33.0      fixes33.1      fixes34.0      fixes34.1      fixes34.2
 fixes34.3      fixes35.0      fixes36.0      fixes36.1      fixes36.2
-fixes36.3      lev_comp.6     lev_comp.txt   makedefs.6     makedefs.txt
-mn.7           mnh.7          nethack.6      nethack.txt    recover.6
-recover.txt    tmac.n         tmac.nh        window.doc
+fixes36.3      fixes37.0      fixesXX.X      lev_comp.6     lev_comp.txt
+makedefs.6     makedefs.txt   mn.7           mnh.7          nethack.6
+nethack.txt    recover.6      recover.txt    tmac.n         tmac.nh
+window.doc
 
 include:
 (files for GEM versions)
@@ -78,11 +79,11 @@ mfndpos.h     micro.h       mkroom.h      monattk.h     mondata.h
 monflag.h     monst.h       monsym.h      ntconf.h      obj.h
 objclass.h    os2conf.h     patchlevel.h  pcconf.h      permonst.h
 prop.h        qtext.h       quest.h       rect.h        region.h
-rm.h          skills.h      sp_lev.h      spell.h       sys.h
-system.h      tcap.h        tileset.h     timeout.h     tosconf.h
-tradstdc.h    trampoli.h    trap.h        unixconf.h    vision.h
-vmsconf.h     wceconf.h     winami.h      wincurs.h     winprocs.h
-wintype.h     you.h         youprop.h
+rm.h          sfprocs.h     sfproto.h     skills.h      sp_lev.h
+spell.h       sys.h         system.h      tcap.h        tileset.h
+timeout.h     tosconf.h     tradstdc.h    trampoli.h    trap.h
+unixconf.h    vision.h      vmsconf.h     wceconf.h     winami.h
+wincurs.h     winprocs.h    wintype.h     you.h         youprop.h
 
 (file for tty versions)
 wintty.h
@@ -93,35 +94,35 @@ mactty.h      macwin.h      mttypriv.h
 
 src:
 (files for all versions)
-allmain.c   alloc.c     apply.c     artifact.c  attrib.c    ball.c
-bones.c     botl.c      cmd.c       dbridge.c   decl.c      detect.c
-dig.c       display.c   dlb.c       do.c        do_name.c   do_wear.c
-dog.c       dogmove.c   dokick.c    dothrow.c   drawing.c   dungeon.c
-eat.c       end.c       engrave.c   exper.c     explode.c   extralev.c
-files.c     fountain.c  hack.c      hacklib.c   invent.c    isaac64.c
-light.c     lock.c      mail.c      makemon.c   mapglyph.c  mcastu.c
-mhitm.c     mhitu.c     minion.c    mklev.c     mkmap.c     mkmaze.c
-mkobj.c     mkroom.c    mon.c       mondata.c   monmove.c   monst.c
-mplayer.c   mthrowu.c   muse.c      music.c     o_init.c    objects.c
-objnam.c    options.c   pager.c     pickup.c    pline.c     polyself.c
-potion.c    pray.c      priest.c    quest.c     questpgr.c  read.c
-rect.c      region.c    restore.c   rip.c       rnd.c       role.c
-rumors.c    save.c      shk.c       shknam.c    sit.c       sounds.c
-sp_lev.c    spell.c     steal.c     steed.c     sys.c       teleport.c
-timeout.c   topten.c    track.c     trap.c      u_init.c    uhitm.c
-vault.c     version.c   vision.c    weapon.c    were.c      wield.c
-windows.c   wizard.c    worm.c      worn.c      write.c     zap.c
+allmain.c    alloc.c      apply.c      artifact.c   attrib.c     ball.c
+bones.c      botl.c       cmd.c        dbridge.c    decl.c       detect.c
+dig.c        display.c    dlb.c        do.c         do_name.c    do_wear.c
+dog.c        dogmove.c    dokick.c     dothrow.c    drawing.c    dungeon.c
+eat.c        end.c        engrave.c    exper.c      explode.c    extralev.c
+files.c      fountain.c   hack.c       hacklib.c    invent.c     isaac64.c
+light.c      lock.c       mail.c       makemon.c    mapglyph.c   mcastu.c
+mhitm.c      mhitu.c      minion.c     mklev.c      mkmap.c      mkmaze.c
+mkobj.c      mkroom.c     mon.c        mondata.c    monmove.c    monst.c
+mplayer.c    mthrowu.c    muse.c       music.c      o_init.c     objects.c
+objnam.c     options.c    pager.c      pickup.c     pline.c      polyself.c
+potion.c     pray.c       priest.c     quest.c      questpgr.c   read.c
+rect.c       region.c     restore.c    rip.c        rnd.c        role.c
+rumors.c     save.c       sfascii.c    sfbase.c     sfdata.c     sflendian.c
+sfstruct.c   shk.c        shknam.c     sit.c        sounds.c     sp_lev.c
+spell.c      steal.c      steed.c      sys.c        teleport.c   timeout.c
+topten.c     track.c      trap.c       u_init.c     uhitm.c      vault.c
+version.c    vision.c     weapon.c     were.c       wield.c      windows.c
+wizard.c     worm.c       worn.c       write.c      zap.c
 
 sys/amiga:
 (files for Amiga versions - untested for 3.6.2)
 Build.ami     Install.ami   Makefile.agc  Makefile.ami  NetHack.cnf
 amidos.c      amidos.p      amifont.uu    amifont8.uu   amigst.c
-amii.hlp      amimenu.c     amirip.c      amisnd.c      amistack.c
-amitty.c      amiwind.c     amiwind.p     clipwin.c     colorwin.c
-cvtsnd.c      grave16.xpm   ifchange      mkdmake       txt2iff.c
-winami.c      winami.p      winchar.c     windefs.h     winext.h
-winfuncs.c    winkey.c      winmenu.c     winproto.h    winreq.c
-winstr.c      xpm2iff.c
+amii.hlp      amimenu.c     amirip.c      amistack.c    amitty.c
+amiwind.c     amiwind.p     clipwin.c     colorwin.c    grave16.xpm
+ifchange      mkdmake       txt2iff.c     winami.c      winami.p
+winchar.c     windefs.h     winext.h      winfuncs.c    winkey.c
+winmenu.c     winproto.h    winreq.c      winstr.c      xpm2iff.c
 
 sys/atari:
 (files for Atari version - untested for 3.6.2)
@@ -137,17 +138,16 @@ sys/mac:
 Files.r       Install.mw    MacHelp       NHDeflts      NHrsrc.hqx
 NHsound.hqx   News          README        carbon.plist  dprintf.c
 maccurs.c     macerrs.c     macfile.c     machelp.hqx   macmain.c
-macmenu.c     macsnd.c      mactopl.c     mactty.c      macunix.c
-macwin.c      mgetline.c    mmodal.c      mrecover.c    mrecover.hqx
-mttymain.c
+macmenu.c     mactopl.c     mactty.c      macunix.c     macwin.c
+mgetline.c    mmodal.c      mrecover.c    mrecover.hqx  mttymain.c
 
 sys/msdos:
 (files for MSDOS version - untested for 3.6.2)
 Install.dos   Makefile.BC   Makefile.GCC  Makefile.MSC  SCHEMA35.MSC
 moveinit.pat  msdos.c       msdoshlp.txt  ovlinit.c     pckeys.c
 pctiles.c     pctiles.h     pcvideo.h     portio.h      schema1.BC
-schema2.BC    schema3.MSC   setup.bat     sound.c       tile2bin.c
-vesa.h        video.c       vidtxt.c      vidvesa.c     vidvga.c
+schema2.BC    schema3.MSC   setup.bat     tile2bin.c    vesa.h
+video.c       vidtxt.c      vidvesa.c     vidvga.c
 
 (files for running MSDOS binary under Windows)
 nhico.uu  nhpif.uu
@@ -199,11 +199,6 @@ cppregex.cpp
 (pmatch regex for other versions)
 pmatchregex.c
 
-sys/share/sounds:
-(files for Amiga and Macintosh versions)
-README       bell.uu      bugle.uu     erthdrum.uu  firehorn.uu  frsthorn.uu
-lethdrum.uu  mgcflute.uu  mgcharp.uu   toolhorn.uu  wdnflute.uu  wdnharp.uu
-
 sys/unix:
 (files for UNIX versions)
 Install.unx     Makefile.dat    Makefile.doc    Makefile.src
@@ -214,9 +209,6 @@ unixmain.c      unixres.c       unixunix.c
 
 (files for replacement cpp, only needed by some ancient UNIX systems)
 cpp1.shr  cpp2.shr  cpp3.shr
-
-(file for sound driver for 386 UNIX)
-snd86unx.shr
 
 sys/unix/NetHack.xcodeproj:
 (file for UNIX versions)
@@ -283,7 +275,7 @@ windmain.c      winnt.c         winos.h
 util:
 (files for all versions)
 dgn_main.c  dlb_main.c  lev_main.c  makedefs.c  mdgrep.h    mdgrep.pl
-panic.c     recover.c
+panic.c     readtags.c  recover.c
 
 (lex/yacc input for special level and dungeon compilers)
 dgn_comp.l  dgn_comp.y  lev_comp.l  lev_comp.y
