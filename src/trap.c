@@ -2624,7 +2624,8 @@ register struct monst *mtmp;
                       a_your[trap->madeby_u]);
             }
             if (!in_sight && !Deaf)
-                pline("Kaablamm!  You hear an explosion in the distance!");
+                pline("Kaablamm!  %s an explosion in the distance!",
+                      "You hear");  /* Deaf-aware */
             blow_up_landmine(trap);
             /* explosion might have destroyed a drawbridge; don't
                dish out more damage if monster is already dead */
@@ -3454,7 +3455,7 @@ struct obj *obj;
         grease_protect(obj, (char *) 0, victim);
     } else if (obj->oclass == SCROLL_CLASS && obj->otyp != SCR_BLANK_PAPER) {
         if (obj->otyp != SCR_BLANK_PAPER
-#ifdef MAIL
+#ifdef MAIL_STRUCTURES
             && obj->otyp != SCR_MAIL
 #endif
             ) {
@@ -3530,7 +3531,7 @@ boolean force;
         return ER_NOTHING;
     } else if (obj->oclass == SCROLL_CLASS) {
         if (obj->otyp == SCR_BLANK_PAPER
-#ifdef MAIL
+#ifdef MAIL_STRUCTURES
             || obj->otyp == SCR_MAIL
 #endif
            ) return 0;

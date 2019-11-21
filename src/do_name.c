@@ -1,4 +1,4 @@
-/* NetHack 3.6	do_name.c	$NHDT-Date: 1560611967 2019/06/15 15:19:27 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.149 $ */
+/* NetHack 3.6	do_name.c	$NHDT-Date: 1573940540 2019/11/16 21:42:20 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.150 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -306,7 +306,7 @@ gloc_filter_init()
 {
     if (iflags.getloc_filter == GFILTER_AREA) {
         if (!g.gloc_filter_map) {
-            g.gloc_filter_map = selection_opvar((char *) 0);
+            g.gloc_filter_map = selection_new();
         }
         /* special case: if we're in a doorway, try to figure out which
            direction we're moving, and use that side of the doorway */
@@ -326,8 +326,8 @@ void
 gloc_filter_done()
 {
     if (g.gloc_filter_map) {
-        opvar_free_x(g.gloc_filter_map);
-        g.gloc_filter_map = (struct opvar *) 0;
+        selection_free(g.gloc_filter_map);
+        g.gloc_filter_map = (struct selectionvar *) 0;
 
     }
 }
@@ -1969,6 +1969,42 @@ struct monst *mon, *other_mon;
             Strcpy(outbuf, "itself");
             break;
         }
+    }
+    return outbuf;
+}
+
+/* for debugging messages, where data might be suspect and we aren't
+   taking what the hero does or doesn't know into consideration */
+char *
+minimal_monnam(mon, ckloc)
+struct monst *mon;
+boolean ckloc;
+{
+    struct permonst *ptr;
+    char *outbuf = nextmbuf();
+
+    if (!mon) {
+        Strcpy(outbuf, "[Null monster]");
+    } else if ((ptr = mon->data) == 0) {
+        Strcpy(outbuf, "[Null mon->data]");
+    } else if (ptr < &mons[0]) {
+        Sprintf(outbuf, "[Invalid mon->data %s < %s]",
+                fmt_ptr((genericptr_t) mon->data),
+                fmt_ptr((genericptr_t) &mons[0]));
+    } else if (ptr >= &mons[NUMMONS]) {
+        Sprintf(outbuf, "[Invalid mon->data %s >= %s]",
+                fmt_ptr((genericptr_t) mon->data),
+                fmt_ptr((genericptr_t) &mons[NUMMONS]));
+    } else if (ckloc && ptr == &mons[PM_LONG_WORM]
+               && g.level.monsters[mon->mx][mon->my] != mon) {
+        Sprintf(outbuf, "%s <%d,%d>",
+                mons[PM_LONG_WORM_TAIL].mname, mon->mx, mon->my);
+    } else {
+        Sprintf(outbuf, "%s%s <%d,%d>",
+                mon->mtame ? "tame " : mon->mpeaceful ? "peaceful " : "",
+                mon->data->mname, mon->mx, mon->my);
+        if (mon->cham != NON_PM)
+            Sprintf(eos(outbuf), "{%s}", mons[mon->cham].mname);
     }
     return outbuf;
 }

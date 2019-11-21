@@ -290,4 +290,8 @@ extern void FDECL(nhassert_failed, (const char * exp, const char * file,
 extern void FDECL(nethack_exit, (int)) NORETURN;
 extern boolean FDECL(file_exists, (const char *));
 extern boolean FDECL(file_newer, (const char *, const char *));
+#ifndef SYSTEM_H
+#include "system.h"
+#endif
+
 #endif /* NTCONF_H */

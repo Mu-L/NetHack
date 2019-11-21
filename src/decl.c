@@ -1,4 +1,4 @@
-/* NetHack 3.6	decl.c	$NHDT-Date: 1571352532 2019/10/17 22:48:52 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.146 $ */
+/* NetHack 3.6	decl.c	$NHDT-Date: 1573869062 2019/11/16 01:51:02 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.149 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2009. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -108,9 +108,17 @@ const char *materialnm[] = { "mysterious", "liquid",  "wax",        "organic",
                              "platinum",   "mithril", "plastic",    "glass",
                              "gemstone",   "stone" };
 
+char emptystr[] = {0};       /* non-const */
+
 /* Global windowing data, defined here for multi-window-system support */
 NEARDATA winid WIN_MESSAGE, WIN_STATUS, WIN_MAP, WIN_INVEN;
-                                   
+#ifdef WIN32
+boolean fqn_prefix_locked[PREFIX_COUNT] = { FALSE, FALSE, FALSE,
+                                            FALSE, FALSE, FALSE,
+                                            FALSE, FALSE, FALSE,
+                                            FALSE };
+#endif
+
 #ifdef PREFIXES_IN_USE
 const char *fqn_prefix_names[PREFIX_COUNT] = {
     "hackdir",  "leveldir", "savedir",    "bonesdir",  "datadir",
@@ -624,7 +632,8 @@ const struct instance_globals g_init = {
     NULL, /* lev_message */
     NULL, /* lregions */
     0, /* num_lregions */
-    UNDEFINED_VALUES, /* SplLev_Map */
+    UNDEFINED_VALUES, /* SpLev_Map */
+    NULL, /* coder */
     UNDEFINED_VALUE, /* xstart */
     UNDEFINED_VALUE, /* ystart */
     UNDEFINED_VALUE, /* xsize */
@@ -636,7 +645,6 @@ const struct instance_globals g_init = {
     { UNDEFINED_PTR }, /* container_obj */
     0, /* container_idx */
     NULL, /* invent_carrying_monster */
-    { AM_CHAOTIC, AM_NEUTRAL, AM_LAWFUL }, /* ralign */
 
     /* spells.c */
     0, /* spl_sortmode */

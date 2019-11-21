@@ -1,4 +1,4 @@
-/* NetHack 3.6  decl.h  $NHDT-Date: 1559601011 2019/06/03 22:30:11 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.150 $ */
+/* NetHack 3.6  decl.h  $NHDT-Date: 1573869061 2019/11/16 01:51:01 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.165 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2007. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -339,6 +339,9 @@ E const struct c_common_strings c_common_strings;
 /* material strings */
 E const char *materialnm[];
 
+/* empty string that is non-const for parameter use */
+E char emptystr[];
+
 /* Monster name articles */
 #define ARTICLE_NONE 0
 #define ARTICLE_THE 1
@@ -409,6 +412,9 @@ E const char *const monexplain[], invisexplain[], *const oclass_names[];
 #define PREFIXES_IN_USE
 #endif
 
+#ifdef WIN32
+E boolean fqn_prefix_locked[PREFIX_COUNT];
+#endif
 #ifdef PREFIXES_IN_USE
 E const char *fqn_prefix_names[PREFIX_COUNT];
 #endif
@@ -421,12 +427,9 @@ E struct restore_info restoreinfo;
 
 E NEARDATA struct savefile_info sfcap, sfrestinfo, sfsaveinfo;
 
-struct opvar {
-    xchar spovartyp; /* one of SPOVAR_foo */
-    union {
-        char *str;
-        long l;
-    } vardata;
+struct selectionvar {
+    int wid, hei;
+    char *map;
 };
 
 struct autopickup_exception {
@@ -461,7 +464,7 @@ struct breadcrumbs {
 E const char *ARGV0;
 #endif
 
-enum earlyarg {ARG_DEBUG, ARG_VERSION
+enum earlyarg {ARG_DEBUG, ARG_VERSION, ARG_SHOWPATHS
 #ifdef WIN32
     ,ARG_WINDOWS
 #endif
@@ -871,7 +874,7 @@ struct instance_globals {
     d_level save_dlevel;
 
     /* do_name.c */
-    struct opvar *gloc_filter_map;
+    struct selectionvar *gloc_filter_map;
     int gloc_filter_floodfill_match_glyph;
     int via_naming;
 
@@ -1185,6 +1188,7 @@ struct instance_globals {
     int num_lregions;
     /* positions touched by level elements explicitly defined in the des-file */
     char SpLev_Map[COLNO][ROWNO];
+    struct sp_coder *coder;
     xchar xstart, ystart;
     char xsize, ysize;
     boolean splev_init_present;
@@ -1194,7 +1198,6 @@ struct instance_globals {
     struct obj *container_obj[MAX_CONTAINMENT];
     int container_idx;
     struct monst *invent_carrying_monster;
-    aligntyp ralign[3];
 
     /* spells.c */
     int spl_sortmode;   /* index into spl_sortchoices[] */

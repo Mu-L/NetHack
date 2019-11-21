@@ -74,27 +74,31 @@ VARDAT = $(VARDATD) $(VARDATND)
 #CHOWN = chown
 #CHGRP = chgrp
 
+# Lua version
+LUA_VERSION = 5.3.5
+
 #
 # end of configuration
 #
 
 DATHELP = help hh cmdhelp keyhelp history opthelp wizhelp
 
-SPEC_LEVS = asmodeus.lev baalz.lev bigrm-*.lev castle.lev fakewiz?.lev \
-	juiblex.lev knox.lev medusa-?.lev minend-?.lev minefill.lev \
-	minetn-?.lev oracle.lev orcus.lev sanctum.lev soko?-?.lev \
-	tower?.lev valley.lev wizard?.lev \
-	astral.lev air.lev earth.lev fire.lev water.lev
-QUEST_LEVS = ???-goal.lev ???-fil?.lev ???-loca.lev ???-strt.lev
+SPEC_LEVS = asmodeus.lua baalz.lua bigrm-*.lua castle.lua fakewiz?.lua \
+	juiblex.lua knox.lua medusa-?.lua minend-?.lua minefill.lua \
+	minetn-?.lua oracle.lua orcus.lua sanctum.lua soko?-?.lua \
+	tower?.lua valley.lua wizard?.lua nhlib.lua \
+	astral.lua air.lua earth.lua fire.lua water.lua
+QUEST_LEVS = ???-goal.lua ???-fil?.lua ???-loca.lua ???-strt.lua
 
 DATNODLB = $(VARDATND) license symbols
-DATDLB = $(DATHELP) dungeon tribute $(SPEC_LEVS) $(QUEST_LEVS) $(VARDATD)
+DATDLB = $(DATHELP) dungeon.lua tribute $(SPEC_LEVS) $(QUEST_LEVS) $(VARDATD)
 DAT = $(DATNODLB) $(DATDLB)
 
 $(GAME):
+	( cd lib/lua-5.3.5/src && make a && cp liblua.a ../../../src/ )
 	( cd src ; $(MAKE) )
 
-all:	$(GAME) recover Guidebook $(VARDAT) dungeon spec_levs check-dlb
+all:	$(GAME) recover Guidebook $(VARDAT) spec_levs check-dlb
 	true; $(MOREALL)
 	@echo "Done."
 
@@ -132,14 +136,9 @@ options: $(GAME)
 quest.dat: $(GAME)
 	( cd dat ; $(MAKE) quest.dat )
 
-spec_levs: dungeon
-	( cd util ; $(MAKE) lev_comp )
+spec_levs:
 	( cd dat ; $(MAKE) spec_levs )
 	( cd dat ; $(MAKE) quest_levs )
-
-dungeon: $(GAME)
-	( cd util ; $(MAKE) dgn_comp )
-	( cd dat ; $(MAKE) dungeon )
 
 nhtiles.bmp: $(GAME)
 	( cd dat ; $(MAKE) nhtiles.bmp )
@@ -236,8 +235,16 @@ dofiles-nodlb:
 	-( cd $(INSTDIR) ; $(CHOWN) $(GAMEUID) $(DAT) ; \
 			$(CHGRP) $(GAMEGRP) $(DAT) ; \
 			chmod $(FILEPERM) $(DAT) )
+#
+# This is not part of the dependency build hierarchy.
+# It requires an explicit "make fetch-Lua".
+fetch-lua: fetch-Lua
 
-update: $(GAME) recover $(VARDAT) dungeon spec_levs
+fetch-Lua:
+	( mkdir -p lib ; cd lib ; \
+		curl -R -O http://www.lua.org/ftp/lua-$(LUA_VERSION).tar.gz ; \
+		tar zxf lua-$(LUA_VERSION).tar.gz ; rm -f lua-$(LUA_VERSION).tar.gz )
+update: $(GAME) recover $(VARDAT) spec_levs
 #	(don't yank the old version out from under people who're playing it)
 	-mv $(INSTDIR)/$(GAME) $(INSTDIR)/$(GAME).old
 #	quest.dat is also kept open and has the same problems over NFS
@@ -256,7 +263,7 @@ update: $(GAME) recover $(VARDAT) dungeon spec_levs
 rootcheck:
 	@true; $(ROOTCHECK)
 
-install: rootcheck $(GAME) recover $(VARDAT) dungeon spec_levs
+install: rootcheck $(GAME) recover $(VARDAT) spec_levs
 	true; $(PREINSTALL)
 # set up the directories
 # not all mkdirs have -p; those that don't will create a -p directory
@@ -288,6 +295,7 @@ clean:
 	( cd src ; $(MAKE) clean )
 	( cd util ; $(MAKE) clean )
 	( cd doc ; $(MAKE) clean )
+	( cd lib/lua-5.3.5/src && $(MAKE) clean )
 
 # 'make spotless' returns the source tree to near-distribution condition.
 # it removes .o files, executables, and compiled data files

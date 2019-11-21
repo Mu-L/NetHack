@@ -18,7 +18,7 @@
 /*
  * Development status of this NetHack version.
  */
-#define NH_DEVEL_STATUS NH_STATUS_WIP
+#define NH_DEVEL_STATUS NH_STATUS_BETA
 
 #ifndef DEBUG  /* allow tool chains to define without causing warnings */
 #define DEBUG
@@ -46,7 +46,7 @@
 #define ENGRAVEFILE "engrave"   /* random engravings on the floor */
 #define BOGUSMONFILE "bogusmon" /* hallucinatory monsters */
 #define TRIBUTEFILE "tribute"   /* 3.6 tribute to Terry Pratchett */
-#define LEV_EXT ".lev"          /* extension for special level files */
+#define LEV_EXT ".lua"          /* extension for special level files */
 
 /* Assorted definitions that may depend on selections in config.h. */
 
@@ -351,6 +351,14 @@ struct savefile_info {
 
 #define MAXMONNO 120 /* extinct monst after this number created */
 #define MHPMAX 500   /* maximum monster hp */
+
+/*
+ * Version 3.7.x has aspirations of portable file formats. We
+ * make a distinction between MAIL functionality and MAIL_STRUCTURES
+ * so that the underlying structures are consistent, whether MAIL is
+ * defined or not.
+ */
+#define MAIL_STRUCTURES
 
 /* PANICTRACE: Always defined for NH_DEVEL_STATUS != NH_STATUS_RELEASED
    but only for supported platforms. */
