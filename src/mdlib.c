@@ -1,4 +1,4 @@
-/* NetHack 3.7  mdlib.c  $NHDT-Date: 1562180226 2019/07/03 18:57:06 $  $NHDT-Branch: NetHack-3.6 $:$NHDT-Revision: 1.149 $ */
+/* NetHack 3.7  mdlib.c  $NHDT-Date: 1574646946 2019/11/25 01:55:46 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.0 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Kenneth Lorber, Kensington, Maryland, 2015. */
 /* Copyright (c) M. Stephenson, 1990, 1991.                       */
@@ -41,7 +41,10 @@
 #if !defined(AMIGA) || defined(AZTEC_C)
 #define rewind(fp) fseek((fp), 0L, SEEK_SET) /* guarantee a return value */
 #endif  /* AMIGA || AZTEC_C */
-
+#else
+#ifndef GLOBAL_H
+#include "global.h"
+#endif
 #endif  /* !MAKEDEFS_C */
 
 void NDECL(build_options);
@@ -560,25 +563,21 @@ build_options()
     opttext[idxopttext] = strdup(optbuf);
     if (idxopttext < (MAXOPT - 1))
         idxopttext++;
-    Sprintf(optbuf,
-            "%sNetHack version %d.%d.%d%s\n",
-            opt_indent,
-            VERSION_MAJOR, VERSION_MINOR, PATCHLEVEL,
 #if (NH_DEVEL_STATUS != NH_STATUS_RELEASED)
 #if (NH_DEVEL_STATUS == NH_STATUS_BETA)
-            " [beta]"
+#define STATUS_ARG " [beta]"
 #else
-            " [work-in-progress]"
+#define STATUS_ARG " [work-in-progress]"
 #endif
 #else
-            ""
+#define STATUS_ARG ""
 #endif /* NH_DEVEL_STATUS == NH_STATUS_RELEASED */
-            );
+    Sprintf(optbuf, "%sNetHack version %d.%d.%d%s\n",
+            opt_indent, VERSION_MAJOR, VERSION_MINOR, PATCHLEVEL, STATUS_ARG);
     opttext[idxopttext] = strdup(optbuf);
     if (idxopttext < (MAXOPT - 1))
         idxopttext++;
-    Sprintf(optbuf,
-            "Options compiled into this edition:");
+    Sprintf(optbuf, "Options compiled into this edition:");
     opttext[idxopttext] = strdup(optbuf);
     if (idxopttext < (MAXOPT - 1))
         idxopttext++;
@@ -729,11 +728,11 @@ runtime_info_init()
             VERSION_STRING = strdup(version_string(tmpbuf, "."));
             VERSION_ID = strdup(version_id_string(tmpbuf, BUILD_DATE));
             COPYRIGHT_BANNER_C = strdup(bannerc_string(tmpbuf, BUILD_DATE));
-#ifdef HOST_NETHACK_GIT_SHA
-            NETHACK_GIT_SHA = strdup(HOST_NETHACK_GIT_SHA);
+#ifdef NETHACK_HOST_GIT_SHA
+            NETHACK_GIT_SHA = strdup(NETHACK_HOST_GIT_SHA);
 #endif
-#ifdef HOST_NETHACK_GIT_BRANCH
-            NETHACK_GIT_BRANCH = strdup(HOST_NETHACK_GIT_BRANCH);
+#ifdef NETHACK_HOST_GIT_BRANCH
+            NETHACK_GIT_BRANCH = strdup(NETHACK_HOST_GIT_BRANCH);
 #endif
 #endif /* CROSSCOMPILE_TARGET && !MAKEDEFS_C */
 	}
