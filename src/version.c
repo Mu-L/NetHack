@@ -1,4 +1,4 @@
-/* NetHack 3.6	version.c	$NHDT-Date: 1575072301 2019/11/30 00:05:01 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.62 $ */
+/* NetHack 3.6	version.c	$NHDT-Date: 1575076767 2019/11/30 01:19:27 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.63 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -144,7 +144,7 @@ doextversion()
             done_rt = FALSE,
             done_dlb = FALSE,
             prolog;
-#if 0   /* moved to util/makedefs.c and rendered via dat/options */
+#if 0   /* moved to util/mdlib.c and rendered via do_runtime_info() */
     const char *lua_info[] = {
  "About Lua: Copyright (c) 1994-2017 Lua.org, PUC-Rio.",
  /*        1         2         3         4         5         6         7
@@ -228,10 +228,6 @@ doextversion()
             }
             (void) strncpy(buf, rtbuf, BUFSZ - 1);
             buf[BUFSZ - 1] = '\0';
-#if 0   /* handled via dat/options */
-        } else if ((rtbuf = lua_info[rtcontext++]) != 0) {
-            Strcpy(buf, rtbuf);
-#endif /*0*/
         } else {
             break;
         }
@@ -307,6 +303,7 @@ static struct rt_opt {
     const char *token, *value;
 } rt_opts[] = {
     { ":PATMATCH:", regex_id },
+    { ":LUAVERSION:", " 5.3.5"}, /* plan is to get this directly from Lua */
 };
 
 /*
@@ -458,7 +455,7 @@ void
 store_version(nhfp)
 NHFILE *nhfp;
 {
-#if !defined(CROSSCOMPILE) || (defined(CROSSCOMPILE) && defined(CROSSCOMPILE_HOST))
+#if !defined(CROSSCOMPILE) || defined(CROSSCOMPILE_HOST)
     static const struct version_info version_data = {
         VERSION_NUMBER, VERSION_FEATURES,
         VERSION_SANITY1, VERSION_SANITY2, VERSION_SANITY3
