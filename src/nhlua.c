@@ -1,4 +1,4 @@
-/* NetHack 3.6	nhlua.c	$NHDT-Date: 1574825214 2019/11/27 03:26:54 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.9 $ */
+/* NetHack 3.6	nhlua.c	$NHDT-Date: 1575071986 2019/11/29 23:59:46 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.12 $ */
 /*      Copyright (c) 2018 by Pasi Kallinen */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -217,8 +217,8 @@ lua_State *L;
     int argc = lua_gettop(L);
 
     if (argc == 2) {
-        int x = LUA_INTCAST(lua_tointeger(L, 1));
-        int y = LUA_INTCAST(lua_tointeger(L, 2));
+        int x = (int) lua_tointeger(L, 1);
+        int y = (int) lua_tointeger(L, 2);
 
         if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) {
             char buf[BUFSZ];
@@ -804,8 +804,7 @@ const char *fname;
     dlb *fh;
     char *buf = (char *) 0;
     long buflen;
-    int c, llret;
-    long bufidx = 0;
+    int cnt, llret;
 
     fh = dlb_fopen(fname, "r");
     if (!fh) {
@@ -819,18 +818,19 @@ const char *fname;
     buf = (char *) alloc(sizeof(char) * (buflen + 1));
     dlb_fseek(fh, 0L, SEEK_SET);
 
-    do {
-        c = dlb_fgetc(fh);
-        if (c == EOF)
-            break;
-        buf[bufidx++] = (char) c;
-    } while (bufidx < buflen);
-    buf[bufidx] = '\0';
+    if ((cnt = dlb_fread(buf, 1, buflen, fh)) != buflen) {
+        impossible("nhl_loadlua: Error loading %s, got %i/%li bytes",
+                   fname, cnt, buflen);
+        ret = FALSE;
+        goto give_up;
+    }
+    buf[buflen] = '\0';
     (void) dlb_fclose(fh);
 
     llret = luaL_loadstring(L, buf);
     if (llret != LUA_OK) {
-        impossible("luaL_loadstring: Error loading %s (errcode %i)", fname, llret);
+        impossible("luaL_loadstring: Error loading %s (errcode %i)",
+                   fname, llret);
         ret = FALSE;
         goto give_up;
     } else {
@@ -843,7 +843,7 @@ const char *fname;
         }
     }
 
-give_up:
+ give_up:
     if (buf) {
         free(buf);
         buf = (char *) 0;
@@ -899,7 +899,7 @@ const char *name;
         goto give_up;
     }
 
-give_up:
+ give_up:
     lua_close(L);
 
     return ret;
