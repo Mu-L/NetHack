@@ -700,6 +700,9 @@ struct role_filter {
 #define WIZKIT_MAX 128
 #define CVT_BUF_SIZE 64
 
+#define LUA_VER_BUFSIZ 20
+#define LUA_COPYRIGHT_BUFSIZ 120
+
 struct instance_globals {
 
     /* apply.c */
@@ -1252,6 +1255,10 @@ struct instance_globals {
     /* zap.c */
     int  poly_zapped;
     boolean obj_zapped;
+
+    /* new stuff */
+    char lua_ver[LUA_VER_BUFSIZ];
+    char lua_copyright[LUA_COPYRIGHT_BUFSIZ];
 
     unsigned long magic; /* validate that structure layout is preserved */
 };

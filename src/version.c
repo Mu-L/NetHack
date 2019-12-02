@@ -1,4 +1,4 @@
-/* NetHack 3.6	version.c	$NHDT-Date: 1575076767 2019/11/30 01:19:27 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.63 $ */
+/* NetHack 3.6	version.c	$NHDT-Date: 1575161965 2019/12/01 00:59:25 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.69 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -303,7 +303,8 @@ static struct rt_opt {
     const char *token, *value;
 } rt_opts[] = {
     { ":PATMATCH:", regex_id },
-    { ":LUAVERSION:", " 5.3.5"}, /* plan is to get this directly from Lua */
+    { ":LUAVERSION:", (const char *) g.lua_ver },
+    { ":LUACOPYRIGHT:", (const char *) g.lua_copyright },
 };
 
 /*
@@ -318,9 +319,13 @@ char *buf;
 {
     int i;
 
+    if (!g.lua_ver[0])
+        get_lua_version();
+
     for (i = 0; i < SIZE(rt_opts); ++i) {
-        if (strstri(buf, rt_opts[i].token))
+        if (strstri(buf, rt_opts[i].token) && *rt_opts[i].value) {
             (void) strsubst(buf, rt_opts[i].token, rt_opts[i].value);
+	}
         /* we don't break out of the loop after a match; there might be
            other matches on the same line */
     }
