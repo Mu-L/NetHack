@@ -575,10 +575,10 @@ const char *name;
     ltyp = lua_type(L, -1);
     if (ltyp == LUA_TSTRING) {
         const char *const boolstr[] = { "true", "false", "yes", "no", NULL };
-        const int boolstr2i[] = { TRUE, FALSE, TRUE, FALSE, -1 };
+        /* const int boolstr2i[] = { TRUE, FALSE, TRUE, FALSE, -1 }; */
 
         ret = luaL_checkoption(L, -1, NULL, boolstr);
-        nhUse(boolstr2i[0]);
+        /* nhUse(boolstr2i[0]); */
     } else if (ltyp == LUA_TBOOLEAN) {
         ret = lua_toboolean(L, -1);
     } else if (ltyp == LUA_TNUMBER) {
@@ -908,7 +908,7 @@ const char *name;
 const char *
 get_lua_version()
 {
-    size_t len;
+    size_t len = (size_t) 0;
     const char *vs = (const char *) 0;
     lua_State *L;
 
