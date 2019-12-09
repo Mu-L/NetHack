@@ -1,4 +1,4 @@
-/* NetHack 3.6	mapglyph.c	$NHDT-Date: 1575755075 2019/12/07 21:44:35 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.58 $ */
+/* NetHack 3.6	mapglyph.c	$NHDT-Date: 1575830186 2019/12/08 18:36:26 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.60 $ */
 /* Copyright (c) David Cohrs, 1991                                */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -9,8 +9,10 @@
 #include "color.h"
 #define HI_DOMESTIC CLR_WHITE /* monst.c */
 
+#if 0
 #if !defined(TTY_GRAPHICS)
 #define has_color(n) TRUE
+#endif
 #endif
 
 #ifdef TEXTCOLOR
@@ -57,6 +59,10 @@ static const int explcolors[] = {
 #define is_objpile(x,y) (!Hallucination && g.level.objects[(x)][(y)] \
                          && g.level.objects[(x)][(y)]->nexthere)
 
+#define GMAP_SET                 0x00000001
+#define GMAP_ROGUELEVEL          0x00000002
+#define GMAP_ALTARCOLOR          0x00000004
+
 /*ARGSUSED*/
 int
 mapglyph(glyph, ochar, ocolor, ospecial, x, y, mgflags)
@@ -74,6 +80,21 @@ unsigned mgflags;
             is_you = (x == u.ux && y == u.uy),
             has_rogue_color = (has_rogue_ibm_graphics
                                && g.symset[g.currentgraphics].nocolor == 0);
+
+    if (!g.glyphmap_perlevel_flags) {
+        /*
+         *    GMAP_SET                0x00000001
+         *    GMAP_ROGUELEVEL         0x00000002
+         *    GMAP_ALTARCOLOR         0x00000004
+         */
+        g.glyphmap_perlevel_flags |= GMAP_SET;
+
+        if (Is_rogue_level(&u.uz)) {
+            g.glyphmap_perlevel_flags |= GMAP_ROGUELEVEL;
+        } else if ((Is_astralevel(&u.uz) || Is_sanctum(&u.uz))) {
+            g.glyphmap_perlevel_flags |= GMAP_ALTARCOLOR;
+        }
+    }
 
     /*
      *  Map the glyph back to a character and color.
@@ -142,22 +163,24 @@ unsigned mgflags;
                           == g.showsyms[S_water + SYM_OFF_P])) {
             special |= MG_BW_LAVA;
         } else if (offset == S_altar && iflags.use_color) {
-            if ((Is_astralevel(&u.uz) || Is_sanctum(&u.uz))
-                && (levl[x][y].altarmask & AM_SHRINE)) {
+            int amsk = altarmask_at(x, y); /* might be a mimic */
+
+            if ((g.glyphmap_perlevel_flags & GMAP_ALTARCOLOR)
+                && (amsk & AM_SHRINE) != 0) {
                 /* high altar */
                 color = CLR_BRIGHT_MAGENTA;
             } else {
-                switch (levl[x][y].altarmask & AM_MASK) {
+                switch (amsk & AM_MASK) {
 #if 0   /*
-         * On OSX with XTERM=xterm-color256 these render as
+         * On OSX with TERM=xterm-color256 these render as
          *  white -> tty: gray, curses: ok
          *  gray  -> both tty and curses: black
          *  black -> both tty and curses: blue
          *  red   -> both tty and curses: ok.
-         * Since the colors have specific associations (mainly with
-         * the unicorns matched with each alignment), we shouldn't use
+         * Since the colors have specific associations (with the
+         * unicorns matched with each alignment), we shouldn't use
          * scrambled colors and we don't have sufficient information
-         * to handle platform-specific variations.
+         * to handle platform-specific color variations.
          */
                 case AM_LAWFUL:  /* 4 */
                     color = CLR_WHITE;
@@ -273,14 +296,16 @@ unsigned mgflags;
 
         if ((special & MG_PET) != 0) {
             ovidx = SYM_PET_OVERRIDE + SYM_OFF_X;
-            if (Is_rogue_level(&u.uz) ? g.ov_rogue_syms[ovidx]
-                                      : g.ov_primary_syms[ovidx])
+            if ((g.glyphmap_perlevel_flags & GMAP_ROGUELEVEL)
+                    ? g.ov_rogue_syms[ovidx]
+                    : g.ov_primary_syms[ovidx])
                 idx = ovidx;
         }
         if (is_you) {
             ovidx = SYM_HERO_OVERRIDE + SYM_OFF_X;
-            if (Is_rogue_level(&u.uz) ? g.ov_rogue_syms[ovidx]
-                                      : g.ov_primary_syms[ovidx])
+            if ((g.glyphmap_perlevel_flags & GMAP_ROGUELEVEL)
+                    ? g.ov_rogue_syms[ovidx]
+                    : g.ov_primary_syms[ovidx])
                 idx = ovidx;
         }
     }
@@ -288,7 +313,8 @@ unsigned mgflags;
     ch = g.showsyms[idx];
 #ifdef TEXTCOLOR
     /* Turn off color if no color defined, or rogue level w/o PC graphics. */
-    if (!has_color(color) || (Is_rogue_level(&u.uz) && !has_rogue_color))
+    if (!has_color(color) ||
+            ((g.glyphmap_perlevel_flags & GMAP_ROGUELEVEL) && !has_rogue_color))
 #endif
         color = NO_COLOR;
     *ochar = (int) ch;
