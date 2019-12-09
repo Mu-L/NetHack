@@ -82,9 +82,6 @@ bitmfile.h  gem_rsc.h   load_img.h  wingem.h
 (file for GNOME versions)
 winGnome.h
 
-(files for Qt versions)
-qt_clust.h     qt_kde0.h      qt_win.h       qt_xpms.h      qttableview.h
-
 (files for X versions)
 tile2x11.h  winX.h      xwindow.h   xwindowp.h
 
@@ -315,14 +312,16 @@ qt_msg.cpp    qt_msg.h      qt_plsel.cpp  qt_plsel.h    qt_rip.cpp
 qt_rip.h      qt_set.cpp    qt_set.h      qt_stat.cpp   qt_stat.h
 qt_str.cpp    qt_str.h      qt_streq.cpp  qt_streq.h    qt_svsel.cpp
 qt_svsel.h    qt_win.cpp    qt_win.h      qt_xcmd.cpp   qt_xcmd.h
-qt_yndlg.cpp  qt_yndlg.h
+qt_xpms.h     qt_yndlg.cpp  qt_yndlg.h
 
 win/Qt3:
 (files for the Qt 3 widget library - X11, Windows, Mac OS X, or Qtopia)
 Info.plist           Install.Qt           knethack.lnk
 knh-mini.xpm         knh.xpm              qpe-nethack.control
-qt_clust.cpp         qt_win.cpp           qttableview.cpp
-tileedit.cpp         tileedit.h
+qt3_clust.cpp        qt3_clust.h          qt3_kde0.h
+qt3_win.cpp          qt3_win.h            qt3_xpms.h
+qt3tableview.cpp     qt3tableview.h       tileedit.cpp
+tileedit.h
 
 win/X11:
 (files for X versions)
