@@ -1773,7 +1773,10 @@ char acc; /* group accelerator, 0 => all */
     tty_menu_item *curr;
     int n;
 
-    for (n = 0, curr = page_start; curr != page_end; n++, curr = curr->next)
+    for (n = 0, curr = page_start; curr != page_end; n++, curr = curr->next) {
+        if (!menuitem_invert_test(0, curr->itemflags, curr->selected))
+            continue;
+
         if (curr->identifier.a_void && (acc == 0 || curr->gselector == acc)) {
             if (curr->selected) {
                 curr->selected = FALSE;
@@ -1782,6 +1785,7 @@ char acc; /* group accelerator, 0 => all */
                 curr->selected = TRUE;
             set_item_state(window, n, curr);
         }
+    }
 }
 
 /*
@@ -1808,11 +1812,13 @@ char acc; /* group accelerator, 0 => all */
 
         if (!on_curr_page && curr->identifier.a_void
             && (acc == 0 || curr->gselector == acc)) {
-            if (curr->selected) {
-                curr->selected = FALSE;
-                curr->count = -1;
-            } else
+            if (menuitem_invert_test(0, curr->itemflags, curr->selected)) {
+                if (curr->selected) {
+                    curr->selected = FALSE;
+                    curr->count = -1;
+                } else
                 curr->selected = TRUE;
+            }
         }
     }
 }
