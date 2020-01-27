@@ -3623,7 +3623,6 @@
             Show  corridor  squares  seen by night vision or a light source
             held by your character as lit (default off).  Persistent.
 
-          NetHack 3.7                                       January 7, 2020
 
           NetHack 3.7                                      January 27, 2020
 
@@ -3690,7 +3689,6 @@
             Not all ports can actually display all types.
 
 
-          NetHack 3.7                                       January 7, 2020
 
           NetHack 3.7                                      January 27, 2020
 
@@ -3823,14 +3821,12 @@
             For backward compatibility, omitting a value  is  the  same  as
             specifying  1 and negating number_pad is the same as specifying
 
-          NetHack 3.7                                       January 7, 2020
 
           NetHack 3.7                                      January 27, 2020
 
 
 
 
-          NetHack Guidebook                                              59
 
           NetHack Guidebook                                              59
 
@@ -3891,14 +3887,12 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
 
           NetHack 3.7                                      January 27, 2020
 
 
 
 
-          NetHack Guidebook                                              60
 
           NetHack Guidebook                                              60
 
@@ -3959,14 +3953,12 @@
           pickup_types
             Specify the object types to be picked up when autopickup is on.
 
-          NetHack 3.7                                       January 7, 2020
 
           NetHack 3.7                                      January 27, 2020
 
 
 
 
-          NetHack Guidebook                                              61
 
           NetHack Guidebook                                              61
 
@@ -6156,16 +6148,16 @@
           again  to M. Drew Streib and Pasi Kallinen for providing a public
           NetHack server at nethack.alt.org. Thanks to  Keith  Simpson  and
           Andy Thomson for hardfought.org. Thanks to all those unnamed dun-
-          geoneers  who  invest  their  time and effort into annual NetHack
-          tournaments such as Junethack, The  November  NetHack  Tournament
+          geoneers who invest their time and  effort  into  annual  NetHack
+          tournaments  such  as  Junethack, The November NetHack Tournament
           and in days past, devnull.net (gone for now, but not forgotten).
 
                                  - - - - - - - - - -
 
-               From  time  to  time,  some depraved individual out there in
-          netland sends a particularly intriguing modification to help  out
+               From time to time, some depraved  individual  out  there  in
+          netland  sends a particularly intriguing modification to help out
           with the game.  The NetHack Development Team sometimes makes note
-          of the names of the worst of these miscreants in this,  the  list
+          of  the  names of the worst of these miscreants in this, the list
           of Dungeoneers:
                Adam Aronow           J. Ali Harlow          Mikko Juola
                Alex Kompel             Janet Walz           Nathan Eady
@@ -6223,7 +6215,7 @@
           Irina Rempt-Drijfhout     Mike Passaretti
               Izchak Miller         Mike Stephenson
 
-               Brand  and product names are trademarks or registered trade-
+               Brand and product names are trademarks or registered  trade-
           marks of their respective holders.
 
 
