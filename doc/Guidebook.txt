@@ -15,7 +15,7 @@
                          Original version - Eric S. Raymond
              (Edited and expanded for 3.6 by Mike Stephenson and others)
 
-                                   January 7, 2020
+                                  January 27, 2020
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -324,7 +324,7 @@
                Intelligence affects your ability to cast  spells  and  read
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -390,7 +390,7 @@
                ical attacks.  Many dungeons show only your experience level
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -456,7 +456,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -522,7 +522,7 @@
                nasty and vicious.  Sometimes, however, they can be helpful.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -588,7 +588,7 @@
                symbol at the chosen location, conditionally check for "More
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -654,7 +654,7 @@
                if you remember a monster there).
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -720,7 +720,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -786,7 +786,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -852,7 +852,7 @@
                once  you've  closed  this  menu.  The available options are
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -918,7 +918,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -984,7 +984,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1050,7 +1050,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1116,7 +1116,7 @@
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1182,7 +1182,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1248,7 +1248,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1314,7 +1314,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1380,7 +1380,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1446,7 +1446,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1512,7 +1512,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1578,7 +1578,7 @@
                When picking a  target  with  cursor  and  the  autodescribe
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1644,7 +1644,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1710,7 +1710,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1776,7 +1776,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1842,7 +1842,7 @@
           command.   By  default  the autoopen option is enabled, so simply
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1908,7 +1908,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -1974,7 +1974,7 @@
           floor while inside a shop.  You will either be offered an  amount
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2040,7 +2040,7 @@
           name to a monster, which may be useful to  help  distinguish  one
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2106,7 +2106,7 @@
           which drops you to a lower dungeon level), any adjacent pet  will
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2172,7 +2172,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2238,7 +2238,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2304,7 +2304,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2370,7 +2370,7 @@
           be thrown by hand, but can be thrown much  farther  and  will  be
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2436,7 +2436,7 @@
           hance".   (Divine  intervention  might  unrestrict  a  particular
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2502,7 +2502,7 @@
           the weapons or having one of them be  stolen  or  destroyed  will
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2568,7 +2568,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2634,7 +2634,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2700,7 +2700,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2766,7 +2766,7 @@
           mand casts a spell.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2832,7 +2832,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2898,7 +2898,7 @@
           drinking   beverages,  even  if  they  provide  some  minor  food
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -2964,7 +2964,7 @@
           figure; a true atheist would hear the words but attach no special
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3030,7 +3030,7 @@
           allow  you  to  set  options before starting the game or a global
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3096,7 +3096,7 @@
                  OPTIONS=!legacy,autopickup,pickup_types:$"=/!?+
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3162,7 +3162,7 @@
             active section name. Lines in other sections are ignored.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3228,7 +3228,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3294,7 +3294,7 @@
           as a file name.  If it  does  start  with  `/',  the  at-sign  is
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3360,7 +3360,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3426,7 +3426,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3492,7 +3492,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3558,7 +3558,7 @@
             aren't  interrupted  with  the "More info?" prompt, but it also
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3623,8 +3623,9 @@
             Show  corridor  squares  seen by night vision or a light source
             held by your character as lit (default off).  Persistent.
 
-
           NetHack 3.7                                       January 7, 2020
+
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3689,8 +3690,9 @@
             Not all ports can actually display all types.
 
 
-
           NetHack 3.7                                       January 7, 2020
+
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3756,7 +3758,7 @@
                  2 - like 1 but does not make any OS adjustments
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -3821,12 +3823,14 @@
             For backward compatibility, omitting a value  is  the  same  as
             specifying  1 and negating number_pad is the same as specifying
 
-
           NetHack 3.7                                       January 7, 2020
 
+          NetHack 3.7                                      January 27, 2020
 
 
 
+
+          NetHack Guidebook                                              59
 
           NetHack Guidebook                                              59
 
@@ -3887,12 +3891,14 @@
 
 
 
-
           NetHack 3.7                                       January 7, 2020
 
+          NetHack 3.7                                      January 27, 2020
 
 
 
+
+          NetHack Guidebook                                              60
 
           NetHack Guidebook                                              60
 
@@ -3953,12 +3959,14 @@
           pickup_types
             Specify the object types to be picked up when autopickup is on.
 
-
           NetHack 3.7                                       January 7, 2020
 
+          NetHack 3.7                                      January 27, 2020
 
 
 
+
+          NetHack Guidebook                                              61
 
           NetHack Guidebook                                              61
 
@@ -4020,7 +4028,7 @@
             and "random" values.  If you prefix the value with `!' or "no",
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4086,7 +4094,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4152,7 +4160,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4218,7 +4226,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4284,7 +4292,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4350,7 +4358,7 @@
             If NetHack can, it should use this size  font  for  the  status
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4416,7 +4424,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4482,7 +4490,7 @@
             (80+2+26+2) is needed for align_status set to left or right.)
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4548,7 +4556,7 @@
             Use BIOS calls to update the screen display quickly and to read
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4614,7 +4622,7 @@
             is  difficult to read, try adjusting these scales; if this does
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4680,7 +4688,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4746,7 +4754,7 @@
             fault is `.'.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4812,7 +4820,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4878,7 +4886,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -4944,7 +4952,7 @@
             "You displaced <something>." is not shown at all.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5010,7 +5018,7 @@
           plicit_uncursed option off so that all items known to be uncursed
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5076,7 +5084,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5142,7 +5150,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5208,7 +5216,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5274,7 +5282,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5340,7 +5348,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5406,7 +5414,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5472,7 +5480,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5538,7 +5546,7 @@
           game  to run in a manner accessible to the blind.  After you have
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5604,7 +5612,7 @@
             formation can be seen via the "#attributes" command.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5670,7 +5678,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5736,7 +5744,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5802,7 +5810,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5868,7 +5876,7 @@
           Eric Raymond, and Eric Smith undertook a radical revision of 3.0.
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -5934,7 +5942,7 @@
           his own NetHack-- to  produce  SLASH.   Larry  Stewart-Zerba  and
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -6000,7 +6008,7 @@
           Windows  platform.   Alex  Kompel  contributed  a  new  graphical
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -6066,7 +6074,7 @@
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -6123,16 +6131,16 @@
                NetHack 3.6.4 was released on December 18, 2019 containing a
           security fix and a few bug fixes.
 
+               NetHack 3.6.5 was released on January  27,  2020  containing
+          some security fixes and a small number of bug fixes.
+
                The official NetHack web site is maintained by Ken Lorber at
           https://www.nethack.org/.
 
-          12.1.  SPECIAL THANKS
-
-               On behalf of the NetHack community, thank you very much once
-          again to M. Drew Streib and Pasi Kallinen for providing a  public
 
 
-          NetHack 3.7                                       January 7, 2020
+
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -6142,7 +6150,11 @@
 
 
 
-          NetHack  server  at  nethack.alt.org. Thanks to Keith Simpson and
+          12.1.  SPECIAL THANKS
+
+               On behalf of the NetHack community, thank you very much once
+          again  to M. Drew Streib and Pasi Kallinen for providing a public
+          NetHack server at nethack.alt.org. Thanks to  Keith  Simpson  and
           Andy Thomson for hardfought.org. Thanks to all those unnamed dun-
           geoneers  who  invest  their  time and effort into annual NetHack
           tournaments such as Junethack, The  November  NetHack  Tournament
@@ -6191,14 +6203,10 @@
             Frederick Roeber          Merlyn LeRoy           Tim Lennan
                Gil Neiger           Michael Allison        Timo Hakulinen
                Greg Laskin            Michael Feir            Tom Almy
-               Greg Olson            Michael Hamel            Tom West
-             Gregg Wonderly         Michael Sokolov        Warren Cheung
-              Hao-yang Wang           Mike Engber         Warwick Allison
-              Helge Hafting           Mike Gallop          Yitzhak Sapir
 
 
 
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
@@ -6208,6 +6216,10 @@
 
 
 
+               Greg Olson            Michael Hamel            Tom West
+             Gregg Wonderly         Michael Sokolov        Warren Cheung
+              Hao-yang Wang           Mike Engber         Warwick Allison
+              Helge Hafting           Mike Gallop          Yitzhak Sapir
           Irina Rempt-Drijfhout     Mike Passaretti
               Izchak Miller         Mike Stephenson
 
@@ -6260,11 +6272,7 @@
 
 
 
-
-
-
-
-          NetHack 3.7                                       January 7, 2020
+          NetHack 3.7                                      January 27, 2020
 
 
 
