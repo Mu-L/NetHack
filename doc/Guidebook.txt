@@ -4366,9 +4366,11 @@
             after game end on a terminal or emulating window.
 
           travel
-            Allow the travel command (default on).  Turning this option off
-            will  prevent  the game from attempting unintended moves if you
-            make inadvertent mouse clicks on the map window.  Persistent.
+            Allow the travel command via mouse click (default on).  Turning
+            this option off will prevent the game from attempting unintend-
+            ed moves if you make inadvertent mouse clicks on the  map  win-
+            dow.   Does  not  affect traveling via the `_' ("#travel") com-
+            mand.  Persistent.
 
           verbose
             Provide more commentary during the game (default on).   Persis-
@@ -4412,8 +4414,6 @@
             When  getting  a  location on the map, and using a key to cycle
             through next and previous targets, use a menu instead to pick a
             target.  (default off)
-
-
 
 
           NetHack 3.7                                      January 27, 2020
