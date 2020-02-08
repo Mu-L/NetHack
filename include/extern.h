@@ -562,6 +562,7 @@ E void FDECL(impact_drop, (struct obj *, XCHAR_P, XCHAR_P, XCHAR_P));
 
 /* ### dothrow.c ### */
 
+E int FDECL(multishot_class_bonus, (int, struct obj *, struct obj *));
 E int NDECL(dothrow);
 E int NDECL(dofire);
 E void FDECL(endmultishot, (BOOLEAN_P));
@@ -1554,6 +1555,7 @@ E boolean FDECL(monhaskey, (struct monst *, BOOLEAN_P));
 E void FDECL(mon_regen, (struct monst *, BOOLEAN_P));
 E int FDECL(dochugw, (struct monst *));
 E boolean FDECL(onscary, (int, int, struct monst *));
+E struct monst *FDECL(find_pmmonst, (int));
 E int FDECL(bee_eat_jelly, (struct monst *, struct obj *));
 E void FDECL(monflee, (struct monst *, int, BOOLEAN_P, BOOLEAN_P));
 E void FDECL(mon_yells, (struct monst *, const char *));
