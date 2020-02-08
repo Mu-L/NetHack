@@ -5617,8 +5617,7 @@
           @  S_ss3                  (magic shield 3 of 4)
           *  S_ss4                  (magic shield 4 of 4)
           ^  S_statue_trap          (statue trap)
-             S_stone                (solid rock or unexplored terrain
-                                     or dark part of a room)
+             S_stone                (solid rock)
           ]  S_strange_obj          (strange object)
           -  S_sw_bc                (swallow bottom center)
           \  S_sw_bl                (swallow bottom left)
@@ -5642,6 +5641,7 @@
           |  S_trwall               (wall)
           -  S_tuwall               (wall)
           U  S_umber                (umber hulk)
+             S_unexplored           (unexplored terrain)
           u  S_unicorn              (unicorn or horse)
           <  S_upladder             (ladder up)
           <  S_upstair              (staircase up)
