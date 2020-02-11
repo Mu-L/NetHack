@@ -13,9 +13,9 @@
 
 
                          Original version - Eric S. Raymond
-             (Edited and expanded for 3.6 by Mike Stephenson and others)
+             (Edited and expanded for 3.7 by Mike Stephenson and others)
 
-                                  January 27, 2020
+                                  February 10, 2020
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -324,7 +324,7 @@
                Intelligence affects your ability to cast  spells  and  read
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -390,7 +390,7 @@
                ical attacks.  Many dungeons show only your experience level
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -456,7 +456,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -522,7 +522,7 @@
                nasty and vicious.  Sometimes, however, they can be helpful.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -588,7 +588,7 @@
                symbol at the chosen location, conditionally check for "More
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -654,7 +654,7 @@
                if you remember a monster there).
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -720,7 +720,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -786,7 +786,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -852,7 +852,7 @@
                once  you've  closed  this  menu.  The available options are
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -918,7 +918,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -984,7 +984,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1050,7 +1050,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1116,7 +1116,7 @@
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1182,7 +1182,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1248,7 +1248,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1314,7 +1314,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1380,7 +1380,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1446,7 +1446,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1512,7 +1512,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1578,7 +1578,7 @@
                When picking a  target  with  cursor  and  the  autodescribe
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1644,7 +1644,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1710,7 +1710,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1776,7 +1776,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1842,7 +1842,7 @@
           command.   By  default  the autoopen option is enabled, so simply
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1908,7 +1908,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -1974,7 +1974,7 @@
           floor while inside a shop.  You will either be offered an  amount
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2040,7 +2040,7 @@
           are objects here" instead of listing them.   The  default  is  5.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2106,7 +2106,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2172,7 +2172,7 @@
           very useful under certain circumstances.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2238,7 +2238,7 @@
           it is the one who moved rather than you.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2304,7 +2304,7 @@
           extremely  obvious,  you will be asked what you want to call this
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2370,7 +2370,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2436,7 +2436,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2502,7 +2502,7 @@
           become highly skilled in daggers or staves but not in  swords  or
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2568,7 +2568,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2634,7 +2634,7 @@
           of  armor,  you  immediately  find  out  the  armor class and any
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2700,7 +2700,7 @@
           vironment  variable  to  the  file name of your mailbox.  You may
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2766,7 +2766,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2832,7 +2832,7 @@
           "Weapon proficiency".)
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2898,7 +2898,7 @@
           much  less  valuable.   All  rocks,  however,  can  be  used   as
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -2964,7 +2964,7 @@
           with these challenges.  Note that it is perfectly  acceptable  to
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3030,7 +3030,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3096,7 +3096,7 @@
           have been attained.  They aren't directly related to conduct  but
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3162,7 +3162,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3228,7 +3228,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3294,7 +3294,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3360,7 +3360,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3426,7 +3426,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3492,7 +3492,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3558,7 +3558,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3624,7 +3624,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3690,7 +3690,7 @@
             (default on).  If this is off, dropping an  object  shifts  all
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3756,7 +3756,7 @@
             highlight  pets  and setting it will turn the hilite_pet option
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3822,7 +3822,7 @@
             Persistent.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3888,7 +3888,7 @@
             Implemented by the Amiga, Gem and tty ports.  Default `|'.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3954,7 +3954,7 @@
             values are:
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4020,7 +4020,7 @@
             containing the symbols  for  the  various  object  types.   Any
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4086,7 +4086,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4152,7 +4152,7 @@
             size  will  always  be  at  least that big; default value is 5.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4218,7 +4218,7 @@
             the  map.  Not all ports support run length compression. It has
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4284,7 +4284,7 @@
             values are:
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4350,7 +4350,7 @@
             Put the ending display in a NetHack window instead of on stdout
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4416,7 +4416,7 @@
             target.  (default off)
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4482,7 +4482,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4548,7 +4548,7 @@
             some non-map data (such  as  menu  selector  letters).   Curses
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4614,7 +4614,7 @@
             Curses interface only.  Number of columns and rows to  use  for
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4680,7 +4680,7 @@
           silver,  maroon,  fuchsia, lime, olive, navy, teal, aqua), or one
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4746,7 +4746,7 @@
             (default on, Mac NetHack only).
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4774,16 +4774,22 @@
 
           video
             Set the video mode used (PC NetHack only).  Values are "autode-
-            tect", "default", or "vga".   Setting  "vga"  (or  "autodetect"
-            with  vga  hardware  present)  will  cause  the game to display
-            tiles.  Cannot be set with the `O' command.
+            tect", "default", "vga", or "vesa".  Setting "vesa" will  cause
+            the game to display tiles, using the full capability of the VGA
+            hardware.  Setting "vga" will cause the game to display  tiles,
+            fixed  at  640x480 in 16 colors, a mode that is compatible with
+            all VGA hardware. Third party tilesets will probably not  work.
+            Setting  "autodetect"  attempts "vesa", then "vga", and finally
+            sets "default" if neither of those modes works.  Cannot be  set
+            with the `O' command.
 
           video_height
-            Set  the  VGA  mode  resolution  height  (MS-DOS   only,   with
-            video:vga)
+            Set   the   VGA  mode  resolution  height  (MS-DOS  only,  with
+            video:vesa)
 
           video_width
-            Set the VGA mode resolution width (MS-DOS only, with video:vga)
+            Set  the  VGA  mode  resolution  width   (MS-DOS   only,   with
+            video:vesa)
 
           videocolors
             Set  the  color  palette for PC systems using NO_TERMS (default
@@ -4803,16 +4809,10 @@
           9.7.  Regular Expressions
 
                Regular expressions are normally POSIX extended regular  ex-
-          pressions.  It is possible to compile NetHack without regular ex-
-          pression support on a platform where there is no regular  expres-
-          sion  library.  While this is not true of any modern platform, if
-          your NetHack was built this way, patterns are instead  glob  pat-
-          terns. This applies to Autopickup exceptions, Message types, Menu
-          colors, and User sounds.
+          pressions.  It  is  possible  to  compile NetHack without regular
 
 
-
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4821,6 +4821,12 @@
           NetHack Guidebook                                              74
 
 
+
+          expression support on a platform where there is  no  regular  ex-
+          pression  library. While this is not true of any modern platform,
+          if your NetHack was built this way,  patterns  are  instead  glob
+          patterns.  This  applies to Autopickup exceptions, Message types,
+          Menu colors, and User sounds.
 
           9.8.  Configuring Autopickup Exceptions
 
@@ -4870,15 +4876,9 @@
           by  using BIND stanzas in the configuration file.  Format is key,
           followed by the command to bind to, separated by  a  colon.   The
           key can be a single character ("x"), a control key ("^X", "C-x"),
-          a meta key ("M-x"), or a three-digit decimal ASCII code.
-
-               For example:
 
 
-
-
-
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4887,6 +4887,10 @@
           NetHack Guidebook                                              75
 
 
+
+          a meta key ("M-x"), or a three-digit decimal ASCII code.
+
+               For example:
 
                BIND=^X:getpos.autodescribe
                BIND={:menu_first_page
@@ -4937,14 +4941,10 @@
             fault is `s'.
 
           getpos.autodescribe
-            When asked for a location, the key to toggle autodescribe.  De-
-            fault is `#'.
-
-          getpos.all.next
-            When  asked  for  a  location,  the  key  to go to next closest
+            When asked for a location,  the  key  to  toggle  autodescribe.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -4954,7 +4954,11 @@
 
 
 
-            interesting thing.  Default is `a'.
+            Default is `#'.
+
+          getpos.all.next
+            When asked for a location, the key to go to next closest inter-
+            esting thing.  Default is `a'.
 
           getpos.all.prev
             When asked for a location, the key to go  to  previous  closest
@@ -5004,13 +5008,9 @@
             Toggles between no filtering, in view only,  and  in  the  same
             area only.  Default is `"'.
 
-          getpos.pick
-            When  asked for a location, the key to choose the location, and
-            possibly ask for more info.  Default is `.'.
 
 
-
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5019,6 +5019,10 @@
           NetHack Guidebook                                              77
 
 
+
+          getpos.pick
+            When  asked for a location, the key to choose the location, and
+            possibly ask for more info.  Default is `.'.
 
           getpos.pick.once
             When asked for a location, the key to choose the location,  and
@@ -5070,13 +5074,9 @@
           repeat
             Key to repeat previous command.  Default is `^A'.
 
-          reqmenu
-            Prefix key to request menu from some commands.  Default is `m'.
 
 
-
-
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5085,6 +5085,9 @@
           NetHack Guidebook                                              78
 
 
+
+          reqmenu
+            Prefix key to request menu from some commands.  Default is `m'.
 
           run
             Prefix key to run towards a direction.  Default is `G'.
@@ -5135,14 +5138,11 @@
             matching rule is used. Put the general case  first,  exceptions
             below them.
 
-          9.11.  Configuring Menu Colors
-
-               Some platforms allow you to define colors used in menu lines
-          when the line matches a user-defined pattern.  At this  time  the
-          tty, curses, win32tty and win32gui interfaces support this.
 
 
-          NetHack 3.7                                      January 27, 2020
+
+
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5151,6 +5151,12 @@
           NetHack Guidebook                                              79
 
 
+
+          9.11.  Configuring Menu Colors
+
+               Some platforms allow you to define colors used in menu lines
+          when the line matches a user-defined pattern.  At this  time  the
+          tty, curses, win32tty and win32gui interfaces support this.
 
                In  general,  the configuration file entries to describe the
           menu color mappings look like this:
@@ -5198,17 +5204,11 @@
           plicit_uncursed option off so that all items known to be uncursed
           are actually displayed with the "uncursed" description.
 
-          9.12.  Configuring User Sounds
-
-               Some  platforms allow you to define sound files to be played
-          when a message that matches a user-defined pattern  is  delivered
-          to the message window.  At this time the Qt port and the win32tty
-          and win32gui ports support the use of user sounds.
 
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5217,6 +5217,13 @@
           NetHack Guidebook                                              80
 
 
+
+          9.12.  Configuring User Sounds
+
+               Some  platforms allow you to define sound files to be played
+          when a message that matches a user-defined pattern  is  delivered
+          to the message window.  At this time the Qt port and the win32tty
+          and win32gui ports support the use of user sounds.
 
                The following configuration file  entries  are  relevant  to
           mapping user sounds to messages:
@@ -5264,17 +5271,10 @@
           OPTION=hilite_status:wisdom/down/red/up/green
 
                Allowed colors are black, red, green, brown, blue,  magenta,
-          cyan, gray, orange, light-green, yellow, light-blue, light-magen-
-          ta, light-cyan, and white.  And  "no-color",  the  default  fore-
-          ground color on the display, which is not necessarily the same as
-          black or white or any of the other colors.
-
-               Allowed attributes are none, bold,  dim,  underline,  blink,
-          and  inverse.   "Normal" is a synonym for "none"; they should not
-          be used in combination with any of the other attributes.
+          cyan,  gray,  orange,  light-green,  yellow,  light-blue,  light-
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5283,6 +5283,14 @@
           NetHack Guidebook                                              81
 
 
+
+          magenta, light-cyan, and  white.   And  "no-color",  the  default
+          foreground  color  on  the  display, which is not necessarily the
+          same as black or white or any of the other colors.
+
+               Allowed attributes are none, bold,  dim,  underline,  blink,
+          and  inverse.   "Normal" is a synonym for "none"; they should not
+          be used in combination with any of the other attributes.
 
                To specify both a color and an attribute, use `&' to combine
           them.   To specify multiple attributes, use `+' to combine those.
@@ -5330,17 +5338,9 @@
 
                * "up", "down" set the field attributes for when  the  field
                  value  changes upwards or downwards.  This attribute times
-                 out after statushilites turns.
-
-               * "changed" sets the field attribute for when the field val-
-                 ue  changes.  This attribute times out after statushilites
-                 turns.  (If a field has both a "changed" rule and an  "up"
-                 or  "down" rule which matches a change in the field's val-
-                 ue, the "up" or "down" one takes precedence.)
 
 
-
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5349,6 +5349,14 @@
           NetHack Guidebook                                              82
 
 
+
+                 out after statushilites turns.
+
+               * "changed" sets the field attribute for when the field val-
+                 ue  changes.  This attribute times out after statushilites
+                 turns.  (If a field has both a "changed" rule and an  "up"
+                 or  "down" rule which matches a change in the field's val-
+                 ue, the "up" or "down" one takes precedence.)
 
                * percentage sets the field attribute when the  field  value
                  matches  the  percentage.  It is specified as a number be-
@@ -5398,15 +5406,7 @@
 
 
 
-
-
-
-
-
-
-
-
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5472,7 +5472,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5538,7 +5538,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5604,7 +5604,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5670,7 +5670,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5736,7 +5736,7 @@
           may want to alter settings via SYMBOLS= and ROGUESYMBOLS= in your
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5802,7 +5802,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5868,7 +5868,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -5934,7 +5934,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6000,7 +6000,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6066,7 +6066,7 @@
           Eric Raymond, and Eric Smith undertook a radical revision of 3.0.
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6132,7 +6132,7 @@
           his  own  NetHack--  to  produce  SLASH.  Larry Stewart-Zerba and
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6198,7 +6198,7 @@
           Windows  platform.   Alex  Kompel  contributed  a  new  graphical
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6264,7 +6264,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6330,7 +6330,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6396,7 +6396,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -6462,7 +6462,7 @@
 
 
 
-          NetHack 3.7                                      January 27, 2020
+          NetHack 3.7                                     February 10, 2020
 
 
 
