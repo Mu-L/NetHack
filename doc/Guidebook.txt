@@ -2652,7 +2652,7 @@
 
                The nudist option can be set (prior to game  start)  to  at-
           tempt  to play the entire game without wearing any armor (a self-
-          imposed challange which is extremely difficult to accomplish).
+          imposed challenge which is extremely difficult to accomplish).
 
                The commands to use armor are `W' (wear) and `T' (take off).
           The  `A'  command  can be used to take off armor as well as other
