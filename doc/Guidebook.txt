@@ -662,7 +662,6 @@
 
           NetHack Guidebook                                              11
 
-          NetHack Guidebook                                              11
 
 
           [yuhjklbn]
@@ -1063,11 +1062,23 @@
 
           ^X   Display basic information about your character.
 
+               Displays  name,  role,  race, gender (unless role name makes
+               that redundant, such as Caveman or  Priestess),  and  align-
+               ment,  along  with  your patron deity and his or her opposi-
+               tion.  It also shows most of the various items  of  informa-
+               tion from the status line(s) in a less terse form, including
+               several additional things which don't appear in  the  normal
+               status display due to space considerations.
 
+               In  normal  play, that's all that `^X' displays.  In explore
+               mode, the role and status feedback is augmented by  the  in-
+               formation provided by enlightenment magic.
 
-          NetHack 3.7                                     February 10, 2020
+          z    Zap a wand.
 
+                    z. - to aim at yourself, use `.' for the direction.
 
+          Z    Zap (cast) a spell.
 
                     Z. - to cast at yourself, use `.' for the direction.
 
@@ -1712,10 +1723,19 @@
           #wizsmell
                Smell monster.  Autocompletes.  Debug mode only.
 
+          #wizwhere
+               Show locations of  special  levels.   Autocompletes.   Debug
+               mode only.
 
+          #wizwish
+               Wish  for  something.  Autocompletes.  Debug mode only.  De-
+               fault key is `^W'.
 
-          NetHack 3.7                                     February 10, 2020
+          #wmode
+               Show wall modes.  Autocompletes.  Debug mode only.
 
+          #zap
+               Zap a wand.  Default key is `z'.
 
           #?
                Help menu:  get the list of available extended commands.
@@ -2946,7 +2966,6 @@
 
           NetHack 3.7                                     February 15, 2020
 
-          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3289,10 +3308,6 @@
 
                Here is a list of allowed statements:
 
-          followed by settings particular to that statement.
-
-               Here is a list of allowed statements:
-
           OPTIONS
             There are two types of options, boolean and  compound  options.
             Boolean  options toggle a setting on or off, while compound op-
@@ -3359,10 +3374,6 @@
 
                  AUTOCOMPLETE=zap,!annotate
 
-            Example:
-
-                 AUTOCOMPLETE=zap,!annotate
-
           AUTOPICKUP_EXCEPTION
             Set exceptions to the pickup_types option.  See the  "Configur-
             ing Autopickup Exceptions" section.
@@ -3424,10 +3435,6 @@
           NetHack Guidebook                                              53
 
 
-
-            "Modifying NetHack Symbols" section.
-
-            Example:
 
             "Modifying NetHack Symbols" section.
 
@@ -3826,15 +3833,6 @@
 
 
             Cannot be set with the `O' command.
-
-          ignintr
-            Ignore interrupt signals, including breaks (default off).  Per-
-            sistent.
-
-          implicit_uncursed
-            Omit "uncursed" from object descriptions when it can be deduced
-            from other aspects of the description  (default  on).   Persis-
-            tent.
 
           ignintr
             Ignore interrupt signals, including breaks (default off).  Per-
@@ -4305,15 +4303,6 @@
             Prevent you from (knowingly) attacking your pets (default  on).
             Persistent.
 
-            actual results of moving.  The default is "run"; versions prior
-            to 3.4.1 used "teleport" only.  Whether or not  the  effect  is
-            noticeable will depend upon the window port used or on the type
-            of terminal.  Persistent.
-
-          safe_pet
-            Prevent you from (knowingly) attacking your pets (default  on).
-            Persistent.
-
           sanity_check
             Evaluate monsters, objects, and map prior to each turn (default
             off).  Debug mode only.
@@ -4370,14 +4359,6 @@
           NetHack Guidebook                                              67
 
 
-
-          standout
-            Boldface monsters and "--More--" (default off).  Persistent.
-
-          statushilites
-            Controls how many turns status hilite behaviors  highlight  the
-            field.   If  negated  or set to zero, disables status hiliting.
-            See "Configuring Status Hilites" for further information.
 
           standout
             Boldface monsters and "--More--" (default off).  Persistent.
@@ -4444,14 +4425,6 @@
           NetHack Guidebook                                              68
 
 
-
-            Persistent.
-
-          whatis_coord
-            When  using  the  `/' or `;' commands to look around on the map
-            with autodescribe on, display coordinates  after  the  descrip-
-            tion.   Also  works  in other situations where you are asked to
-            pick a location.
 
             Persistent.
 
@@ -4584,14 +4557,6 @@
           NetHack Guidebook                                              70
 
 
-
-          font_menu
-            If NetHack can, it should use a font by  the  chosen  name  for
-            menu windows.
-
-          font_message
-            If NetHack can, it should use a font by the chosen name for the
-            message window.
 
           font_menu
             If NetHack can, it should use a font by  the  chosen  name  for
