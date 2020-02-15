@@ -3182,8 +3182,6 @@
           disclosure.  Listed roughly in order of difficulty and not neces-
           sarily in the order in which you might accomplish them.
 
-
-
           Shop       - Entered a shop.
           Temple     - Entered a temple.
           Mines      - Entered the Gnomish Mines.
@@ -3209,7 +3207,6 @@
           Nudist     - Never wore any armor.
           Ascended   - Delivered the Amulet to its final destination.
 
-
           Notes:
 
                There's  no  guaranteed Novel so the achievement to read one
@@ -3227,6 +3224,9 @@
           son,  even  if  you are not directly responsible, and only if she
           dies.
 
+               Blind and Nudist are also conducts, and they can only be en-
+          abled   by   setting   the   correspondingly   named   option  in
+
 
           NetHack 3.7                                     February 10, 2020
 
@@ -3238,12 +3238,10 @@
 
 
 
-               Blind and Nudist are also conducts, and they can only be en-
-          abled  by  setting the correspondingly named option in NETHACKOP-
-          TIONS or run-time configuration file prior to game start.  In the
-          case of Blind, the option also enforces the conduct.  They aren't
-          really significant accomplishments unless/until you make substan-
-          tial progress into the dungeon.
+          NETHACKOPTIONS or  run-time  configuration  file  prior  to  game
+          start.   In  the case of Blind, the option also enforces the con-
+          duct.  They aren't really significant accomplishments  unless/un-
+          til you make substantial progress into the dungeon.
 
           9.  Options
 
@@ -3291,7 +3289,9 @@
           tion, and are ignored unless a CHOOSE statement was used  to  se-
           lect that section.  Section names are case insensitive.
 
-
+               You  can use different configuration statements in the file,
+          some of which can be used multiple times.  In general, the state-
+          ments are written in capital letters, followed by an equals sign,
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3304,9 +3304,6 @@
 
 
 
-               You  can use different configuration statements in the file,
-          some of which can be used multiple times.  In general, the state-
-          ments are written in capital letters, followed by an equals sign,
           followed by settings particular to that statement.
 
                Here is a list of allowed statements:
@@ -3358,6 +3355,9 @@
             pletion  has no effect for the X11 windowport.  You can specify
             multiple autocompletions.  To enable autocompletion,  list  the
             extended  command.   Prefix the command with "!" to disable the
+            autocompletion for that command.
+
+
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3369,8 +3369,6 @@
           NetHack Guidebook                                              52
 
 
-
-            autocompletion for that command.
 
             Example:
 
@@ -3423,7 +3421,9 @@
             Define  the  directory  that contains the sound files.  See the
             "Configuring User Sounds" section.
 
-
+          SYMBOLS
+            Override one or more symbols in the symbol  set  used  for  all
+            dungeon  levels  except  for  the special rogue level.  See the
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3436,9 +3436,6 @@
 
 
 
-          SYMBOLS
-            Override one or more symbols in the symbol  set  used  for  all
-            dungeon  levels  except  for  the special rogue level.  See the
             "Modifying NetHack Symbols" section.
 
             Example:
@@ -3489,6 +3486,9 @@
           equals sign, and then the value of the string.  The value is ter-
           minated by the next comma or the end of string.
 
+               For example, to set up an environment variable so that color
+          is on, legacy is off, character name is set to "Blue Meanie", and
+          named fruit is set to "lime", you would enter the command
 
 
 
@@ -3501,10 +3501,6 @@
           NetHack Guidebook                                              54
 
 
-
-               For example, to set up an environment variable so that color
-          is on, legacy is off, character name is set to "Blue Meanie", and
-          named fruit is set to "lime", you would enter the command
 
           % setenv NETHACKOPTIONS "color,\!leg,name:Blue Meanie,fruit:lime"
 
@@ -3557,6 +3553,10 @@
             get a location on the map (default true).  The whatis_coord op-
             tion controls whether the description includes map coordinates.
 
+          autodig
+            Automatically dig if you are wielding a digging tool and moving
+            into a place that can be dug (default false).  Persistent.
+
 
           NetHack 3.7                                     February 10, 2020
 
@@ -3567,10 +3567,6 @@
           NetHack Guidebook                                              55
 
 
-
-          autodig
-            Automatically dig if you are wielding a digging tool and moving
-            into a place that can be dug (default false).  Persistent.
 
           autoopen
             Walking into a closed door attempts to open it (default  true).
@@ -3621,7 +3617,11 @@
             Save game state after each level change, for possible  recovery
             after program crash (default on).  Persistent.
 
-
+          checkspace
+            Check  free  disk  space  before writing files to disk (default
+            on).  You may have to turn this off if you have more than 2  GB
+            free  space on the partition used for your save and level files
+            (because too much space might overflow the calculation and  end
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3634,11 +3634,6 @@
 
 
 
-          checkspace
-            Check  free  disk  space  before writing files to disk (default
-            on).  You may have to turn this off if you have more than 2  GB
-            free  space on the partition used for your save and level files
-            (because too much space might overflow the calculation and  end
             up looking like insufficient space).  Only applies when MFLOPPY
             was defined during compilation.
 
@@ -3688,6 +3683,11 @@
                  # - disclose it without prompting, ask for sort order.
 
             Asking refers to picking one of the orderings from a menu.  The
+            `+' disclose without prompting choice, or  being  prompted  and
+            answering `y' rather than `a', will default to showing monsters
+            in the traditional order, from high level to low level.
+
+
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3699,10 +3699,6 @@
           NetHack Guidebook                                              57
 
 
-
-            `+' disclose without prompting choice, or  being  prompted  and
-            answering `y' rather than `a', will default to showing monsters
-            in the traditional order, from high level to low level.
 
             Omitted categories are implicitly added with `n' prefix.  Spec-
             ified categories with omitted prefix implicitly use `+' prefix.
@@ -3754,6 +3750,10 @@
             whimsy  that  NetHack  uses  from time to time.  You should set
             this to something you find more  appetizing  than  slime  mold.
             Apples,  oranges,  pears,  bananas, and melons already exist in
+            NetHack, so don't use those.
+
+          gender
+            Your starting gender (gender:male or gender:female).   You  may
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3766,10 +3766,6 @@
 
 
 
-            NetHack, so don't use those.
-
-          gender
-            Your starting gender (gender:male or gender:female).   You  may
             specify  just  the first letter.  Although you can still denote
             your gender using the "male" and "female" options, the "gender"
             option  will  take precedence.  The default is to randomly pick
@@ -3820,6 +3816,10 @@
           hitpointbar
             Show  a  hit  point bar graph behind your name and title.  Only
             available for TTY and Windows GUI, and only when  statushilites
+            is on.
+
+          horsename
+            Name  your  starting  horse  (for example "horsename:Trigger").
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3832,10 +3832,6 @@
 
 
 
-            is on.
-
-          horsename
-            Name  your  starting  horse  (for example "horsename:Trigger").
             Cannot be set with the `O' command.
 
           ignintr
@@ -3886,6 +3882,10 @@
           menustyle
             Controls the interface used when you need to choose various ob-
             jects (in response to the Drop  command,  for  instance).   The
+            value  specified  should be the first letter of one of the fol-
+            lowing:  traditional, combination, full,  or  partial.   Tradi-
+            tional  was the only interface available for early versions; it
+            consists of a prompt for object class characters,  followed  by
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3898,10 +3898,6 @@
 
 
 
-            value  specified  should be the first letter of one of the fol-
-            lowing:  traditional, combination, full,  or  partial.   Tradi-
-            tional  was the only interface available for early versions; it
-            consists of a prompt for object class characters,  followed  by
             an  object-by-object prompt for all items matching the selected
             object class(es).  Combination starts with a prompt for  object
             class(es) of interest, but then displays a menu of matching ob-
@@ -3952,6 +3948,10 @@
 
           menu_overlay
             Do not clear the screen before drawing menus, and  align  menus
+            to  the  right edge of the screen. Only for the tty port.  (de-
+            fault on)
+
+
 
 
           NetHack 3.7                                     February 10, 2020
@@ -3963,9 +3963,6 @@
           NetHack Guidebook                                              61
 
 
-
-            to  the  right edge of the screen. Only for the tty port.  (de-
-            fault on)
 
           menu_previous_page
             Menu character accelerator to goto the previous menu page.  Im-
@@ -4018,6 +4015,9 @@
             (which  defaults  to  "full"),  or  it  can  be  negated (which
             defaults to "single").
 
+          name
+            Set your character's name (defaults to your  user  name).   You
+            can  also set your character's role by appending a dash and one
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4030,9 +4030,6 @@
 
 
 
-          name
-            Set your character's name (defaults to your  user  name).   You
-            can  also set your character's role by appending a dash and one
             or more letters of the role (that is, by suffixing one of -A -B
             -C  -H  -K  -M  -P -Ra -Ro -S -T -V -W).  If -@ is used for the
             role, then a random one will be automatically  chosen.   Cannot
@@ -4083,7 +4080,10 @@
             tion:pray.
 
             Confirm     - for any prompts which are set  to  require  "yes"
-                          rather  than  `y',  also  require  "no" to reject
+                          rather  than `y', also require "no" to reject in-
+                          stead of accepting any non-yes response as no
+            quit        - require "yes" rather than `y' to confirm quitting
+                          the  game  or  switching into non-scoring explore
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4096,9 +4096,6 @@
 
 
 
-                          instead of accepting any non-yes response as no
-            quit        - require "yes" rather than `y' to confirm quitting
-                          the  game  or  switching into non-scoring explore
                           mode;
             die         - require "yes" rather than `y'  to  confirm  dying
                           (not  useful  in  normal play; applies to explore
@@ -4150,6 +4147,9 @@
 
             Some of those choices might not work,  particularly  the  final
             three,  depending  upon terminal hardware or terminal emulation
+            software.
+
+
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4161,8 +4161,6 @@
           NetHack Guidebook                                              64
 
 
-
-            software.
 
             Currently multiple highlight-style letters can be  combined  by
             simply  stringing them together (for example, "bk"), but in the
@@ -4216,6 +4214,8 @@
             entirely.   Requesting  it when not allowed or not possible re-
             sults in explore mode instead.  Default is normal play.
 
+          pushweapon
+            Using the `w' (wield) command when already  wielding  something
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4228,8 +4228,6 @@
 
 
 
-          pushweapon
-            Using the `w' (wield) command when already  wielding  something
             pushes  the  old  item into your alternate weapon slot (default
             off).  Likewise for the `a' (apply) command if  it  causes  the
             applied item to become wielded.  Persistent.
@@ -4283,6 +4281,8 @@
             walk     - update the map after each step;
             crawl    - like walk, but pause briefly after each step.
 
+            This option only affects the game's  screen  display,  not  the
+
 
           NetHack 3.7                                     February 10, 2020
 
@@ -4294,8 +4294,7 @@
 
 
 
-            This option only affects the game's screen display, not the ac-
-            tual  results  of moving.  The default is "run"; versions prior
+            actual results of moving.  The default is "run"; versions prior
             to 3.4.1 used "teleport" only.  Whether or not  the  effect  is
             noticeable will depend upon the window port used or on the type
             of terminal.  Persistent.
@@ -4347,7 +4346,8 @@
 
           sparkle
             Display a sparkly effect when a monster (including yourself) is
-            hit  by  an  attack  to  which  it  is  resistant (default on).
+            hit  by  an attack to which it is resistant (default on).  Per-
+            sistent.
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4359,8 +4359,6 @@
           NetHack Guidebook                                              67
 
 
-
-            Persistent.
 
           standout
             Boldface monsters and "--More--" (default off).  Persistent.
@@ -4414,6 +4412,8 @@
             dow.   Does  not  affect traveling via the `_' ("#travel") com-
             mand.  Persistent.
 
+          verbose
+            Provide  more  commentary  during  the   game   (default   on).
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4426,9 +4426,7 @@
 
 
 
-          verbose
-            Provide more commentary during the game (default on).   Persis-
-            tent.
+            Persistent.
 
           whatis_coord
             When  using  the  `/' or `;' commands to look around on the map
@@ -4480,6 +4478,8 @@
             pends on build-time settings; use "#version" to check).  Cannot
             be set with the `O' command.
 
+            When used, it should be the first option set  since  its  value
+            might  enable  or  disable  the  availability  of various other
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4492,12 +4492,10 @@
 
 
 
-            When used, it should be the first option set  since  its  value
-            might  enable  or disable the availability of various other op-
-            tions.  For multiple lines in a configuration file, that  would
-            be  the  first non-comment line.  For a comma-separated list in
-            NETHACKOPTIONS or an OPTIONS line in a configuration file, that
-            would be the rightmost option in the list.
+            options.  For multiple lines  in  a  configuration  file,  that
+            would  be  the  first  non-comment line.  For a comma-separated
+            list in NETHACKOPTIONS or an OPTIONS line  in  a  configuration
+            file, that would be the rightmost option in the list.
 
           wizweight
             Augment object descriptions with their objects' weight (default
@@ -4546,6 +4544,8 @@
 
           font_map
             if NetHack can, it should use a font by the chosen name for the
+            map window.
+
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4557,8 +4557,6 @@
           NetHack Guidebook                                              70
 
 
-
-            map window.
 
           font_menu
             If NetHack can, it should use a font by  the  chosen  name  for
@@ -4612,6 +4610,8 @@
 
           player_selection
             If  NetHack  can, it should pop up dialog boxes, or use prompts
+            for character selection.
+
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4623,8 +4623,6 @@
           NetHack Guidebook                                              71
 
 
-
-            for character selection.
 
           popup_dialog
             If NetHack can, it should pop up dialog boxes for input.
@@ -4678,6 +4676,8 @@
             Specify the name of an alternative tile file  to  override  the
             default.
 
+          tile_height
+            Specify  the  preferred  height  of each tile in a tile capable
 
 
           NetHack 3.7                                     February 10, 2020
@@ -4690,8 +4690,6 @@
 
 
 
-          tile_height
-            Specify  the  preferred  height  of each tile in a tile capable
             port.
 
           tile_width
@@ -4742,6 +4740,8 @@
           wraptext
             If NetHack can, it should wrap long lines of text if they don't
             fit in the visible area of the window.
+
+
 
 
 
