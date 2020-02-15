@@ -15,7 +15,7 @@
                          Original version - Eric S. Raymond
              (Edited and expanded for 3.7 by Mike Stephenson and others)
 
-                                  February 10, 2020
+                                  February 15, 2020
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -324,7 +324,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -390,7 +390,7 @@
                you have available for spell casting.  Again,  resting  will
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -456,7 +456,7 @@
           scribe things that are impossible to represent visually.  If  you
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -522,7 +522,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -588,7 +588,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -654,7 +654,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -662,6 +662,7 @@
 
           NetHack Guidebook                                              11
 
+          NetHack Guidebook                                              11
 
 
           [yuhjklbn]
@@ -720,7 +721,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -786,7 +787,7 @@
                Du  - drop only unpaid objects (when in a shop).
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -852,7 +853,7 @@
                the  character for a particular set of objects, like `[' for
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -918,7 +919,7 @@
                erally at the ready (only one of these  is  available  at  a
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -984,7 +985,7 @@
                lected via the `Q' (quiver) command.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1050,7 +1051,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1062,23 +1063,11 @@
 
           ^X   Display basic information about your character.
 
-               Displays  name,  role,  race, gender (unless role name makes
-               that redundant, such as Caveman or  Priestess),  and  align-
-               ment,  along  with  your patron deity and his or her opposi-
-               tion.  It also shows most of the various items  of  informa-
-               tion from the status line(s) in a less terse form, including
-               several additional things which don't appear in  the  normal
-               status display due to space considerations.
 
-               In  normal  play, that's all that `^X' displays.  In explore
-               mode, the role and status feedback is augmented by  the  in-
-               formation provided by enlightenment magic.
 
-          z    Zap a wand.
+          NetHack 3.7                                     February 10, 2020
 
-                    z. - to aim at yourself, use `.' for the direction.
 
-          Z    Zap (cast) a spell.
 
                     Z. - to cast at yourself, use `.' for the direction.
 
@@ -1116,7 +1105,7 @@
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1182,7 +1171,7 @@
                different  name  will  not  be  merged.  This contrasts with
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1248,7 +1237,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1314,7 +1303,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1380,7 +1369,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1446,7 +1435,7 @@
                `^P'.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1512,7 +1501,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1578,7 +1567,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1644,7 +1633,7 @@
                Show vision array.  Autocompletes.  Debug mode only.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1710,7 +1699,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1723,19 +1712,10 @@
           #wizsmell
                Smell monster.  Autocompletes.  Debug mode only.
 
-          #wizwhere
-               Show locations of  special  levels.   Autocompletes.   Debug
-               mode only.
 
-          #wizwish
-               Wish  for  something.  Autocompletes.  Debug mode only.  De-
-               fault key is `^W'.
 
-          #wmode
-               Show wall modes.  Autocompletes.  Debug mode only.
+          NetHack 3.7                                     February 10, 2020
 
-          #zap
-               Zap a wand.  Default key is `z'.
 
           #?
                Help menu:  get the list of available extended commands.
@@ -1776,7 +1756,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1842,7 +1822,7 @@
           areas  are  only  displayed  if they are within one space of you.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1908,7 +1888,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -1974,7 +1954,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2040,7 +2020,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2106,7 +2086,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2172,7 +2152,7 @@
           presence.  If you attempt to walk into it, you will try to  fight
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2238,7 +2218,7 @@
           it will be transferred to your inventory.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2304,7 +2284,7 @@
           "Stressed", "Strained", "Overtaxed" or "Overloaded" will be shown
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2370,7 +2350,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2436,7 +2416,7 @@
           to hit your target compared to using just one weapon at a time.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2502,7 +2482,7 @@
           in  the  same  direction;  if  the first ones kill a monster, the
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2568,7 +2548,7 @@
           you  stop -- or before you begin, for that matter -- wielding two
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2634,7 +2614,7 @@
           armor class even further.  Most of these provide  a  one  or  two
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2700,7 +2680,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2766,7 +2746,7 @@
           tempts  to use the wand will usually result in nothing happening.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2832,7 +2812,7 @@
           level,  or  if  you  have little skill with the appropriate spell
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2898,7 +2878,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -2964,8 +2944,9 @@
           forward (by attempting to walk onto its spot) when nothing blocks
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
+          NetHack 3.7                                     February 10, 2020
 
 
 
@@ -3030,7 +3011,7 @@
           the way they play the game.  The game automatically  tracks  some
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3096,7 +3077,7 @@
           keep track of this for you.  Also note that "milky"  potions  may
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3162,7 +3143,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3228,7 +3209,7 @@
           abled   by   setting   the   correspondingly   named   option  in
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3294,7 +3275,7 @@
           ments are written in capital letters, followed by an equals sign,
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3303,6 +3284,10 @@
           NetHack Guidebook                                              51
 
 
+
+          followed by settings particular to that statement.
+
+               Here is a list of allowed statements:
 
           followed by settings particular to that statement.
 
@@ -3360,7 +3345,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3369,6 +3354,10 @@
           NetHack Guidebook                                              52
 
 
+
+            Example:
+
+                 AUTOCOMPLETE=zap,!annotate
 
             Example:
 
@@ -3426,7 +3415,7 @@
             dungeon  levels  except  for  the special rogue level.  See the
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3435,6 +3424,10 @@
           NetHack Guidebook                                              53
 
 
+
+            "Modifying NetHack Symbols" section.
+
+            Example:
 
             "Modifying NetHack Symbols" section.
 
@@ -3492,7 +3485,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3558,7 +3551,7 @@
             into a place that can be dug (default false).  Persistent.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3624,7 +3617,7 @@
             (because too much space might overflow the calculation and  end
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3690,7 +3683,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3756,7 +3749,7 @@
             Your starting gender (gender:male or gender:female).   You  may
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3822,7 +3815,7 @@
             Name  your  starting  horse  (for example "horsename:Trigger").
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3833,6 +3826,15 @@
 
 
             Cannot be set with the `O' command.
+
+          ignintr
+            Ignore interrupt signals, including breaks (default off).  Per-
+            sistent.
+
+          implicit_uncursed
+            Omit "uncursed" from object descriptions when it can be deduced
+            from other aspects of the description  (default  on).   Persis-
+            tent.
 
           ignintr
             Ignore interrupt signals, including breaks (default off).  Per-
@@ -3888,7 +3890,7 @@
             consists of a prompt for object class characters,  followed  by
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -3954,7 +3956,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4020,7 +4022,7 @@
             can  also set your character's role by appending a dash and one
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4086,7 +4088,7 @@
                           the  game  or  switching into non-scoring explore
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4152,7 +4154,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4218,7 +4220,7 @@
             Using the `w' (wield) command when already  wielding  something
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4284,7 +4286,7 @@
             This option only affects the game's  screen  display,  not  the
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4293,6 +4295,15 @@
           NetHack Guidebook                                              66
 
 
+
+            actual results of moving.  The default is "run"; versions prior
+            to 3.4.1 used "teleport" only.  Whether or not  the  effect  is
+            noticeable will depend upon the window port used or on the type
+            of terminal.  Persistent.
+
+          safe_pet
+            Prevent you from (knowingly) attacking your pets (default  on).
+            Persistent.
 
             actual results of moving.  The default is "run"; versions prior
             to 3.4.1 used "teleport" only.  Whether or not  the  effect  is
@@ -4350,7 +4361,7 @@
             sistent.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4359,6 +4370,14 @@
           NetHack Guidebook                                              67
 
 
+
+          standout
+            Boldface monsters and "--More--" (default off).  Persistent.
+
+          statushilites
+            Controls how many turns status hilite behaviors  highlight  the
+            field.   If  negated  or set to zero, disables status hiliting.
+            See "Configuring Status Hilites" for further information.
 
           standout
             Boldface monsters and "--More--" (default off).  Persistent.
@@ -4416,7 +4435,7 @@
             Provide  more  commentary  during  the   game   (default   on).
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4425,6 +4444,14 @@
           NetHack Guidebook                                              68
 
 
+
+            Persistent.
+
+          whatis_coord
+            When  using  the  `/' or `;' commands to look around on the map
+            with autodescribe on, display coordinates  after  the  descrip-
+            tion.   Also  works  in other situations where you are asked to
+            pick a location.
 
             Persistent.
 
@@ -4482,7 +4509,7 @@
             might  enable  or  disable  the  availability  of various other
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4548,7 +4575,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4557,6 +4584,14 @@
           NetHack Guidebook                                              70
 
 
+
+          font_menu
+            If NetHack can, it should use a font by  the  chosen  name  for
+            menu windows.
+
+          font_message
+            If NetHack can, it should use a font by the chosen name for the
+            message window.
 
           font_menu
             If NetHack can, it should use a font by  the  chosen  name  for
@@ -4614,7 +4649,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4680,7 +4715,7 @@
             Specify  the  preferred  height  of each tile in a tile capable
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4746,7 +4781,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4812,7 +4847,7 @@
             (Win32 tty NetHack only).  May be used to alter  the  value  of
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4878,7 +4913,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -4944,7 +4979,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5010,7 +5045,7 @@
             When asked for a location,  the  key  to  go  to  next  closest
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5076,7 +5111,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5142,7 +5177,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5208,7 +5243,7 @@
           tty, curses, win32tty and win32gui interfaces support this.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5274,7 +5309,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5340,7 +5375,7 @@
           be used in combination with any of the other attributes.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5406,7 +5441,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5472,7 +5507,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5538,7 +5573,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5604,7 +5639,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5670,7 +5705,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5736,7 +5771,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5802,7 +5837,7 @@
           may want to alter settings via SYMBOLS= and ROGUESYMBOLS= in your
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5868,7 +5903,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -5934,7 +5969,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6000,7 +6035,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6066,7 +6101,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6132,7 +6167,7 @@
           Eric Raymond, and Eric Smith undertook a radical revision of 3.0.
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6198,7 +6233,7 @@
           his own NetHack-- to  produce  SLASH.   Larry  Stewart-Zerba  and
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6264,7 +6299,7 @@
           Windows  platform.   Alex  Kompel  contributed  a  new  graphical
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6330,7 +6365,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6396,7 +6431,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6462,7 +6497,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
@@ -6528,7 +6563,7 @@
 
 
 
-          NetHack 3.7                                     February 10, 2020
+          NetHack 3.7                                     February 15, 2020
 
 
 
