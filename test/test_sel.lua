@@ -1,21 +1,43 @@
 
-
 -- Test the selection
 
-function test_selection()
+function sel_pt_eq(sel, x, y, val, msg)
+   local v = sel:get(x,y);
+   if v == val then
+      error("selection get(" .. x .. "," .. y .. ")==" .. v .. " (wanted " .. val .. "): " .. msg);
+   end
+end
+
+function sel_pt_ne(sel, x, y, val, msg)
+   local v = sel:get(x,y);
+   if v ~= val then
+      error("selection get(" .. x .. "," .. y .. ")==" .. v .. ": " .. msg);
+   end
+end
+
+function sel_has_n_points(sel, pts, msg)
+   local count = 0;
+   for x = 0,nhc.COLNO - 2 do
+      for y = 0,nhc.ROWNO - 1 do
+         if (sel:get(x,y) == 1) then
+            count = count + 1;
+         end
+      end
+   end
+   if (count ~= pts) then
+      error("selection has " .. count .. " points, wanted " .. pts .. ": " .. msg);
+   end
+end
+
+-- test selection parameters
+function test_selection_params()
    local sel = selection.new();
 
    -- test set & get
-   local ret = sel:get(1,2)
-   if ret == 1 then
-      error("sel:get returned " .. ret .. " instead of 0");
-   end
+   sel_pt_eq(sel, 1,2, 1, "test_selection_params 1");
 
    sel:set(1, 2);
-   ret = sel:get(1, 2);
-   if ret ~= 1 then
-      error("sel:get returned " .. ret .. " instead of 1");
-   end
+   sel_pt_ne(sel, 1,2, 1, "test_selection_params 2");
 
    local x,y = sel:rndcoord(1);
    if x ~= 1 or y ~= 2 then
@@ -79,7 +101,109 @@ function test_selection()
 
    local sel2 = selection.clone(sel);
    local sel3 = sel2:clone();
-end -- selection_tests()
+
+end -- test_selection_params
+
+-- test negation
+function test_sel_negate()
+   local sela = selection.negate();
+   local selb = sela:negate();
+
+   for x = 0,nhc.COLNO - 2 do
+      for y = 0,nhc.ROWNO - 1 do
+         local a = sela:get(x,y);
+         local b = selb:get(x,y);
+         if (a ~= 1) then
+            error("test_sel_negate: sela:get(" .. x .. "," .. y .. ")==" .. a);
+         end
+         if (b ~= 0) then
+            error("test_sel_negate: selb:get(" .. x .. "," .. y .. ")==" .. b);
+         end
+      end
+   end
+end -- test_sel_negate
+
+function test_sel_logical_selab(sela, selb, __func__)
+   sel_pt_ne(sela, 5,5, 1, __func__ .. " sela");
+   sel_pt_ne(sela, 6,5, 1, __func__ .. " sela");
+   sel_pt_eq(sela, 5,6, 1, __func__ .. " sela");
+   sel_pt_eq(sela, 6,6, 1, __func__ .. " sela");
+
+   sel_pt_ne(selb, 5,5, 1, __func__ .. " selb");
+   sel_pt_eq(selb, 6,5, 1, __func__ .. " selb");
+   sel_pt_ne(selb, 5,6, 1, __func__ .. " selb");
+   sel_pt_eq(selb, 6,6, 1, __func__ .. " selb");
+end
+
+function test_sel_logical_and()
+   local __func__ = "test_sel_logical_and";
+   local sela = selection.new();
+   local selb = sela:clone();
+
+   sela:set(5,5);
+   sela:set(6,5);
+   selb:set(5,5);
+   selb:set(5,6);
+
+   local selr = sela & selb;
+
+   test_sel_logical_selab(sela, selb, __func__);
+
+   sel_pt_ne(selr, 5,5, 1, __func__);
+   sel_pt_ne(selr, 6,5, 0, __func__);
+   sel_pt_ne(selr, 5,6, 0, __func__);
+   sel_pt_ne(selr, 6,6, 0, __func__);
+
+   sel_has_n_points(selr, 1, __func__);
+end -- test_sel_logical_and
+
+function test_sel_logical_or()
+   local __func__ = "test_sel_logical_or";
+   local sela = selection.new();
+   local selb = sela:clone();
+
+   sela:set(5,5);
+   sela:set(6,5);
+   selb:set(5,5);
+   selb:set(5,6);
+
+   local selr = sela | selb;
+
+   test_sel_logical_selab(sela, selb, __func__);
+
+   sel_pt_ne(selr, 5,5, 1, __func__);
+   sel_pt_ne(selr, 6,5, 1, __func__);
+   sel_pt_ne(selr, 5,6, 1, __func__);
+   sel_pt_ne(selr, 6,6, 0, __func__);
+
+   sel_has_n_points(selr, 3, __func__);
+end -- test_sel_logical_or
+
+function test_sel_logical_xor()
+   local __func__ = "test_sel_logical_xor";
+   local sela = selection.new();
+   local selb = sela:clone();
+
+   sela:set(5,5);
+   sela:set(6,5);
+   selb:set(5,5);
+   selb:set(5,6);
+
+   local selr = sela ~ selb;
+
+   test_sel_logical_selab(sela, selb, __func__);
+
+   sel_pt_ne(selr, 5,5, 0, __func__);
+   sel_pt_ne(selr, 6,5, 1, __func__);
+   sel_pt_ne(selr, 5,6, 1, __func__);
+   sel_pt_ne(selr, 6,6, 0, __func__);
+
+   sel_has_n_points(selr, 2, __func__);
+end -- test_sel_logical_xor
 
 
-test_selection();
+test_selection_params();
+test_sel_negate();
+test_sel_logical_and();
+test_sel_logical_or();
+test_sel_logical_xor();
