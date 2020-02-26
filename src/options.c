@@ -1,4 +1,4 @@
-/* NetHack 3.7	options.c	$NHDT-Date: 1580434523 2020/01/31 01:35:23 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.439 $ */
+/* NetHack 3.7	options.c	$NHDT-Date: 1582748890 2020/02/26 20:28:10 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.451 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2008. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1462,10 +1462,19 @@ char *op UNUSED;
 
 int
 optfn_MACgraphics(optidx, req, negated, opts, op)
-int optidx, req;
+#if defined(MAC_GRAPHICS_ENV) && defined(BACKWARD_COMPAT)
+int optidx;
+int req;
 boolean negated;
 char *opts;
 char *op;
+#else
+int optidx UNUSED;
+int req;
+boolean negated UNUSED;
+char *opts UNUSED;
+char *op UNUSED;
+#endif
 {
 #if defined(MAC_GRAPHICS_ENV) && defined(BACKWARD_COMPAT)
     boolean badflag = FALSE;
@@ -4579,7 +4588,7 @@ char *op;
         switch (optidx) {
         case opt_time:
 #ifdef SCORE_ON_BOTL
-        case opt_showsore:
+        case opt_showscore:
 #endif
         case opt_showexp:
             if (VIA_WINDOWPORT())
