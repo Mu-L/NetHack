@@ -192,11 +192,14 @@ data.base lookup of an entry with any blank lines would falsely claim that
 using nhl_error() to report a Lua processing problem would clobber the stack
 level teleporation's "You materialize on a different level!" could be given
 	out of sequence with other arrival messages
-creating Mine Town variant 1 (Orcish Town) sometimes complained about being
-	unable to place lregion type 1 and failed to have any staircase up
+more sequencing: if wielding Sting or similar and level teleporting to a
+	level with different warning effect, the start-glowing or stop-glowing
+	message came before the materialize message on the destination level
 prevent "you materialize on a different level" after "a mysterious force
 	prevents you from descending" if you try to level teleport past the
 	stairs down from the quest home level before being granted access
+creating Mine Town variant 1 (Orcish Town) sometimes complained about being
+	unable to place lregion type 1 and failed to have any staircase up
 set g.context.botl for glove and wielding actions that could start or end
 	bare-handedness in support of condtests[bl_bareh]
 reinstate ranked ordering of the status condition fields
@@ -211,6 +214,8 @@ fix crash in water_damage_chain
 teleport feedback "you materialize at another location" was given too soon
 'mention_decore' was repeatedly reporting "you are back on bottom" when
 	moving around underwater
+revised 'mention_decor' was describing furniture or ice right before look-here
+	described the same thing when stepping onto object(s)
 poison gas clouds located over known but unlit pools were visible as known
 	clouds but steam clouds in that situation were not
 after the wish parsing change, wishing for "<something of monster>" or for
