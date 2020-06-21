@@ -1168,10 +1168,10 @@
                more meaningful for you or that it will appear in a particu-
                lar location when inventory listings are displayed.  You can
                move to a currently empty slot, or if the destination is oc-
-               cupied -- and won't merge -- the item there will swap  slots
-               with  the  one  being  moved.  "#adjust" can also be used to
-               split a stack of objects; when choosing the item to  adjust,
-               enter a count prior to its letter.
+               cupied--and won't merge--the item there will swap slots with
+               the  one being moved.  "#adjust" can also be used to split a
+               stack of objects; when choosing the item to adjust, enter  a
+               count prior to its letter.
 
                Adjusting  without  a  count  used to collect all compatible
                stacks when moving to the destination.   That  behavior  has
@@ -2275,8 +2275,8 @@
           it is the one who moved rather than you.
 
                However,  if  you encounter a monster which you can't see or
-          sense -- perhaps it is invisible and has just tapped you  on  the
-          noggin  --  a special "remembered, unseen monster" marker will be
+          sense--perhaps it is invisible and has just  tapped  you  on  the
+          noggin--a  special  "remembered,  unseen  monster" marker will be
           displayed at the location where you think it is.  That will  per-
           sist  until  you have proven that there is no monster there, even
           if the unseen monster moves to another location or you move to  a
@@ -2425,8 +2425,8 @@
           factors.  Among them are: type of weapon, quality of weapon  (en-
           chantment and/or erosion), experience level, strength, dexterity,
           encumbrance, and proficiency (see below).   The  monster's  armor
-          class -- a general defense rating, not necessarily due to wearing
-          of armor -- is a factor too; also, some monsters are particularly
+          class--a  general  defense rating, not necessarily due to wearing
+          of armor--is a factor too; also, some monsters  are  particularly
           vulnerable to certain types of weapons.
 
                Many  weapons  can be wielded in one hand; some require both
@@ -2492,14 +2492,14 @@
 
                Some characters have the ability to fire a volley of  multi-
           ple  items  in a single turn.  Knowing how to load several rounds
-          of ammunition at once -- or hold several missiles in your hand --
-          and  still  hit  a target is not an easy task.  Rangers are among
-          those who are adept at this task, as are those with a high  level
-          of  proficiency  in  the  relevant  weapon skill (in bow skill if
-          you're wielding one to shoot arrows, in crossbow skill if  you're
-          wielding one to shoot bolts, or in sling skill if you're wielding
-          one to shoot stones).  The number of items that the character has
-          a  chance  to  fire varies from turn to turn.  You can explicitly
+          of ammunition at once--or hold several missiles in your hand--and
+          still  hit a target is not an easy task.  Rangers are among those
+          who are adept at this task, as are those with  a  high  level  of
+          proficiency  in the relevant weapon skill (in bow skill if you're
+          wielding one to shoot arrows, in crossbow skill if you're  wield-
+          ing  one to shoot bolts, or in sling skill if you're wielding one
+          to shoot stones).  The number of items that the character  has  a
+          chance  to  fire  varies  from  turn to turn.  You can explicitly
 
 
           NetHack 3.7                                         June 20, 2020
@@ -2587,7 +2587,7 @@
           that your two weapons are not fully equal; the one  in  the  hand
           you  normally  wield with is considered primary and the other one
           is considered secondary.  The most noticeable difference is after
-          you  stop -- or before you begin, for that matter -- wielding two
+          you  stop--or  before  you  begin,  for that matter--wielding two
           weapons at once.  The primary is your wielded weapon and the sec-
           ondary  is  just an item in your inventory that's been designated
           as alternate weapon.)
@@ -2846,9 +2846,9 @@
 
                Spellbooks are tomes of mighty magic.  When studied with the
           `r' (read) command, they transfer to the reader the knowledge  of
-          a  spell  (and  therefore eventually become unreadable) -- unless
-          the attempt backfires.  Reading a cursed spellbook  or  one  with
-          mystic runes beyond your ken can be harmful to your health!
+          a  spell (and therefore eventually become unreadable)--unless the
+          attempt backfires.  Reading a cursed spellbook or one with mystic
+          runes beyond your ken can be harmful to your health!
 
                A  spell (even when learned) can also backfire when you cast
           it.  If you attempt to cast a spell well  above  your  experience
@@ -3024,9 +3024,9 @@
           cation and move to another location where you can't directly  see
           that  object  any  more, it will continue to be displayed on your
           map.  That remains the case even if it is not actually there  any
-          more  -- perhaps a monster has picked it up or it has rotted away
-          -- until you can see or feel that location  again.   One  notable
-          exception  is that if the object gets covered by the "remembered,
+          more--perhaps  a monster has picked it up or it has rotted away--
+          until you can see or feel that location again.  One  notable  ex-
+          ception  is  that  if the object gets covered by the "remembered,
           unseen monster" marker.  When that marker is later removed  after
 
 
@@ -3040,9 +3040,9 @@
 
 
 
-          you've  verified  that  no monster is there, you will forget that
-          there was any object there regardless of whether the unseen  mon-
-          ster  actually  took  the  object.  If the object is still there,
+          you've verified that no monster is there, you will have forgotten
+          that there was any object there regardless of whether the  unseen
+          monster  actually took the object.  If the object is still there,
           then once you see or feel that location again you will re-discov-
           er the object and resume remembering it.
 
@@ -4498,7 +4498,7 @@
                  v - in view only
                  a - in same area only
 
-            The area-filter tries to be slightly predictive  --  if  you're
+            The area-filter tries  to  be  slightly  predictive--if  you're
             standing on a doorway, it will consider the area on the side of
             the door you were last moving towards.
 
@@ -4805,11 +4805,11 @@
 
             This conversion is only done for commands, not for other  input
             prompts.  Note that typing one or more digits as a count prefix
-            prior to a command -- preceded by n if the number_pad option is
-            set  --  is  also  subject to this conversion, so attempting to
-            abort the count by typing ESC will leave  NetHack  waiting  for
-            another character to complete the two character sequence.  Type
-            a second ESC to finish  cancelling  such  a  count.   At  other
+            prior to a command--preceded by n if the number_pad  option  is
+            set--is also subject to this conversion, so attempting to abort
+            the count by typing ESC will leave NetHack waiting for  another
+            character  to complete the two character sequence.  Type a sec-
+            ond ESC to finish cancelling such a count.  At other prompts  a
 
 
           NetHack 3.7                                         June 20, 2020
@@ -4822,7 +4822,7 @@
 
 
 
-            prompts a single ESC suffices.
+            single ESC suffices.
 
           BIOS
             Use BIOS calls to update the screen display quickly and to read
