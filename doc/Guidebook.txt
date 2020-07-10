@@ -15,7 +15,7 @@
                          Original version - Eric S. Raymond
              (Edited and expanded for 3.7 by Mike Stephenson and others)
 
-                                    July 5, 2020
+                                    July 9, 2020
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -324,7 +324,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -390,7 +390,7 @@
                you have available for spell casting.  Again,  resting  will
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -456,7 +456,7 @@
           scribe things that are impossible to represent visually.  If  you
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -522,7 +522,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -588,7 +588,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -654,7 +654,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -720,7 +720,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -786,7 +786,7 @@
                Di  - examine your inventory before dropping anything.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -852,7 +852,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -918,7 +918,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -984,7 +984,7 @@
                hand and it will generally be less effective than when shot.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1050,7 +1050,7 @@
                from normal play to "explore mode", also known as "discovery
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1116,7 +1116,7 @@
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1182,7 +1182,7 @@
                not  have  a  name,  only  other  stacks  with  no  name are
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1248,7 +1248,7 @@
                Dip  an  object into something.  Autocompletes.  Default key
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1314,7 +1314,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1380,7 +1380,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1446,7 +1446,7 @@
                it.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1512,7 +1512,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1578,7 +1578,7 @@
                Show bare  map  without  displaying  monsters,  objects,  or
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1644,7 +1644,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1710,7 +1710,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1725,7 +1725,13 @@
                key is `^F'.
 
           #wizrumorcheck
-               Verify rumor boundaries.  Autocompletes.  Debug mode only.
+               Verify  rumor  boundaries  by displaying first and last true
+               rumors and first and last false rumors.
+
+               Also displays first, second,  and  last  random  engravings,
+               epitaphs, and hallucinatory monsters.
+
+               Autocompletes.  Debug mode only.
 
           #wizsmell
                Smell monster.  Autocompletes.  Debug mode only.
@@ -1767,16 +1773,10 @@
 
           M-a  #adjust
 
-          M-A  #annotate
-
-          M-c  #chat
-
-          M-C  #conduct
 
 
 
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1785,6 +1785,12 @@
           NetHack Guidebook                                              28
 
 
+
+          M-A  #annotate
+
+          M-c  #chat
+
+          M-C  #conduct
 
           M-d  #dip
 
@@ -1833,16 +1839,10 @@
 
           h    #help
 
-          j    #jump
-
-          k    #kick
-
-          l    #loot
 
 
 
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1851,6 +1851,12 @@
           NetHack Guidebook                                              29
 
 
+
+          j    #jump
+
+          k    #kick
+
+          l    #loot
 
           N    #name
 
@@ -1900,15 +1906,9 @@
 
                Some closed doors are booby-trapped and will explode  if  an
           attempt  is  made to open (when unlocked) or unlock (when locked)
-          or kick down.  Like kicking, an explosion destroys the  door  and
-          makes  a  lot  of  noise.   The  "#untrap" command can be used to
-          search a door for traps but might take multiple attempts to  find
-          one.  When one is found, you'll be asked whether to try to disarm
-          it.  If you accede, success will eliminate the trap  but  failure
-          will  set  off  the  trap's  explosion.   (If  you  decline,  you
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1918,7 +1918,13 @@
 
 
 
-          effectively forget that a trap was found there.)
+          or kick down.  Like kicking, an explosion destroys the  door  and
+          makes  a  lot  of  noise.   The  "#untrap" command can be used to
+          search a door for traps but might take multiple attempts to  find
+          one.  When one is found, you'll be asked whether to try to disarm
+          it.  If you accede, success will eliminate the trap  but  failure
+          will  set  off the trap's explosion.  (If you decline, you effec-
+          tively forget that a trap was found there.)
 
                Closed doors can be useful for shutting out monsters.   Most
           monsters  cannot  open closed doors, although a few don't need to
@@ -1966,15 +1972,9 @@
           to  the same location as a boulder (and then presumably move past
           it), or to destroy a boulder with magic or tools,  or  to  create
           new  boulders with a scroll of earth.  However, doing such things
-          will lower your luck without any  specific  message  given  about
-          that.   See  the  Conduct  section  for information about getting
-          feedback for your actions in Sokoban.
 
 
-
-
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -1983,6 +1983,10 @@
           NetHack Guidebook                                              31
 
 
+
+          will lower your luck without any  specific  message  given  about
+          that.   See  the  Conduct  section  for information about getting
+          feedback for your actions in Sokoban.
 
           5.3.  Stairs and ladders (`<', `>')
 
@@ -2034,13 +2038,9 @@
           of  gold  and  asked whether you're willing to sell, or you'll be
           told that the shopkeeper isn't interested (generally,  your  item
           needs  to  be  compatible with the type of merchandise carried by
-          the shop).
-
-               If you drop something in a shop by accident, the  shopkeeper
-          will  usually  claim ownership without offering any compensation.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2050,6 +2050,10 @@
 
 
 
+          the shop).
+
+               If you drop something in a shop by accident, the  shopkeeper
+          will  usually  claim ownership without offering any compensation.
           You'll have to buy it back if you want to reclaim it.
 
                Shopkeepers sometimes run out of money.  When that  happens,
@@ -2099,14 +2103,10 @@
           are objects here" instead of listing them.   The  default  is  5.
           Setting it to 1 would always give that message instead of listing
           any objects.  Setting it to 0 is a special case which will always
-          list all objects no matter how big a pile is.  Note that the num-
-          ber refers to the count of separate  stacks  of  objects  present
-          rather  than  the sum of the quantities of those stacks (so 7 ar-
-          rows or 25 gold pieces will each count as 1 rather than as 7  and
-          25,  respectively,  and  total  to  2  when  both are at the same
+          list  all  objects  no  matter  how big a pile is.  Note that the
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2116,7 +2116,11 @@
 
 
 
-          location).
+          number refers to the count of separate stacks of objects  present
+          rather  than  the sum of the quantities of those stacks (so 7 ar-
+          rows or 25 gold pieces will each count as 1 rather than as 7  and
+          25,  respectively, and total to 2 when both are at the same loca-
+          tion).
 
                The "nopickup" command prefix (default `m') can be used  be-
           fore  a  movement direction to step on objects without attempting
@@ -2166,13 +2170,9 @@
 
                Monsters you cannot see are not  displayed  on  the  screen.
           Beware!   You  may  suddenly come upon one in a dark place.  Some
-          magic items can help you  locate  them  before  they  locate  you
-          (which some monsters can do very well).
 
 
-
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2181,6 +2181,9 @@
           NetHack Guidebook                                              34
 
 
+
+          magic items can help you  locate  them  before  they  locate  you
+          (which some monsters can do very well).
 
                The  commands  `/' and `;' may be used to obtain information
           about those monsters who are displayed on the screen.   The  com-
@@ -2233,12 +2236,9 @@
                Your  pet  also  gains experience from killing monsters, and
           can grow over time, gaining hit points  and  doing  more  damage.
           Initially,  your  pet  may  even be better at killing things than
-          you, which makes pets useful for low-level characters.
 
 
-
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2247,6 +2247,8 @@
           NetHack Guidebook                                              35
 
 
+
+          you, which makes pets useful for low-level characters.
 
                Your pet will follow you up and down  staircases  if  it  is
           next  to  you when you move.  Otherwise your pet will be stranded
@@ -2300,11 +2302,9 @@
 
                However, if you encounter a monster which you can't  see  or
           sense--perhaps  it  is  invisible  and has just tapped you on the
-          noggin--a special "remembered, unseen  monster"  marker  will  be
-          displayed  at  the  location  where  you  think it is.  That will
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2314,10 +2314,12 @@
 
 
 
-          persist until you have proven that there  is  no  monster  there,
-          even  if the unseen monster moves to another location or you move
-          to a spot where the marker's location ordinarily wouldn't be seen
-          any more.
+          noggin--a special "remembered, unseen  monster"  marker  will  be
+          displayed  at the location where you think it is.  That will per-
+          sist until you have proven that there is no monster  there,  even
+          if  the unseen monster moves to another location or you move to a
+          spot where the marker's location ordinarily wouldn't be seen  any
+          more.
 
           7.  Objects
 
@@ -2366,11 +2368,9 @@
           extremely  obvious,  you will be asked what you want to call this
           type of object so you will recognize it later.  You can also  use
           the  "#name"  command,  for the same purpose at any time, to name
-          all objects of a particular type or just  an  individual  object.
-          When  you  use "#name" on an object which has already been named,
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2380,6 +2380,8 @@
 
 
 
+          all objects of a particular type or just  an  individual  object.
+          When  you  use "#name" on an object which has already been named,
           specifying a space as the value will remove the  prior  name  in-
           stead of assigning a new one.
 
@@ -2432,11 +2434,9 @@
 
                There are wielded weapons, like maces and swords, and thrown
           weapons,  like arrows and spears.  To hit monsters with a weapon,
-          you must wield it and attack them, or throw it at them.  You  can
-          simply  elect  to  throw  a spear.  To shoot an arrow, you should
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2446,6 +2446,8 @@
 
 
 
+          you must wield it and attack them, or throw it at them.  You  can
+          simply  elect  to  throw  a spear.  To shoot an arrow, you should
           first wield a bow, then throw the arrow.  Crossbows shoot  cross-
           bow bolts.  Slings hurl rocks and (other) stones (like gems).
 
@@ -2498,11 +2500,9 @@
                You  can  throw just about anything via the `t' command.  It
           will prompt for the item to throw; picking `?' will  list  things
           in  your  inventory  which are considered likely to be thrown, or
-          picking `*' will list your entire inventory.  After you've chosen
-          what  to  throw, you will be prompted for a direction rather than
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2512,6 +2512,8 @@
 
 
 
+          picking `*' will list your entire inventory.  After you've chosen
+          what  to  throw, you will be prompted for a direction rather than
           for a specific target.  The distance something can be thrown  de-
           pends mainly on the type of object and your strength.  Arrows can
           be thrown by hand, but can be thrown much  farther  and  will  be
@@ -2564,11 +2566,9 @@
                The  "#enhance"  extended  command is used to review current
           weapons proficiency (also spell proficiency) and to choose  which
           skill(s) to improve when you've used one or more skills enough to
-          become eligible to do so.  The skill rankings are  "none"  (some-
-          times also referred to as "restricted", because you won't be able
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2578,6 +2578,8 @@
 
 
 
+          become eligible to do so.  The skill rankings are  "none"  (some-
+          times also referred to as "restricted", because you won't be able
           to advance), "unskilled", "basic", "skilled", and "expert".   Re-
           stricted skills simply will not appear in the list shown by "#en-
           hance".   (Divine  intervention  might  unrestrict  a  particular
@@ -2629,12 +2631,10 @@
           thing causes the currently wielded weapon to become  your  alter-
           nate weapon.  So the sequence `w', `w' can be used to first wield
           the weapon you intend to be secondary, and then wield the one you
-          want  as  primary  which will push the first into secondary posi-
-          tion.
+          want  as  primary  which  will  push  the  first  into  secondary
 
 
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2643,6 +2643,8 @@
           NetHack Guidebook                                              41
 
 
+
+          position.
 
                When in two-weapon combat mode, using the `X'  command  tog-
           gles  back to single-weapon mode.  Throwing or dropping either of
@@ -2696,11 +2698,9 @@
           rust.  Such damage can be repaired.  Some types of armor may  in-
           hibit spell casting.
 
-               The  nudist  option  can be set (prior to game start) to at-
-          tempt to play the entire game without wearing any armor (a  self-
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2710,6 +2710,8 @@
 
 
 
+               The  nudist  option  can be set (prior to game start) to at-
+          tempt to play the entire game without wearing any armor (a  self-
           imposed challenge which is extremely difficult to accomplish).
 
                The commands to use armor are `W' (wear) and `T' (take off).
@@ -2761,12 +2763,10 @@
           feature  on  versions where NetHack mail delivery is triggered by
           electronic mail appearing in your system mailbox,  you  must  let
           NetHack know where to look for new mail by setting the "MAIL" en-
-          vironment variable to the file name of your mailbox.  You may al-
-          so  want to set the "MAILREADER" environment variable to the file
-          name of your favorite reader, so NetHack can shell to it when you
+          vironment variable to the file name of  your  mailbox.   You  may
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2776,10 +2776,12 @@
 
 
 
-          read  the  scroll.  On versions of NetHack where mail is randomly
-          generated internal to the game, these environment  variables  are
-          ignored.  You can disable the mail daemon by turning off the mail
-          option.
+          also  want  to  set  the "MAILREADER" environment variable to the
+          file name of your favorite reader, so NetHack  can  shell  to  it
+          when  you  read the scroll.  On versions of NetHack where mail is
+          randomly generated internal to the game, these environment  vari-
+          ables  are  ignored.   You can disable the mail daemon by turning
+          off the mail option.
 
                The command to read a scroll is `r'.
 
@@ -2830,9 +2832,7 @@
 
 
 
-
-
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2898,7 +2898,7 @@
           can become proficient (to varying degrees), spells are  similarly
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -2964,7 +2964,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3030,7 +3030,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3096,7 +3096,7 @@
           a  physiological  need for water; thus there is no restriction on
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3162,7 +3162,7 @@
           ing  spoken  to  by an angry god, priest(ess), or other religious
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3228,7 +3228,7 @@
           type  ("polypiling")  or  the  form of your own body into another
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3294,7 +3294,7 @@
           perience levels 1, 3, 6, 10, 14, 18, 22, 26, and 30.  The one for
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3360,7 +3360,7 @@
           ASCII  text  file can can be created with any text editor.  After
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3426,7 +3426,7 @@
             must be writable.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3492,7 +3492,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3558,7 +3558,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3624,7 +3624,7 @@
           as a file name.  If it  does  start  with  `/',  the  at-sign  is
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3690,7 +3690,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3756,7 +3756,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3822,7 +3822,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3888,7 +3888,7 @@
             yourself  or  next  to you, show a menu of possible actions for
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -3954,7 +3954,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4020,7 +4020,7 @@
             Not all ports can actually display all types.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4086,7 +4086,7 @@
                  2 - like 1 but does not make any OS adjustments
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4152,7 +4152,7 @@
             specifying  1 and negating number_pad is the same as specifying
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4218,7 +4218,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4284,7 +4284,7 @@
             Specify the object types to be picked up when autopickup is on.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4350,7 +4350,7 @@
             and "random" values.  If you prefix the value with `!' or "no",
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4416,7 +4416,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4482,7 +4482,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4548,7 +4548,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4614,7 +4614,7 @@
           is supported by the window port that you are currently  using  by
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4680,7 +4680,7 @@
             If  NetHack  can,  it should use this size font for the message
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4746,7 +4746,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4812,7 +4812,7 @@
                  2 - auto, on if display is at least (24+2)x(80+2)  (default)
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4878,7 +4878,7 @@
             ond ESC to finish cancelling such a count.  At other prompts  a
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -4944,7 +4944,7 @@
             Set the color palette for PC systems  using  NO_TERMS  (default
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5010,7 +5010,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5076,7 +5076,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5142,7 +5142,7 @@
             When asked for a location, the key to go  to  previous  closest
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5208,7 +5208,7 @@
             location.  Default is `z'.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5274,7 +5274,7 @@
                     sage is shown in between.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5340,7 +5340,7 @@
             specifies  that  any menu line with " blessed " contained in it
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5406,7 +5406,7 @@
           will  cause  the  hitpoints  field to display in the color red if
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5472,7 +5472,7 @@
             ally displayed depending upon your other option settings.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5538,7 +5538,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5604,7 +5604,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5670,7 +5670,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5736,7 +5736,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5802,7 +5802,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5868,7 +5868,7 @@
           program  as  a  message  handler", your NetHack has been compiled
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -5934,7 +5934,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6000,7 +6000,7 @@
             bones file content in ascii text.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6066,7 +6066,7 @@
             %D - current time, YYYYMMDDhhmmss format
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6132,7 +6132,7 @@
           It is initiated by starting the game  with  the  -D  command-line
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6198,7 +6198,7 @@
           Team to produce subsequent revisions of 3.0.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6264,7 +6264,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6330,7 +6330,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6396,7 +6396,7 @@
           dows CE port for 3.4.1.
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6462,7 +6462,7 @@
           beloved community patches. Many bugs were fixed and some code was
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6528,7 +6528,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6594,7 +6594,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
@@ -6660,7 +6660,7 @@
 
 
 
-          NetHack 3.7                                          July 5, 2020
+          NetHack 3.7                                          July 9, 2020
 
 
 
