@@ -439,18 +439,23 @@ static const char * cast_c_xpm[] UNUSED = {
 static QString
 aboutMsg()
 {
-    char vbuf[BUFSZ];
+    char *p, vbuf[BUFSZ];
+    /* nethack's getversionstring() includes a final period
+       but we're using it mid-sentence so strip period off */
+    if ((p = strrchr(getversionstring(vbuf), '.')) != 0 && *(p + 1) == '\0')
+        *p = '\0';
     QString msg;
     msg.sprintf(
         // format
-        "Qt NetHack is a version of NetHack\n"
-        "built using"           // no newline
+        "Qt NetHack is a version of NetHack built using" // no newline
 #ifdef KDE
-        " KDE and"              // ditto
+        " KDE and"                                       // ditto
 #endif
-        " the Qt %d GUI toolkit.\n"
-        "\nThis is NetHack %s%s.\n"
-        "\nNetHack's Qt interface originally developed by Warwick Allison.\n"
+        " the Qt %d GUI toolkit.\n"                      // short Qt version
+        "\n"
+        "This is %s%s.\n"       // long nethack version and full Qt version
+        "\n"
+        "NetHack's Qt interface originally developed by Warwick Allison.\n"
         "\n"
 #if 0
         "Homepage:\n     http://trolls.troll.no/warwick/nethack/\n" //obsolete
@@ -463,14 +468,14 @@ aboutMsg()
 #else
         "Qt:\n     http://www.troll.no/\n"      // obsolete
 #endif
-        "NetHack:\n     %s\n",
+        "NetHack:\n     %s\n", // DEVTEAM_URL
         // arguments
 #ifdef QT_VERSION_MAJOR
         QT_VERSION_MAJOR,
 #else
         5,              // Qt version macro should exist; if not, assume Qt5
 #endif
-        getversionstring(vbuf), /* nethack version */
+        vbuf,           // nethack version
 #ifdef QT_VERSION_STR
         " with Qt " QT_VERSION_STR,
 #else
@@ -822,7 +827,8 @@ public:
     const QMimeSource* data(const QString& abs_name) const
     {
 	const QMimeSource* r = 0;
-	if ( (NetHackMimeSourceFactory*)this == Q3MimeSourceFactory::defaultFactory() )
+	if ( (NetHackMimeSourceFactory *) this
+             == Q3MimeSourceFactory::defaultFactory() )
 	    r = Q3MimeSourceFactory::data(abs_name);
 	else
 	    r = Q3MimeSourceFactory::defaultFactory()->data(abs_name);
@@ -1001,51 +1007,59 @@ void NetHackQtMainWindow::keyPressEvent(QKeyEvent* event)
 
     const char* d = g.Cmd.dirchars;
     switch (event->key()) {
-     case Qt::Key_Up:
+    case Qt::Key_Up:
 	if ( dirkey == d[0] )
 	    dirkey = d[1];
 	else if ( dirkey == d[4] )
 	    dirkey = d[3];
 	else
 	    dirkey = d[2];
-    break; case Qt::Key_Down:
+        break;
+    case Qt::Key_Down:
 	if ( dirkey == d[0] )
 	    dirkey = d[7];
 	else if ( dirkey == d[4] )
 	    dirkey = d[5];
 	else
 	    dirkey = d[6];
-    break; case Qt::Key_Left:
+        break;
+    case Qt::Key_Left:
 	if ( dirkey == d[2] )
 	    dirkey = d[1];
 	else if ( dirkey == d[6] )
 	    dirkey = d[7];
 	else
 	    dirkey = d[0];
-    break; case Qt::Key_Right:
+        break;
+    case Qt::Key_Right:
 	if ( dirkey == d[2] )
 	    dirkey = d[3];
 	else if ( dirkey == d[6] )
 	    dirkey = d[5];
 	else
 	    dirkey = d[4];
-    break; case Qt::Key_PageUp:
+        break;
+    case Qt::Key_PageUp:
 	dirkey = 0;
 	if (message) message->Scroll(0,-1);
-    break; case Qt::Key_PageDown:
+        break;
+    case Qt::Key_PageDown:
 	dirkey = 0;
 	if (message) message->Scroll(0,+1);
-    break; case Qt::Key_Space:
+        break;
+    case Qt::Key_Space:
 	if ( flags.rest_on_space ) {
 	    event->ignore();
 	    return;
 	}
-	case Qt::Key_Enter:
+    case Qt::Key_Enter:
 	if ( map )
 	    map->clickCursor();
-    break; default:
+        break;
+    default:
 	dirkey = 0;
 	event->ignore();
+        break;
     }
 }
 
@@ -1075,8 +1089,10 @@ void NetHackQtMainWindow::closeEvent(QCloseEvent* e)
 void NetHackQtMainWindow::ShowIfReady()
 {
     if (message && map && status) {
-	QWidget* hp = qt_compact_mode ? static_cast<QWidget *>(stack) : static_cast<QWidget *>(hsplitter);
-	QWidget* vp = qt_compact_mode ? static_cast<QWidget *>(stack) : static_cast<QWidget *>(vsplitter);
+        QWidget* hp = qt_compact_mode ? static_cast<QWidget *>(stack)
+                                      : static_cast<QWidget *>(hsplitter);
+        QWidget* vp = qt_compact_mode ? static_cast<QWidget *>(stack)
+                                      : static_cast<QWidget *>(vsplitter);
 	message->Widget()->setParent(hp);
 	map->Widget()->setParent(vp);
 	status->Widget()->setParent(hp);
