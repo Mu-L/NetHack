@@ -4,19 +4,27 @@ necessary for which versions, so that you can tell which files may be deleted
 from or not transferred to your system if you wish.
 
 (Note: we ignore various dot files related to git.)
-1.:
+1XX: '.'
+
+.:
 (files in top directory)
 .clang-format    .travis.yml      Cross-compiling  Files
 Porting          README
+
+XX: 'DEVEL'
 
 DEVEL:
 (files for people developing changes to NetHack)
 Developer.txt      code_features.txt  code_style.txt     git_recipes.txt
 gitinfo.pl         nhgitset.pl
 
+XX: 'DEVEL/DOTGIT'
+
 DEVEL/DOTGIT:
 (file for people developing changes to NetHack)
 TARGET
+
+XX: 'DEVEL/hooksdir'
 
 DEVEL/hooksdir:
 (files for people developing changes to NetHack)
@@ -27,6 +35,8 @@ post-checkout       post-commit         post-merge
 post-rewrite        pre-applypatch      pre-auto-gc
 pre-commit          pre-push            pre-rebase
 prepare-commit-msg
+
+XX: 'dat'
 
 dat:
 (files for all versions)
@@ -60,6 +70,8 @@ symbols       themerms.lua  tower1.lua    tower2.lua    tower3.lua
 tribute       valley.lua    water.lua     wizard1.lua   wizard2.lua
 wizard3.lua   wizhelp
 
+XX: 'doc'
+
 doc:
 (files for all versions)
 Gbk-1pg-pfx.mn  Gbk-1pg-sfx.mn  Guidebook.mn    Guidebook.tex
@@ -78,6 +90,8 @@ makedefs.txt    mn.7            mn.txt          mnh.7
 mnh.txt         nethack.6       nethack.txt     options.doc
 recover.6       recover.txt     tmac.n          tmac.nh
 window.doc
+
+XX: 'include'
 
 include:
 (files for GEM versions)
@@ -112,9 +126,13 @@ wintty.h
 mac-carbon.h  mac-qt.h      mac-term.h    macpopup.h    mactty.h
 macwin.h      mttypriv.h
 
+XX: 'outdated/include'
+
 outdated/include:
 (files that are no longer maintained for current game code)
 amiconf.h  beconf.h   def_os2.h  macconf.h  os2conf.h  tosconf.h  wceconf.h
+
+XX: 'outdated/sys/amiga'
 
 outdated/sys/amiga:
 (files for Amiga versions - untested for 3.7)
@@ -126,14 +144,20 @@ ifchange      mkdmake       txt2iff.c     winami.c      winami.p
 winchar.c     windefs.h     winext.h      winfuncs.c    winkey.c
 winmenu.c     winproto.h    winreq.c      winstr.c      xpm2iff.c
 
+XX: 'outdated/sys/atari'
+
 outdated/sys/atari:
 (files for Atari version - untested for 3.7)
 Install.tos   atarifnt.uue  nethack.mnu   setup.g       tos.c
 unx2atar.sed
 
+XX: 'outdated/sys/be'
+
 outdated/sys/be:
 (files for BeOS version - untested for 3.7)
 README    bemain.c
+
+XX: 'outdated/sys/mac'
 
 outdated/sys/mac:
 (files for 68K Macintosh versions)
@@ -143,14 +167,20 @@ maccurs.c     macerrs.c     macfile.c     machelp.hqx   macmain.c
 macmenu.c     mactopl.c     mactty.c      macunix.c     macwin.c
 mgetline.c    mmodal.c      mrecover.c    mrecover.hqx  mttymain.c
 
+XX: 'outdated/sys/msdos'
+
 outdated/sys/msdos:
 (files for deprecated real mode msdos version)
 Makefile.BC   Makefile.MSC  SCHEMA35.MSC  moveinit.pat  ovlinit.c
 schema1.BC    schema2.BC    schema3.MSC
 
+XX: 'outdated/sys/os2'
+
 outdated/sys/os2:
 (files for OS/2 version - untested for 3.7)
 Install.os2   Makefile.os2  nhpmico.uu    os2.c
+
+XX: 'outdated/sys/wince'
 
 outdated/sys/wince:
 (files for Windows CE and PocketPC - untested for 3.7)
@@ -165,13 +195,19 @@ mhtxtbuf.c    mhtxtbuf.h    mswproc.c     newres.h      nhico.uu
 resource.h    winMS.h       winhack.c     winhack.rc    winhcksp.rc
 winmain.c
 
+XX: 'outdated/sys/wince/ceinc'
+
 outdated/sys/wince/ceinc:
 (header files for Windows CE and PocketPC - untested for 3.7)
 assert.h  errno.h   fcntl.h
 
+XX: 'outdated/sys/wince/ceinc/sys'
+
 outdated/sys/wince/ceinc/sys:
 (sys/stat.h for Windows CE and PocketPC - untested for 3.6.2)
 stat.h
+
+XX: 'outdated/win/Qt3'
 
 outdated/win/Qt3:
 (files for the Qt 3 widget library - X11, Windows, Mac OS X, or Qtopia)
@@ -182,10 +218,14 @@ qt3_win.cpp          qt3_win.h            qt3_xpms.h
 qt3tableview.cpp     qt3tableview.h       tileedit.cpp
 tileedit.h
 
+XX: 'outdated/win/gem'
+
 outdated/win/gem:
 (files for GEM versions - untested for 3.7)
 Install.gem  bitmfile.c   gem_rsc.uu   gem_rso.uu   gr_rect.c    gr_rect.h
 load_img.c   tile2img.c   title.uu     wingem.c     wingem1.c    xpm2img.c
+
+XX: 'outdated/win/gnome'
 
 outdated/win/gnome:
 (files for GNOME versions - untested for 3.7)
@@ -195,6 +235,8 @@ gnmenu.c    gnmenu.h    gnmesg.c    gnmesg.h    gnomeprv.h  gnopts.c
 gnopts.h    gnplayer.c  gnplayer.h  gnsignal.c  gnsignal.h  gnstatus.c
 gnstatus.h  gntext.c    gntext.h    gnworn.c    gnworn.h    gnyesno.c
 gnyesno.h   mapbg.xpm
+
+XX: 'src'
 
 src:
 (files for all versions)
@@ -219,6 +261,8 @@ uhitm.c     vault.c     version.c   vision.c    weapon.c    were.c
 wield.c     windows.c   wizard.c    worm.c      worn.c      write.c
 zap.c
 
+XX: 'sys/msdos'
+
 sys/msdos:
 (files for MSDOS version)
 Install.dos             Makefile.GCC            Makefile1.cross
@@ -231,6 +275,8 @@ vidtxt.c                vidvesa.c               vidvga.c
 
 (files for running MSDOS binary under Windows)
 nhico.uu  nhpif.uu
+
+XX: 'sys/share'
 
 sys/share:
 (Berkeley random number file, which may be included in any version)
@@ -272,6 +318,8 @@ cppregex.cpp
 (pmatch regex for other versions)
 pmatchregex.c
 
+XX: 'sys/unix'
+
 sys/unix:
 (files for UNIX versions)
 Install.unx     Makefile.dat    Makefile.doc    Makefile.src
@@ -283,21 +331,31 @@ unixmain.c      unixres.c       unixunix.c
 (files for replacement cpp, only needed by some ancient UNIX systems)
 cpp1.shr  cpp2.shr  cpp3.shr
 
+XX: 'sys/unix/NetHack.xcodeproj'
+
 sys/unix/NetHack.xcodeproj:
 (file for UNIX versions)
 project.pbxproj
+
+XX: 'sys/unix/NetHack.xcodeproj/project.xcworkspace'
 
 sys/unix/NetHack.xcodeproj/project.xcworkspace:
 (file for UNIX versions)
 contents.xcworkspacedata
 
+XX: 'sys/unix/NetHack.xcodeproj/project.xcworkspace/xcshareddata'
+
 sys/unix/NetHack.xcodeproj/project.xcworkspace/xcshareddata:
 (files for UNIX versions)
 IDEWorkspaceChecks.plist      WorkspaceSettings.xcsettings
 
+XX: 'sys/unix/NetHack.xcodeproj/xcshareddata/xcschemes'
+
 sys/unix/NetHack.xcodeproj/xcshareddata/xcschemes:
 (files for UNIX versions)
 NetHack.xcscheme   makedefs.xcscheme  recover.xcscheme
+
+XX: 'sys/unix/hints'
 
 sys/unix/hints:
 (files for configuring UNIX NetHack versions)
@@ -308,12 +366,16 @@ macosx10.5          macosx10.7          macosx10.8
 macosx10.10         macosx10.10-qt      macosx10.14
 solaris             solaris-playground  unix
 
+XX: 'sys/vms'
+
 sys/vms:
 (files for VMS version)
 Install.vms   Makefile.dat  Makefile.doc  Makefile.src  Makefile.top
 Makefile.utl  install.com   lev_lex.h     nethack.com   oldcrtl.c
 spec_lev.com  sysconf       vmsbuild.com  vmsfiles.c    vmsmail.c
 vmsmain.c     vmsmisc.c     vmstty.c      vmsunix.c
+
+XX: 'sys/winnt'
 
 sys/winnt:
 (files for Windows 7/8.x/10 version)
@@ -326,14 +388,20 @@ stubs.c              sysconf.template     travis-gcc.sh
 win10.c              win10.h              win32api.h
 windmain.c           winnt.c              winos.h
 
+XX: 'test'
+
 test:
 (files in top directory)
 test_des.lua  test_lev.lua  test_obj.lua  test_sel.lua  test_src.lua
 testwish.lua
 
+XX: 'util'
+
 util:
 (files for all versions)
 dlb_main.c  makedefs.c  mdgrep.h    mdgrep.pl   panic.c     recover.c
+
+XX: 'win/Qt'
 
 win/Qt:
 (files for the Qt 4 or 5 widget library - X11, Windows, Mac OS X)
@@ -348,6 +416,8 @@ qt_stat.cpp   qt_stat.h     qt_str.cpp    qt_str.h      qt_streq.cpp
 qt_streq.h    qt_svsel.cpp  qt_svsel.h    qt_win.cpp    qt_win.h
 qt_xcmd.cpp   qt_xcmd.h     qt_xpms.h     qt_yndlg.cpp  qt_yndlg.h
 
+XX: 'win/X11'
+
 win/X11:
 (files for X versions)
 Install.X11   NetHack.ad    Window.c      dialogs.c     ibm.bdf
@@ -356,9 +426,13 @@ nh_icon.xpm   pet_mark.xbm  pilemark.xbm  rip.xpm       tile2x11.c
 winX.c        winmap.c      winmenu.c     winmesg.c     winmisc.c
 winstat.c     wintext.c     winval.c
 
+XX: 'win/chain'
+
 win/chain:
 (files for stacking window systems)
 wc_chainin.c   wc_chainout.c  wc_trace.c
+
+XX: 'win/curses'
 
 win/curses:
 (files in top directory)
@@ -366,10 +440,14 @@ Bugs.txt    Readme.txt  Todo.txt    cursdial.c  cursdial.h  cursinit.c
 cursinit.h  cursinvt.c  cursinvt.h  cursmain.c  cursmesg.c  cursmesg.h
 cursmisc.c  cursmisc.h  cursstat.c  cursstat.h  curswins.c  curswins.h
 
+XX: 'win/macosx'
+
 win/macosx:
 (files for macosx versions)
 NetHackGuidebook.applescript  NetHackRecover.applescript
 NetHackTerm.applescript       recover.pl
+
+XX: 'win/share'
 
 win/share:
 (files for versions using optional tiles)
@@ -378,9 +456,13 @@ nhsplash.xpm   objects.txt    other.txt      ppmwrite.c     renumtiles.pl
 safeproc.c     thintile.c     tile.doc       tile.h         tile2bmp.c
 tilemap.c      tileset.c      tiletext.c
 
+XX: 'win/tty'
+
 win/tty:
 (files for tty versions)
 getline.c  termcap.c  topl.c     wintty.c
+
+XX: 'win/win32'
 
 win/win32:
 (files for Windows versions - tested up to Windows 10)
@@ -399,6 +481,8 @@ nhresource.h           petmark.uu             pilemark.uu
 record.uu              resource.h             rip.uu
 splash.uu              tiles-mingw32.mak      tiles.mak
 winMS.h
+
+XX: 'win/win32/vs2017'
 
 win/win32/vs2017:
 (files for Visual Studio 2017 Community Edition builds)
@@ -422,6 +506,8 @@ nhraykey.def                  nhraykey.vcxproj
 recover.vcxproj               tile2bmp.vcxproj
 tilemap.vcxproj               tiles.vcxproj
 travisci.sh                   uudecode.vcxproj
+
+XX: 'win/win32/vs2017/Images'
 
 win/win32/vs2017/Images:
 (files for Visual Studio 2017 Community Edition builds)
@@ -480,7 +566,9 @@ Wide310x150Logo.scale-400.png
 
 This is a list of files produced by auxiliary programs.  They can all be
 regenerated from the files in the distribution.
-0dat:
+0XX: 'dat'
+
+dat:
 (files generated by makedefs at playground creation time)
 data     options  oracles  rumors
 
@@ -499,6 +587,8 @@ ttyoptions
 (tile files optionally generated for X ports at playground creation time)
 pet_mark.xbm  rip.xpm       x11tiles
 
+XX: 'include'
+
 include:
 (file for tiles support copied from win/share at compile time)
 tile.h
@@ -511,6 +601,8 @@ date.h     onames.h   pm.h       vis_tab.h
 
 (files generated by yacc (or copied from sys/share) at compile time)
 dgn_comp.h  lev_comp.h
+
+XX: 'src'
 
 src:
 (files for win32 that are moved into src at compile time)
@@ -528,9 +620,13 @@ vis_tab.c
 (file optionally generated by tilemap at compile time)
 tile.c
 
+XX: 'sys/winnt'
+
 sys/winnt:
 (file generated by uudecode at compile time)
 nethack.ico
+
+XX: 'util'
 
 util:
 (files generated by lex and yacc (or copied from sys/share) at compile time)
