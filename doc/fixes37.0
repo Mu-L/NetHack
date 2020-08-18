@@ -1,4 +1,4 @@
-NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.285 $ $NHDT-Date: 1597546107 2020/08/16 02:48:27 $
+NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.288 $ $NHDT-Date: 1597707740 2020/08/17 23:42:20 $
 
 General Fixes and Modified Features
 -----------------------------------
@@ -349,6 +349,7 @@ curses: for vertical status, line up conditions in columns; usually two but
 msdos: add -DSTATUES_LOOK_LIKE_MONSTERS to Makefile1.cross so the VESA mode
 	can display statue glyphs
 Qt: quit if can't load tiles file instead of continuing and then segfaulting
+Qt: [later] tiles load failure at startup now continues using an ascii map
 Qt: use more columns for extended command selection dialog so that the number
 	of rows needed doesn't result in some commands being unaccessible
 Qt: suppress wizard mode commands from '#' handling when not in wizard mode
@@ -381,6 +382,7 @@ Qt: "paper doll" subset of persistent inventory has undergone several changes:
 	two-handed weapon in both the shield and primary weapon slots; show
 	first active light source in a previously unused slot on lower right;
 	show first leash-in-use in a previously unused slot on lower left
+Qt: paper doll inventory view was inconsistently updated during Hallucination
 Qt+QSX: fix control key
 Qt+OSX: rename menu entry "nethack->Preferences..." for invoking nethack's
 	'O' command to "Game->Run-time options" and entry "Game->Qt settings"
@@ -509,6 +511,8 @@ user_sounds: provide an experimental mechanism for terminal-side sounds similar
 	act on it)
 Qt: the "paper doll" inventory subset can be controlled via the "Qt Settings"
 	dialog box ("Preferences..." on OSX)
+Qt: draw a border around each tile in the paper door inventory; when BUC is
+	known for a doll item, change the border's color and thicken it
 
 
 NetHack Community Patches (or Variation) Included
