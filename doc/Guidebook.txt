@@ -15,7 +15,7 @@
                          Original version - Eric S. Raymond
              (Edited and expanded for 3.7 by Mike Stephenson and others)
 
-                                   August 5, 2020
+                                  October 2, 2020
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -324,7 +324,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -390,7 +390,7 @@
                you have available for spell casting.  Again,  resting  will
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -456,7 +456,7 @@
           scribe things that are impossible to represent visually.  If  you
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -522,7 +522,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -588,7 +588,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -654,7 +654,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -720,7 +720,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -786,7 +786,7 @@
                Da  - drop all objects, without asking for confirmation.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -852,7 +852,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -918,7 +918,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -984,7 +984,7 @@
                an arrow while not wielding a bow, you are  throwing  it  by
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1050,7 +1050,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1116,7 +1116,7 @@
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1182,7 +1182,7 @@
                other  stacks  with the same name or with no name will merge
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1248,7 +1248,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1314,7 +1314,7 @@
                Show your inventory.  Default key is `i'.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1380,7 +1380,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1446,7 +1446,7 @@
                it.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1512,7 +1512,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1578,7 +1578,7 @@
                Show bare  map  without  displaying  monsters,  objects,  or
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1644,7 +1644,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1710,7 +1710,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1776,7 +1776,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1842,7 +1842,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1908,7 +1908,7 @@
           attempt  is  made to open (when unlocked) or unlock (when locked)
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -1974,7 +1974,7 @@
           send  you  to  a  different  level  but behave differently.  Some
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2040,7 +2040,7 @@
           scribed  below).   Monsters are only active on the current level;
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2106,7 +2106,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2172,7 +2172,7 @@
           on the map.  Setting this  option  to  true  will  describe  such
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2238,7 +2238,7 @@
           when angered.  Remember:  discretion is the better part of valor.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2304,7 +2304,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2370,7 +2370,7 @@
           pends  on  your strength and your constitution.  The stronger and
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2436,7 +2436,7 @@
           as  uncursed.   They  could just as easily have been described as
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2502,7 +2502,7 @@
           encumbrance,  and  proficiency  (see below).  The monster's armor
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2568,7 +2568,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2634,7 +2634,7 @@
           boost your training towards the next skill level  (unless  you've
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2700,7 +2700,7 @@
           protection in NetHack.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2766,7 +2766,7 @@
           protected.  Food stored  in  ice  boxes  or  tins  ("cans")  will
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2832,7 +2832,7 @@
           is the bane of the undead, so potions  of  holy  water  are  good
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2898,7 +2898,7 @@
           ing a ring and then re-wear them after.  That's  done  implicitly
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -2964,7 +2964,7 @@
           mand casts a spell.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3030,7 +3030,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3096,7 +3096,7 @@
           map.   That remains the case even if it is not actually there any
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3162,7 +3162,7 @@
           and candy bars), and lumps of royal jelly.  Monks are expected to
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3228,7 +3228,7 @@
           The  identity of scrolls and spellbooks (and knowledge of spells)
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3294,7 +3294,7 @@
           <Rank>     - Attained rank title <Rank>.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3360,7 +3360,7 @@
           abled   by   setting   the   correspondingly   named   option  in
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3426,7 +3426,7 @@
           a CHOOSE directive has selected that section.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3492,7 +3492,7 @@
             extended  command.   Prefix the command with "!" to disable the
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3558,7 +3558,7 @@
             Define  a  sound  mapping.   See  the "Configuring User Sounds"
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3624,7 +3624,7 @@
           option  to  the  list,  and  turn  it off by typing a `!' or "no"
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3690,7 +3690,7 @@
             command.  Persistent.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3756,7 +3756,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3822,7 +3822,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3888,7 +3888,7 @@
             Your starting gender (gender:male or gender:female).   You  may
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -3954,7 +3954,7 @@
             Name  your  starting  horse  (for example "horsename:Trigger").
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4020,7 +4020,7 @@
             consists of a prompt for object class characters,  followed  by
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4086,7 +4086,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4152,7 +4152,7 @@
             can  also set your character's role by appending a dash and one
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4218,7 +4218,7 @@
                           the  game  or  switching into non-scoring explore
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4284,7 +4284,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4350,7 +4350,7 @@
             Using the `w' (wield) command when already  wielding  something
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4416,7 +4416,7 @@
             This option only affects the game's  screen  display,  not  the
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4482,7 +4482,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4548,7 +4548,7 @@
             ed  moves  if  you  make  inadvertent  mouse  clicks on the map
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4614,7 +4614,7 @@
             select  which  one  to  use,  such  as  "tty" or "X11" (default
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4680,7 +4680,7 @@
             your terminal (default off).
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4746,7 +4746,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4812,7 +4812,7 @@
             Specify  the  name  of an alternative tile file to override the
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4878,7 +4878,7 @@
             fit in the visible area of the window.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -4944,7 +4944,7 @@
             (Win32  tty  NetHack  only).  May be used to alter the value of
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5010,7 +5010,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5076,7 +5076,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5142,7 +5142,7 @@
             When  asked  for  a  location,  the  key  to go to next closest
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5208,7 +5208,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5274,7 +5274,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5340,7 +5340,7 @@
           tty, curses, win32tty and win32gui interfaces support this.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5406,7 +5406,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5472,7 +5472,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5538,7 +5538,7 @@
                  ue  changes.  This attribute times out after statushilites
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5604,7 +5604,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5670,7 +5670,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5736,7 +5736,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5802,7 +5802,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5868,7 +5868,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -5934,7 +5934,7 @@
           may want to alter settings via SYMBOLS= and ROGUESYMBOLS= in your
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6000,7 +6000,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6066,7 +6066,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6132,7 +6132,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6198,7 +6198,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6264,7 +6264,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6330,7 +6330,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6396,7 +6396,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6462,7 +6462,7 @@
           dows CE port for 3.4.1.
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6528,7 +6528,7 @@
           beloved community patches. Many bugs were fixed and some code was
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6594,7 +6594,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6660,7 +6660,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
@@ -6726,7 +6726,7 @@
 
 
 
-          NetHack 3.7                                        August 5, 2020
+          NetHack 3.7                                       October 2, 2020
 
 
 
