@@ -1,4 +1,4 @@
-NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.358 $ $NHDT-Date: 1605959203 2020/11/21 11:46:43 $
+NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.360 $ $NHDT-Date: 1606011660 2020/11/22 02:21:00 $
 
 General Fixes and Modified Features
 -----------------------------------
@@ -303,6 +303,8 @@ since ki-rin look quite a bit like unicorns, make them be more like one:
 wand or scroll of create monster that makes a new monster which can be seen
 	or sensed becomes discovered but was doing so even for a concealed
 	mimic seen as furniture or an object
+'showscore' could be used to determine how much gold was inside a container
+	whose contents were unknown
 
 
 Fixes to 3.7.0-x Problems that Were Exposed Via git Repository
@@ -504,6 +506,7 @@ Qt+OSX: since menu entry help->"About Qt NetHack" gets hijacked and becomes
 tiles: add indicator of thonged portion to aklys tile
 tty: role and race selection menus weren't filtering out potential choices
 	which got excluded by OPTIONS=align:!lawful or !neutral or !chaotic
+tty: '$' can now select gold in a menu even when it isn't on current page
 Unix: when user name is used as default character name, keep hyphenated value
 	intact instead stripping off dash and whatever follows as if that
 	specified role/race/&c (worked once upon a time; broken since 3.3.0)
