@@ -15,7 +15,7 @@
                          Original version - Eric S. Raymond
              (Edited and expanded for 3.7 by Mike Stephenson and others)
 
-                                  November 25, 2020
+                                  November 30, 2020
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -324,7 +324,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -390,7 +390,7 @@
                you have available for spell casting.  Again,  resting  will
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -456,7 +456,7 @@
           scribe things that are impossible to represent visually.  If  you
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -522,7 +522,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -588,7 +588,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -654,7 +654,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -720,7 +720,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -786,7 +786,7 @@
                Da  - drop all objects, without asking for confirmation.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -852,7 +852,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -918,7 +918,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -984,7 +984,7 @@
                an arrow while not wielding a bow, you are  throwing  it  by
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1050,7 +1050,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1086,7 +1086,8 @@
 
                     Z. - to cast at yourself, use `.' for the direction.
 
-          ^Z   Suspend the game (UNIX(R) versions with job control only).
+          ^Z   Suspend  the  game (UNIX(R) versions with job control only).
+               See "#suspend" below for more details.
 
           :    Look at what is here.
 
@@ -1111,12 +1112,11 @@
           (    Tell what tools you are using.
 
 
-
           __________
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1134,29 +1134,29 @@
 
           +    List the spells you know.
 
-               Using  this  command,  you  can  also rearrange the order in
-               which your spells are listed, either by sorting  the  entire
-               list  or by picking one spell from the menu then picking an-
-               other to swap places with  it.   Swapping  pairs  of  spells
+               Using this command, you can  also  rearrange  the  order  in
+               which  your  spells are listed, either by sorting the entire
+               list or by picking one spell from the menu then picking  an-
+               other  to  swap  places  with  it.  Swapping pairs of spells
                changes their casting letters, so the change lasts after the
-               current `+' command finishes.  Sorting  the  whole  list  is
-               temporary.   To  make the most recent sort order persist be-
-               yond the current `+' command, choose the sort  option  again
-               and  then  pick  "reassign  casting  letters".   (Any spells
-               learned after that will be added to  the  end  of  the  list
+               current  `+'  command  finishes.   Sorting the whole list is
+               temporary.  To make the most recent sort order  persist  be-
+               yond  the  current `+' command, choose the sort option again
+               and then  pick  "reassign  casting  letters".   (Any  spells
+               learned  after  that  will  be  added to the end of the list
                rather than be inserted into the sorted ordering.)
 
           \    Show what types of objects have been discovered.
 
           `    Show discovered types for one class of objects.
 
-          !    Escape to a shell.
+          !    Escape to a shell.  See "#shell" below for more details.
 
           #    Perform an extended command.
 
 
 
-               As  you can see, the authors of NetHack used up all the let-
+               As you can see, the authors of NetHack used up all the  let-
           ters, so this is a way to introduce the less frequently used com-
           mands.  What extended commands are available depends on what fea-
           tures the game was compiled with.
@@ -1165,24 +1165,24 @@
                Adjust inventory letters (most useful when the fixinv option
                is "on").  Autocompletes.  Default key is `M-a'.
 
-               This  command allows you to move an item from one particular
-               inventory slot to another so that it has a letter  which  is
+               This command allows you to move an item from one  particular
+               inventory  slot  to another so that it has a letter which is
                more meaningful for you or that it will appear in a particu-
                lar location when inventory listings are displayed.  You can
                move to a currently empty slot, or if the destination is oc-
                cupied--and won't merge--the item there will swap slots with
-               the  one being moved.  "#adjust" can also be used to split a
-               stack of objects; when choosing the item to adjust, enter  a
+               the one being moved.  "#adjust" can also be used to split  a
+               stack  of objects; when choosing the item to adjust, enter a
                count prior to its letter.
 
-               Adjusting  without  a  count  used to collect all compatible
-               stacks when moving to the destination.   That  behavior  has
+               Adjusting without a count used  to  collect  all  compatible
+               stacks  when  moving  to the destination.  That behavior has
                been changed; to gather compatible stacks, "#adjust" a stack
-               into its own inventory slot.  If it  has  a  name  assigned,
-               other  stacks  with the same name or with no name will merge
+               into  its  own  inventory  slot.  If it has a name assigned,
+               other stacks with the same name or with no name  will  merge
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1192,31 +1192,31 @@
 
 
 
-               provided that all their other attributes match.  If it  does
-               not  have  a name, only other stacks with no name are eligi-
-               ble.  In either case, otherwise  compatible  stacks  with  a
-               different  name will not be merged.  This contrasts with us-
+               provided  that all their other attributes match.  If it does
+               not have a name, only other stacks with no name  are  eligi-
+               ble.   In  either  case,  otherwise compatible stacks with a
+               different name will not be merged.  This contrasts with  us-
                ing "#adjust" to move from one slot to a different slot.  In
-               that  situation,  moving (no count given) a compatible stack
+               that situation, moving (no count given) a  compatible  stack
                will merge if either stack has a name when the other doesn't
-               and  give  that  name  to the result, while splitting (count
-               given) will ignore the source  stack's  name  when  deciding
+               and give that name to the  result,  while  splitting  (count
+               given)  will  ignore  the  source stack's name when deciding
                whether to merge with the destination stack.
 
           #annotate
                Allows you to specify one line of text to associate with the
                current dungeon level.  All levels with annotations are dis-
-               played  by the "#overview" command.  Autocompletes.  Default
+               played by the "#overview" command.  Autocompletes.   Default
                key is `M-A', and also `^N' if number_pad is on.
 
           #apply
-               Apply (use) a tool such as a pick-axe, a  key,  or  a  lamp.
+               Apply  (use)  a  tool  such as a pick-axe, a key, or a lamp.
                Default key is `a'.
 
-               If  the  tool used acts on items on the floor, using the `m'
+               If the tool used acts on items on the floor, using  the  `m'
                prefix skips those items.
 
-               If used on a wand, that wand will be broken,  releasing  its
+               If  used  on a wand, that wand will be broken, releasing its
                magic in the process.  Confirmation is required.
 
           #attributes
@@ -1226,9 +1226,9 @@
                Toggle the autopickup option on/off.  Default key is `@'.
 
           #call
-               Call  (name)  a  monster,  or an object in inventory, on the
-               floor, or in the discoveries list, or add an annotation  for
-               the  current  level  (same  as "#annotate").  Default key is
+               Call (name) a monster, or an object  in  inventory,  on  the
+               floor,  or in the discoveries list, or add an annotation for
+               the current level (same as  "#annotate").   Default  key  is
                `C'.
 
           #cast
@@ -1241,14 +1241,14 @@
                Close a door.  Default key is `c'.
 
           #conduct
-               List voluntary challenges  you  have  maintained.   Autocom-
+               List  voluntary  challenges  you  have maintained.  Autocom-
                pletes.  Default key is `M-C'.
 
                See the section below entitled "Conduct" for details.
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1259,7 +1259,7 @@
 
 
           #dip
-               Dip  an  object into something.  Autocompletes.  Default key
+               Dip an object into something.  Autocompletes.   Default  key
                is `M-d'.
 
           #down
@@ -1272,22 +1272,22 @@
                Drop specific item types.  Default key is `D'.
 
           #eat
-               Eat something.  Default key is `e'.  The  `m'  prefix  skips
+               Eat  something.   Default  key is `e'.  The `m' prefix skips
                eating items on the floor.
 
           #engrave
                Engrave writing on the floor.  Default key is `E'.
 
           #enhance
-               Advance  or  check  weapon and spell skills.  Autocompletes.
+               Advance or check weapon and  spell  skills.   Autocompletes.
                Default key is `M-e'.
 
           #exploremode
                Enter the explore mode.
 
                Requires confirmation; default response is n (no).  To real-
-               ly  switch to explore mode, respond with y.  You can set the
-               paranoid_confirmation:quit option to require a  response  of
+               ly switch to explore mode, respond with y.  You can set  the
+               paranoid_confirmation:quit  option  to require a response of
                yes instead.
 
           #fire
@@ -1297,11 +1297,11 @@
                Force a lock.  Autocompletes.  Default key is `M-f'.
 
           #glance
-               Show  what  type  of thing a map symbol corresponds to.  De-
+               Show what type of thing a map symbol  corresponds  to.   De-
                fault key is `;'.
 
           #help
-               Show the help menu.  Default key is `?',  and  also  `h'  if
+               Show  the  help  menu.   Default key is `?', and also `h' if
                number_pad is on.
 
           #herecmdmenu
@@ -1314,7 +1314,7 @@
                Show your inventory.  Default key is `i'.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1328,15 +1328,15 @@
                Inventory specific item types.  Default key is `I'.
 
           #invoke
-               Invoke  an object's special powers.  Autocompletes.  Default
+               Invoke an object's special powers.  Autocompletes.   Default
                key is `M-i'.
 
           #jump
-               Jump to another location.  Autocompletes.   Default  key  is
+               Jump  to  another  location.  Autocompletes.  Default key is
                `M-j', and also `j' if number_pad is on.
 
           #kick
-               Kick  something.  Default key is `^D', and `k' if number_pad
+               Kick something.  Default key is `^D', and `k' if  number_pad
                is on.
 
           #known
@@ -1348,7 +1348,7 @@
                is ``'.
 
           #levelchange
-               Change your experience level.   Autocompletes.   Debug  mode
+               Change  your  experience  level.  Autocompletes.  Debug mode
                only.
 
           #lightsources
@@ -1358,29 +1358,29 @@
                Look at what is here, under you.  Default key is `:'.
 
           #loot
-               Loot  a  box  or bag on the floor beneath you, or the saddle
-               from a steed standing next to you.  Autocompletes.   Precede
-               with  the `m' prefix to skip containers at your location and
+               Loot a box or bag on the floor beneath you,  or  the  saddle
+               from  a steed standing next to you.  Autocompletes.  Precede
+               with the `m' prefix to skip containers at your location  and
                go directly to removing a saddle.  Default key is `M-l', and
                also `l' if number_pad is on.
 
           #monster
-               Use  a monster's special ability (when polymorphed into mon-
+               Use a monster's special ability (when polymorphed into  mon-
                ster form).  Autocompletes.  Default key is `M-m'.
 
           #name
-               Name a monster, an individual object, or a type  of  object.
-               Same  as "#call".  Autocompletes.  Default keys are `N', `M-
+               Name  a  monster, an individual object, or a type of object.
+               Same as "#call".  Autocompletes.  Default keys are `N',  `M-
                n', and `M-N'.
 
           #offer
-               Offer a sacrifice to the gods.  Autocompletes.  Default  key
+               Offer  a sacrifice to the gods.  Autocompletes.  Default key
                is `M-o'.
 
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1390,8 +1390,8 @@
 
 
 
-               You'll  need to find an altar to have any chance at success.
-               Corpses of  recently  killed  monsters  are  the  fodder  of
+               You'll need to find an altar to have any chance at  success.
+               Corpses  of  recently  killed  monsters  are  the  fodder of
                choice.
 
                The `m' prefix skips offering any items which are on the al-
@@ -1404,22 +1404,22 @@
                Show and change option settings.  Default key is `O'.
 
           #overview
-               Display information you've  discovered  about  the  dungeon.
-               Any  visited level (unless forgotten due to amnesia) with an
-               annotation is included, and many  things  (altars,  thrones,
-               fountains,  and  so on; extra stairs leading to another dun-
-               geon branch) trigger an automatic  annotation.   If  dungeon
+               Display  information  you've  discovered  about the dungeon.
+               Any visited level (unless forgotten due to amnesia) with  an
+               annotation  is  included,  and many things (altars, thrones,
+               fountains, and so on; extra stairs leading to  another  dun-
+               geon  branch)  trigger  an automatic annotation.  If dungeon
                overview is chosen during end-of-game disclosure, every vis-
-               ited level will be included regardless of annotations.   Au-
+               ited  level will be included regardless of annotations.  Au-
                tocompletes.  Default keys are `^O', and `M-O'.
 
           #panic
                Test the panic routine.  Terminates the current game.  Auto-
                completes.  Debug mode only.
 
-               Asks for confirmation; default is n (no); continue  playing.
-               To  really  panic,  respond  with  y.  You can set the para-
-               noid_confirmation:quit option to require a response  of  yes
+               Asks  for confirmation; default is n (no); continue playing.
+               To really panic, respond with y.   You  can  set  the  para-
+               noid_confirmation:quit  option  to require a response of yes
                instead.
 
           #pay
@@ -1433,20 +1433,20 @@
                Polymorph self.  Autocompletes.  Debug mode only.
 
           #pray
-               Pray to the gods for help.  Autocompletes.  Default  key  is
+               Pray  to  the gods for help.  Autocompletes.  Default key is
                `M-p'.
 
-               Praying  too  soon after receiving prior help is a bad idea.
-               (Hint: entering the dungeon alive is treated as  having  re-
+               Praying too soon after receiving prior help is a  bad  idea.
+               (Hint:  entering  the dungeon alive is treated as having re-
                ceived help.  You probably shouldn't start off a new game by
-               praying right away.)  Since using this command  by  accident
-               can  cause  trouble,  there is an option to make you confirm
-               your intent before praying.  It is enabled by  default,  and
-               you  can  reset  the paranoid_confirmation option to disable
+               praying  right  away.)  Since using this command by accident
+               can cause trouble, there is an option to  make  you  confirm
+               your  intent  before praying.  It is enabled by default, and
+               you can reset the paranoid_confirmation  option  to  disable
                it.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1457,54 +1457,54 @@
 
 
           #prevmsg
-               Show previously displayed game  messages.   Default  key  is
+               Show  previously  displayed  game  messages.  Default key is
                `^P'.
 
           #puton
-               Put  on  an  accessory  (ring, amulet, etc).  Default key is
+               Put on an accessory (ring, amulet,  etc).   Default  key  is
                `P'.
 
           #quaff
                Quaff (drink) something.  Default key is `q'.
 
           #quit
-               Quit the program without saving your  game.   Autocompletes.
+               Quit  the  program without saving your game.  Autocompletes.
                Default key is `M-q'.
 
-               Since  using  this  command by accident would throw away the
-               current game, you are asked to confirm  your  intent  before
+               Since using this command by accident would  throw  away  the
+               current  game,  you  are asked to confirm your intent before
                quitting.  Default response is n (no); continue playing.  To
-               really quit, respond with y.  You can set the  paranoid_con-
+               really  quit, respond with y.  You can set the paranoid_con-
                firmation:quit option to require a response of yes instead.
 
           #quiver
                Select ammunition for quiver.  Default key is `Q'.
 
           #read
-               Read  a scroll, a spellbook, or something else.  Default key
+               Read a scroll, a spellbook, or something else.  Default  key
                is `r'.
 
           #redraw
-               Redraw the screen.  Default key is `^R', and  also  `^L'  if
+               Redraw  the  screen.   Default key is `^R', and also `^L' if
                number_pad is on.
 
           #remove
-               Remove  an  accessory  (ring,  amulet, etc).  Default key is
+               Remove an accessory (ring, amulet,  etc).   Default  key  is
                `R'.
 
           #ride
-               Ride (or stop riding) a  saddled  creature.   Autocompletes.
+               Ride  (or  stop  riding) a saddled creature.  Autocompletes.
                Default key is `M-R'.
 
           #rub
-               Rub  a  lamp or a stone.  Autocompletes.  Default key is `M-
+               Rub a lamp or a stone.  Autocompletes.  Default key  is  `M-
                r'.
 
           #save
                Save the game and exit the program.  Default key is `S'.
 
           #search
-               Search for traps and secret doors around you.   Default  key
+               Search  for  traps and secret doors around you.  Default key
                is `s'.
 
           #seeall
@@ -1512,7 +1512,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1531,36 +1531,42 @@
           #seegold
                Count your gold.  Default key is `$'.
 
-          #seenv
-               Show seen vectors.  Autocompletes.  Debug mode only.
-
           #seerings
                Show the ring(s) currently worn.  Default key is `='.
 
-          #seespells
-               List and reorder known spells.  Default key is `+'.
-
           #seetools
                Show the tools currently in use.  Default key is `('.
-
-          #seetrap
-               Show the type of an adjacent trap.  Default key is `^'.
 
           #seeweapon
                Show the weapon currently wielded.  Default key is `)'.
 
           #shell
-               Do a shell escape.  Default key is `!'.
+               Do a shell escape, switching from NetHack to  a  subprocess.
+               Can  be disabled at the time the program is built.  When en-
+               abled, access for specific users can be  controlled  by  the
+               system  configuration file.  Use the shell command `exit' to
+               return to the game.  Default key is `!'.
+
+          #showspells
+               List and reorder known spells.  Default key is `+'.
+
+          #showtrap
+               Show the type of an adjacent trap.  Default key is `^'.
 
           #sit
                Sit down.  Autocompletes.  Default key is `M-s'.
 
           #stats
-               Show  memory  usage  statistics.  Autocompletes.  Debug mode
+               Show memory usage statistics.   Autocompletes.   Debug  mode
                only.
 
           #suspend
-               Suspend the game.  Default key is `^Z'.
+               Suspend  the game, switching from NetHack to the terminal it
+               was started from without performing save-and-exit.   Can  be
+               disabled  at  the  time the program is built.  When enabled,
+               mainly useful for tty and curses interfaces  on  UNIX.   Use
+               the  shell  command `fg' to return to the game.  Default key
+               is `^Z'.
 
           #swap
                Swap wielded and secondary weapons.  Default key is `x'.
@@ -1571,14 +1577,8 @@
           #takeoffall
                Remove all armor.  Default key is `A'.
 
-          #teleport
-               Teleport around the level.  Default key is `^T'.
 
-          #terrain
-               Show bare  map  without  displaying  monsters,  objects,  or
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1588,6 +1588,11 @@
 
 
 
+          #teleport
+               Teleport around the level.  Default key is `^T'.
+
+          #terrain
+               Show bare  map  without  displaying  monsters,  objects,  or
                traps.  Autocompletes.
 
           #therecmdmenu
@@ -1636,15 +1641,10 @@
                List vanquished monsters.  Autocompletes.  Debug mode only.
 
           #version
-               Print compile time options for this version of NetHack.  Au-
-               tocompletes.  Default key is `M-v'.
-
-          #versionshort
-               Show version string.  Default key is `v'.
+               Print compile time options  for  this  version  of  NetHack.
 
 
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1653,6 +1653,11 @@
           NetHack Guidebook                                              26
 
 
+
+               Autocompletes.  Default key is `M-v'.
+
+          #versionshort
+               Show version string.  Default key is `v'.
 
           #vision
                Show vision array.  Autocompletes.  Debug mode only.
@@ -1703,14 +1708,9 @@
                Set one or more intrinsic attributes.  Autocompletes.  Debug
                mode only.
 
-          #wizlevelport
-               Teleport to another level.  Autocompletes.  Debug mode only.
-               Default key is `^V'.
 
 
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1719,6 +1719,10 @@
           NetHack Guidebook                                              27
 
 
+
+          #wizlevelport
+               Teleport to another level.  Autocompletes.  Debug mode only.
+               Default key is `^V'.
 
           #wizmap
                Map the level.  Autocompletes.  Debug  mode  only.   Default
@@ -1733,15 +1737,19 @@
 
                Autocompletes.  Debug mode only.
 
+          #wizseenv
+               Show  map  locations'  seen  vectors.  Autocompletes.  Debug
+               mode only.
+
           #wizsmell
                Smell monster.  Autocompletes.  Debug mode only.
 
           #wizwhere
-               Show  locations  of  special  levels.  Autocompletes.  Debug
+               Show locations of  special  levels.   Autocompletes.   Debug
                mode only.
 
           #wizwish
-               Wish for something.  Autocompletes.  Debug mode  only.   De-
+               Wish  for  something.  Autocompletes.  Debug mode only.  De-
                fault key is `^W'.
 
           #wmode
@@ -1756,27 +1764,19 @@
 
 
                If your keyboard has a meta key (which, when pressed in com-
-          bination with another key, modifies  it  by  setting  the  "meta"
-          [8th,  or  "high"] bit), you can invoke many extended commands by
+          bination  with  another  key,  modifies  it by setting the "meta"
+          [8th, or "high"] bit), you can invoke many extended  commands  by
           meta-ing the first letter of the command.
 
-               In Windows, OS/2, PC and ST NetHack, the "Alt"  key  can  be
+               In  Windows,  OS/2,  PC and ST NetHack, the "Alt" key can be
           used in this fashion; on the Amiga, set the altmeta option to get
-          this behavior.  On other systems, if typing  "Alt"  plus  another
-          key  transmits  a  two character sequence consisting of an Escape
+          this  behavior.   On  other systems, if typing "Alt" plus another
+          key transmits a two character sequence consisting  of  an  Escape
           followed by the other key, you may set the altmeta option to have
           NetHack combine them into meta+key.
 
-          M-?  #? (not supported by all platforms)
 
-          M-2  #twoweapon (unless the number_pad option is enabled)
-
-          M-a  #adjust
-
-
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1785,6 +1785,12 @@
           NetHack Guidebook                                              28
 
 
+
+          M-?  #? (not supported by all platforms)
+
+          M-2  #twoweapon (unless the number_pad option is enabled)
+
+          M-a  #adjust
 
           M-A  #annotate
 
@@ -1834,15 +1840,9 @@
 
 
 
-               If  the number_pad option is on, some additional letter com-
-          mands are available:
-
-          h    #help
 
 
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1851,6 +1851,11 @@
           NetHack Guidebook                                              29
 
 
+
+               If the number_pad option is on, some additional letter  com-
+          mands are available:
+
+          h    #help
 
           j    #jump
 
@@ -1864,51 +1869,46 @@
 
           5.  Rooms and corridors
 
-               Rooms and corridors in the dungeon are either lit  or  dark.
-          Any  lit  areas within your line of sight will be displayed; dark
-          areas are only displayed if they are within  one  space  of  you.
+               Rooms  and  corridors in the dungeon are either lit or dark.
+          Any lit areas within your line of sight will be  displayed;  dark
+          areas  are  only  displayed  if they are within one space of you.
           Walls and corridors remain on the map as you explore them.
 
-               Secret  corridors  are  hidden  and appear to be solid rock.
-          You can find them with the `s' (search) command when adjacent  to
+               Secret corridors are hidden and appear  to  be  solid  rock.
+          You  can find them with the `s' (search) command when adjacent to
           them.  Multiple search attempts may be needed.  When searching is
-          successful, secret corridors become ordinary open corridor  loca-
-          tions.   Mapping magic reveals secret corridors, so converts them
+          successful,  secret corridors become ordinary open corridor loca-
+          tions.  Mapping magic reveals secret corridors, so converts  them
           into ordinary corridors and shows them as such.
 
           5.1.  Doorways
 
                Doorways connect rooms and corridors.  Some doorways have no
-          doors;  you  can  walk right through.  Others have doors in them,
+          doors; you can walk right through.  Others have  doors  in  them,
           which may be open, closed, or locked.  To open a closed door, use
-          the  `o'  (open)  command; to close it again, use the `c' (close)
-          command.  By default the autoopen option is  enabled,  so  simply
-          attempting  to walk onto a closed door's location will attempt to
-          open it without needing `o'.  Opening via autoopen will not  work
-          if  you  are  confused or stunned or suffer from the fumbling at-
+          the `o' (open) command; to close it again, use  the  `c'  (close)
+          command.   By  default  the autoopen option is enabled, so simply
+          attempting to walk onto a closed door's location will attempt  to
+          open  it without needing `o'.  Opening via autoopen will not work
+          if you are confused or stunned or suffer from  the  fumbling  at-
           tribute.
 
-               Open doors cannot be entered diagonally; you  must  approach
-          them  straight  on, horizontally or vertically.  Doorways without
+               Open  doors  cannot be entered diagonally; you must approach
+          them straight on, horizontally or vertically.   Doorways  without
           doors are not restricted in this fashion except on one particular
           level (described by "#overview" as "a primitive area").
 
-               Unlocking  magic exists but usually won't be available early
+               Unlocking magic exists but usually won't be available  early
           on.  You can get through a locked door without magic by first us-
-          ing  an  unlocking  tool  with  the `a' (apply) command, and then
+          ing an unlocking tool with the  `a'  (apply)  command,  and  then
           opening it.  By default the autounlock option is also enabled, so
-          if  you attempt to open (via `o' or autoopen) a locked door while
-          carrying an unlocking tool, you'll be asked whether to use it  on
-          the  door's  lock.   Alternatively,  you  can break a closed door
-          (whether locked or not) down by kicking it via  the  `^D'  (kick)
-          command.   Kicking  down  a  door  destroys it and makes a lot of
-          noise which might wake sleeping monsters.
-
-               Some closed doors are booby-trapped and will explode  if  an
-          attempt  is  made to open (when unlocked) or unlock (when locked)
+          if you attempt to open (via `o' or autoopen) a locked door  while
+          carrying  an unlocking tool, you'll be asked whether to use it on
+          the door's lock.  Alternatively, you  can  break  a  closed  door
+          (whether  locked  or  not) down by kicking it via the `^D' (kick)
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1918,63 +1918,63 @@
 
 
 
-          or kick down.  Like kicking, an explosion destroys the  door  and
-          makes  a  lot  of  noise.   The  "#untrap" command can be used to
-          search a door for traps but might take multiple attempts to  find
+          command.  Kicking down a door destroys it  and  makes  a  lot  of
+          noise which might wake sleeping monsters.
+
+               Some  closed  doors are booby-trapped and will explode if an
+          attempt is made to open (when unlocked) or unlock  (when  locked)
+          or  kick  down.  Like kicking, an explosion destroys the door and
+          makes a lot of noise.  The  "#untrap"  command  can  be  used  to
+          search  a door for traps but might take multiple attempts to find
           one.  When one is found, you'll be asked whether to try to disarm
-          it.  If you accede, success will eliminate the trap  but  failure
-          will  set  off the trap's explosion.  (If you decline, you effec-
+          it.   If  you accede, success will eliminate the trap but failure
+          will set off the trap's explosion.  (If you decline,  you  effec-
           tively forget that a trap was found there.)
 
-               Closed doors can be useful for shutting out monsters.   Most
-          monsters  cannot  open closed doors, although a few don't need to
-          (for example, ghosts can walk through doors and  fog  clouds  can
-          flow  under them).  Some monsters who can open doors can also use
+               Closed  doors can be useful for shutting out monsters.  Most
+          monsters cannot open closed doors, although a few don't  need  to
+          (for  example,  ghosts  can walk through doors and fog clouds can
+          flow under them).  Some monsters who can open doors can also  use
           unlocking tools.  And some (giants) can smash doors.
 
                Secret doors are hidden and appear to be ordinary wall (from
-          inside  a  room) or solid rock (from outside).  You can find them
-          with the `s' (search) command but it might  take  multiple  tries
-          (possibly  many tries if your luck is poor).  Once found they are
-          in all ways equivalent to normal doors.  Mapping magic  does  not
+          inside a room) or solid rock (from outside).  You can  find  them
+          with  the  `s'  (search) command but it might take multiple tries
+          (possibly many tries if your luck is poor).  Once found they  are
+          in  all  ways equivalent to normal doors.  Mapping magic does not
           reveal secret doors.
 
           5.2.  Traps (`^')
 
-               There  are  traps throughout the dungeon to snare the unwary
-          intruder.  For example, you may suddenly fall into a pit  and  be
-          stuck  for  a  few turns trying to climb out (see below).  A trap
-          usually won't appear on your map until you trigger it  by  moving
+               There are traps throughout the dungeon to snare  the  unwary
+          intruder.   For  example, you may suddenly fall into a pit and be
+          stuck for a few turns trying to climb out (see  below).   A  trap
+          usually  won't  appear on your map until you trigger it by moving
           onto it, you see someone else trigger it, or you discover it with
-          the `s' (search) command (multiple attempts are often needed;  if
-          your  luck is poor, many attempts might be needed).  Wands of se-
-          cret door detection and spell of detect unseen also reveal  traps
-          within  a modest radius but only if the trap is also within line-
+          the  `s' (search) command (multiple attempts are often needed; if
+          your luck is poor, many attempts might be needed).  Wands of  se-
+          cret  door detection and spell of detect unseen also reveal traps
+          within a modest radius but only if the trap is also within  line-
           of-sight (whether you can see at the time or not).  There is also
           other magic which can reveal traps.
 
-               Monsters  can fall prey to traps, too, which can potentially
-          be used as a defensive  strategy.   Unfortunately  traps  can  be
+               Monsters can fall prey to traps, too, which can  potentially
+          be  used  as  a  defensive  strategy.  Unfortunately traps can be
           harmful to your pet(s) as well.  Monsters, including pets, usual-
-          ly will avoid moving onto a trap which is shown on  your  map  if
+          ly  will  avoid  moving onto a trap which is shown on your map if
           they have encountered that type of trap before.
 
-               Some  traps  such  as pits, bear traps, and webs hold you in
-          one place.  You can escape by simply trying to move to  an  adja-
+               Some traps such as pits, bear traps, and webs  hold  you  in
+          one  place.   You can escape by simply trying to move to an adja-
           cent spot and repeat as needed; eventually you will get free.
 
-               Other  traps  can  send  you  to different locations.  Tele-
-          porters send you elsewhere on  the  same  dungeon  level.   Level
-          teleporters  send  you to a random dungeon level, the destination
-          chosen from a few levels lower all the  way  to  the  top.   Trap
-          doors  and holes also send you to another level, but one which is
-          always below the current level.  Usually that will  be  the  next
-          level  down  but  it can be farther.  All of these traps choose a
-          new destination each time they're activated.  Magic portals  also
-          send  you  to  a  different  level  but behave differently.  Some
+               Other traps can send  you  to  different  locations.   Tele-
+          porters  send  you  elsewhere  on  the same dungeon level.  Level
+          teleporters send you to a random dungeon level,  the  destination
+          chosen  from  a  few  levels  lower all the way to the top.  Trap
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -1984,63 +1984,63 @@
 
 
 
-          portals are two-way and their remote destination  is  always  the
-          same: another portal which can take you back.  Others are one-way
-          and send you to a specific destination level but not  necessarily
-          to a specific location there.
+          doors and holes also send you to another level, but one which  is
+          always  below  the  current level.  Usually that will be the next
+          level down but it can be farther.  All of these  traps  choose  a
+          new  destination each time they're activated.  Magic portals also
+          send you to a different level but behave differently.  Some  por-
+          tals are two-way and their remote destination is always the same:
+          another portal which can take you back.  Others are  one-way  and
+          send you to a specific destination level but not necessarily to a
+          specific location there.
 
-               There  is  a  special multi-level branch of the dungeon with
-          pre-mapped levels based on the classic computer  game  "Sokoban."
+               There is a special multi-level branch of  the  dungeon  with
+          pre-mapped  levels  based on the classic computer game "Sokoban."
           In that game, you operate as a warehouse worker who pushes crates
-          around obstacles to position them at  designated  locations.   In
-          NetHack,  the  goal  is to push boulders into pits or holes until
+          around  obstacles  to  position them at designated locations.  In
+          NetHack, the goal is to push boulders into pits  or  holes  until
           those traps have all been nullified, giving access to whatever is
-          beyond  them.  In the Sokoban game, you can only move in the four
+          beyond them.  In the Sokoban game, you can only move in the  four
           cardinal compass directions, and a crate in its final destination
-          blocks  further  access  to  that spot.  In the Sokoban levels of
-          NetHack, you can move diagonally (unless that would let you  pass
-          between  two neighboring boulders) but you can only push boulders
-          in the four cardinal directions, and a boulder which fills a  pit
-          or  hole removes both the boulder and the trap so opens up normal
-          access to that spot.  With careful foresight, it is  possible  to
-          complete  all of the levels according to the traditional rules of
+          blocks further access to that spot.  In  the  Sokoban  levels  of
+          NetHack,  you can move diagonally (unless that would let you pass
+          between two neighboring boulders) but you can only push  boulders
+          in  the four cardinal directions, and a boulder which fills a pit
+          or hole removes both the boulder and the trap so opens up  normal
+          access  to  that spot.  With careful foresight, it is possible to
+          complete all of the levels according to the traditional rules  of
           Sokoban.  (Hint: to solve Sokoban puzzles, you often need to move
-          things  away from their eventual destinations in order to open up
-          more room to maneuver.)  Since NetHack does not support  an  undo
-          capability,  some allowances are permitted in case you get stuck.
+          things away from their eventual destinations in order to open  up
+          more  room  to maneuver.)  Since NetHack does not support an undo
+          capability, some allowances are permitted in case you get  stuck.
           For example, each level has at least one extra boulder.  Also, it
           is possible to drop everything in order to be able to squeeze in-
-          to the same location as a boulder (and then presumably move  past
-          it),  or  to  destroy a boulder with magic or tools, or to create
-          new boulders with a scroll of earth.  However, doing such  things
-          will  lower  your  luck  without any specific message given about
-          that.  See the Conduct  section  for  information  about  getting
+          to  the same location as a boulder (and then presumably move past
+          it), or to destroy a boulder with magic or tools,  or  to  create
+          new  boulders with a scroll of earth.  However, doing such things
+          will lower your luck without any  specific  message  given  about
+          that.   See  the  Conduct  section  for information about getting
           feedback for your actions in Sokoban.
 
           5.3.  Stairs and ladders (`<', `>')
 
-               In  general, each level in the dungeon will have a staircase
+               In general, each level in the dungeon will have a  staircase
           going up (`<') to the previous level and another going down (`>')
-          to  the  next  level.  There are some exceptions though.  For in-
-          stance, fairly early in the dungeon you will find  a  level  with
+          to the next level.  There are some exceptions  though.   For  in-
+          stance,  fairly  early  in the dungeon you will find a level with
           two down staircases, one continuing into the dungeon and the oth-
-          er branching into an area known  as  the  Gnomish  Mines.   Those
-          mines  eventually hit a dead end, so after exploring them (if you
-          choose to do so), you'll need to climb back up to the  main  dun-
+          er  branching  into  an  area  known as the Gnomish Mines.  Those
+          mines eventually hit a dead end, so after exploring them (if  you
+          choose  to  do so), you'll need to climb back up to the main dun-
           geon.
 
-               When  you  traverse a set of stairs, or trigger a trap which
-          sends you to another level, the level you're leaving will be  de-
-          activated  and  stored  in a file on disk.  If you're moving to a
+               When you traverse a set of stairs, or trigger a  trap  which
+          sends  you to another level, the level you're leaving will be de-
+          activated and stored in a file on disk.  If you're  moving  to  a
           previously visited level, it will be loaded from its file on disk
-          and  reactivated.   If you're moving to a level which has not yet
-          been visited, it will be created (from scratch  for  most  random
-          levels, from a template for some "special" levels, or loaded from
-          the remains of an earlier game for a "bones" level as briefly de-
-          scribed  below).   Monsters are only active on the current level;
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2050,63 +2050,63 @@
 
 
 
+          and reactivated.  If you're moving to a level which has  not  yet
+          been  visited,  it  will be created (from scratch for most random
+          levels, from a template for some "special" levels, or loaded from
+          the remains of an earlier game for a "bones" level as briefly de-
+          scribed below).  Monsters are only active on the  current  level;
           those on other levels are essentially placed into stasis.
 
-               Ordinarily when you climb a set of stairs, you  will  arrive
-          on  the  corresponding  staircase  at your destination.  However,
-          pets (see below) and some other monsters  will  follow  along  if
+               Ordinarily  when  you climb a set of stairs, you will arrive
+          on the corresponding staircase  at  your  destination.   However,
+          pets  (see  below)  and  some other monsters will follow along if
           they're close enough when you travel up or down stairs, and occa-
-          sionally one of these creatures  will  displace  you  during  the
+          sionally  one  of  these  creatures  will displace you during the
           climb.  When that occurs, the pet or other monster will arrive on
           the staircase and you will end up nearby.
 
-               Ladders serve the same purpose as staircases,  and  the  two
-          types  of  inter-level  connections  are nearly indistinguishable
+               Ladders  serve  the  same purpose as staircases, and the two
+          types of inter-level  connections  are  nearly  indistinguishable
           during game play.
 
           5.4.  Shops and shopping
 
-               Occasionally you will run across a room  with  a  shopkeeper
-          near  the  door  and  many items lying on the floor.  You can buy
+               Occasionally  you  will  run across a room with a shopkeeper
+          near the door and many items lying on the  floor.   You  can  buy
           items by picking them up and then using the `p' command.  You can
-          inquire  about the price of an item prior to picking it up by us-
+          inquire about the price of an item prior to picking it up by  us-
           ing the "#chat" command while standing on it.  Using an item pri-
           or to paying for it will incur a charge, and the shopkeeper won't
           allow you to leave the shop until you have paid any debt you owe.
 
-               You can sell items to a shopkeeper by dropping them  to  the
-          floor  while inside a shop.  You will either be offered an amount
-          of gold and asked whether you're willing to sell,  or  you'll  be
-          told  that  the shopkeeper isn't interested (generally, your item
-          needs to be compatible with the type of  merchandise  carried  by
+               You  can  sell items to a shopkeeper by dropping them to the
+          floor while inside a shop.  You will either be offered an  amount
+          of  gold  and  asked whether you're willing to sell, or you'll be
+          told that the shopkeeper isn't interested (generally,  your  item
+          needs  to  be  compatible with the type of merchandise carried by
           the shop).
 
-               If  you drop something in a shop by accident, the shopkeeper
-          will usually claim ownership without offering  any  compensation.
+               If you drop something in a shop by accident, the  shopkeeper
+          will  usually  claim ownership without offering any compensation.
           You'll have to buy it back if you want to reclaim it.
 
-               Shopkeepers  sometime  run out of money.  When that happens,
-          you'll be offered credit instead of gold when  you  try  to  sell
-          something.   Credit  can  be used to pay for purchases, but it is
-          only good in the shop where it was  obtained;  other  shopkeepers
-          won't  honor  it.   (If you happen to find a "credit card" in the
+               Shopkeepers sometime run out of money.  When  that  happens,
+          you'll  be  offered  credit  instead of gold when you try to sell
+          something.  Credit can be used to pay for purchases,  but  it  is
+          only  good  in  the shop where it was obtained; other shopkeepers
+          won't honor it.  (If you happen to find a "credit  card"  in  the
           dungeon, don't bother trying to use it in shops; shopkeepers will
           not accept it.)
 
-               The  `$'  command,  which reports the amount of gold you are
+               The `$' command, which reports the amount of  gold  you  are
           carrying (in inventory, not inside bags or boxes), will also show
-          current  shop debt or credit, if any.  The "Iu" command lists un-
+          current shop debt or credit, if any.  The "Iu" command lists  un-
           paid items (those which still belong to the shop) if you are car-
-          rying  any.   The "Ix" command shows an inventory-like display of
-          any unpaid items which have been used up, along with  other  shop
-          fees, if any.
+          rying any.  The "Ix" command shows an inventory-like  display  of
+          any  unpaid  items which have been used up, along with other shop
 
 
-
-
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2116,19 +2116,21 @@
 
 
 
+          fees, if any.
+
           5.4.1.  Shop idiosyncrasies
 
                Several aspects of shop behavior might be unexpected.
 
           * The price of a given item can vary due to a variety of factors.
 
-          * A  shopkeeper treats the spot immediately inside the door as if
+          * A shopkeeper treats the spot immediately inside the door as  if
             it were outside the shop.
 
-          * While the shopkeeper watches you like a hawk, he  or  she  will
+          * While  the  shopkeeper  watches you like a hawk, he or she will
             generally ignore any other customers.
 
-          * If  a  shop  is "closed for inventory," it will not open of its
+          * If a shop is "closed for inventory," it will not  open  of  its
             own accord.
 
           * Shops do not get restocked with new items, regardless of inven-
@@ -2136,43 +2138,41 @@
 
           5.5.  Movement feedback
 
-               Moving  around  the  map usually provides no feedback--other
-          than drawing the hero at the new location--unless you step on  an
-          object  or pile of objects, or on a trap, or attempt to move onto
-          a spot where a monster is located.   There  are  several  options
+               Moving around the map usually  provides  no  feedback--other
+          than  drawing the hero at the new location--unless you step on an
+          object or pile of objects, or on a trap, or attempt to move  onto
+          a  spot  where  a  monster is located.  There are several options
           which can be used to augment the normal feedback.
 
-               The  pile_limit option controls how many objects can be in a
+               The pile_limit option controls how many objects can be in  a
           pile--sharing the same map location--for the game to state "there
-          are  objects  here"  instead  of listing them.  The default is 5.
+          are objects here" instead of listing them.   The  default  is  5.
           Setting it to 1 would always give that message instead of listing
           any objects.  Setting it to 0 is a special case which will always
           list all objects no matter how big a pile is.  Note that the num-
-          ber  refers  to  the  count of separate stacks of objects present
-          rather than the sum of the quantities of those stacks (so  7  ar-
-          rows  or 25 gold pieces will each count as 1 rather than as 7 and
-          25, respectively, and total to 2 when both are at the same  loca-
+          ber refers to the count of separate  stacks  of  objects  present
+          rather  than  the sum of the quantities of those stacks (so 7 ar-
+          rows or 25 gold pieces will each count as 1 rather than as 7  and
+          25,  respectively, and total to 2 when both are at the same loca-
           tion).
 
-               The  "nopickup" command prefix (default `m') can be used be-
-          fore a movement direction to step on objects  without  attempting
+               The "nopickup" command prefix (default `m') can be used  be-
+          fore  a  movement direction to step on objects without attempting
           auto-pickup and without giving feedback about them.
 
-               The  mention_walls  option controls whether you get feedback
-          if you try to walk into a wall or solid stone or off the edge  of
-          the  map.  Normally nothing happens (unless the hero is blind and
+               The mention_walls option controls whether you  get  feedback
+          if  you try to walk into a wall or solid stone or off the edge of
+          the map.  Normally nothing happens (unless the hero is blind  and
           no wall is shown, then the wall that is being bumped into will be
-          drawn  on the map).  This option also gives feedback when rushing
+          drawn on the map).  This option also gives feedback when  rushing
           or running stops for some non-obvious reason.
 
-               The mention_decor option controls whether you  get  feedback
-          when  walking on "furniture."  Normally stepping onto stairs or a
-          fountain or an altar or various other things doesn't elicit  any-
-          thing  unless it is covered by one or more objects so is obscured
-          on the map.  Setting this  option  to  true  will  describe  such
+               The  mention_decor  option controls whether you get feedback
+          when walking on "furniture."  Normally stepping onto stairs or  a
+          fountain  or  an  altar  or  various  other things doesn't elicit
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2182,16 +2182,19 @@
 
 
 
-          things  even  when  they  aren't obscured.  Doorless doorways and
-          open doors aren't considered worthy of mention; closed doors  (if
-          you  can  move  onto their spots) and broken doors are.  Assuming
-          that you're able to do so, moving onto water or lava or ice  will
-          give  feedback  if not yet on that type of terrain but not repeat
-          it (unless there has been some intervening message)  when  moving
-          from water to another water spot, or lava to lava, or ice to ice.
-          Moving off of any of those back onto "normal" terrain  will  give
-          one  message  too, unless there is feedback about one or more ob-
-          jects, in which case the back on land circumstance is implied.
+          anything unless it is covered by one or more objects  so  is  ob-
+          scured  on  the  map.   Setting this option to true will describe
+          such things even when they aren't  obscured.   Doorless  doorways
+          and  open doors aren't considered worthy of mention; closed doors
+          (if you can move onto their spots) and broken doors are.   Assum-
+          ing  that  you're able to do so, moving onto water or lava or ice
+          will give feedback if not yet on that type of terrain but not re-
+          peat  it  (unless  there  has been some intervening message) when
+          moving from water to another water spot, or lava to lava, or  ice
+          to  ice.   Moving  off of any of those back onto "normal" terrain
+          will give one message too, unless there is feedback about one  or
+          more  objects, in which case the back on land circumstance is im-
+          plied.
 
                The confirm and safe_pet options control what  happens  when
           you  try  to  move onto a peaceful monster's spot or a tame one's
@@ -2233,12 +2236,9 @@
 
                Monsters you cannot see are not  displayed  on  the  screen.
           Beware!   You  may  suddenly come upon one in a dark place.  Some
-          magic items can help you  locate  them  before  they  locate  you
-          (which some monsters can do very well).
 
 
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2247,6 +2247,9 @@
           NetHack Guidebook                                              35
 
 
+
+          magic items can help you  locate  them  before  they  locate  you
+          (which some monsters can do very well).
 
                The  commands  `/' and `;' may be used to obtain information
           about those monsters who are displayed on the screen.   The  com-
@@ -2299,12 +2302,9 @@
                Your  pet  also  gains experience from killing monsters, and
           can grow over time, gaining hit points  and  doing  more  damage.
           Initially,  your  pet  may  even be better at killing things than
-          you, which makes pets useful for low-level characters.
 
 
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2313,6 +2313,8 @@
           NetHack Guidebook                                              36
 
 
+
+          you, which makes pets useful for low-level characters.
 
                Your pet will follow you up and down  staircases  if  it  is
           next  to  you when you move.  Otherwise your pet will be stranded
@@ -2366,11 +2368,9 @@
 
                However, if you encounter a monster which you can't  see  or
           sense--perhaps  it  is  invisible  and has just tapped you on the
-          noggin--a special "remembered, unseen  monster"  marker  will  be
-          displayed  at  the  location  where  you  think it is.  That will
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2380,10 +2380,12 @@
 
 
 
-          persist until you have proven that there  is  no  monster  there,
-          even  if the unseen monster moves to another location or you move
-          to a spot where the marker's location ordinarily wouldn't be seen
-          any more.
+          noggin--a special "remembered, unseen  monster"  marker  will  be
+          displayed  at the location where you think it is.  That will per-
+          sist until you have proven that there is no monster  there,  even
+          if  the unseen monster moves to another location or you move to a
+          spot where the marker's location ordinarily wouldn't be seen  any
+          more.
 
           7.  Objects
 
@@ -2432,11 +2434,9 @@
           extremely  obvious,  you will be asked what you want to call this
           type of object so you will recognize it later.  You can also  use
           the  "#name"  command,  for the same purpose at any time, to name
-          all objects of a particular type or just  an  individual  object.
-          When  you  use "#name" on an object which has already been named,
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2446,6 +2446,8 @@
 
 
 
+          all objects of a particular type or just  an  individual  object.
+          When  you  use "#name" on an object which has already been named,
           specifying a space as the value will remove the  prior  name  in-
           stead of assigning a new one.
 
@@ -2498,11 +2500,9 @@
                Given  a  chance,  most monsters in the Mazes of Menace will
           gratuitously try to kill you.  You need weapons for  self-defense
           (killing  them  first).   Without  a  weapon, you do only 1-2 hit
-          points of damage (plus bonuses, if any).  Monk characters are  an
-          exception;  they  normally  do  more damage with bare (or gloved)
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2512,6 +2512,8 @@
 
 
 
+          points of damage (plus bonuses, if any).  Monk characters are  an
+          exception;  they  normally  do  more damage with bare (or gloved)
           hands than they do with weapons.
 
                There are wielded weapons, like maces and swords, and thrown
@@ -2566,9 +2568,7 @@
           change), `X' (twoweapon), and "#enhance" (see below).
 
 
-
-
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2634,7 +2634,7 @@
           become highly skilled in daggers or staves but not in  swords  or
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2700,7 +2700,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2766,7 +2766,7 @@
           "plusses" it provides.   Cursed  pieces  of  armor  usually  have
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2832,7 +2832,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2898,7 +2898,7 @@
           number of times it has been recharged followed  by  a  colon  and
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -2964,7 +2964,7 @@
           lar to wands.  To cast one at yourself, just give a  `.'  or  `s'
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3030,7 +3030,7 @@
           kicking it with the `^D' command, or by using a weapon  to  force
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3096,7 +3096,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3162,7 +3162,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3228,7 +3228,7 @@
           that  playing  Monk  or  Priest  characters  should  violate this
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3294,7 +3294,7 @@
           cide;  playing  without  this  feature is considered a challenge.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3360,7 +3360,7 @@
           order  in  which they happen during your current game rather than
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3426,7 +3426,7 @@
           ASCII text file and can be created with any text editor.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3492,7 +3492,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3558,7 +3558,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3624,7 +3624,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3690,7 +3690,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3756,7 +3756,7 @@
             ment,  damage,  or  quality  of  the  weapon;  you  are free to
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3822,7 +3822,7 @@
             ends.   Value  is  a space separated list of prompting/category
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3888,7 +3888,7 @@
             available  commands.   It  is  keystroke  compatible  with  the
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -3954,7 +3954,7 @@
             formation.  Persistent.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4020,7 +4020,7 @@
             When using a menu to interact with a  container,  use  the  old
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4086,7 +4086,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4152,7 +4152,7 @@
             Allow  use  of  the mouse for input and travel.  Valid settings
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4218,7 +4218,7 @@
              2 - like 1 but `5' works as `g' prefix instead of as `G'
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4284,7 +4284,7 @@
             By default, the pray choice is enabled,  the  others  disabled.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4350,7 +4350,7 @@
             If  this option is on and autopickup is also on, try to pick up
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4416,7 +4416,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4482,7 +4482,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4548,7 +4548,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4614,7 +4614,7 @@
             The whatis_coord option is also used with the "/m", "/M", "/o",
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4680,7 +4680,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4746,7 +4746,7 @@
             If NetHack can, it should use a font by the chosen name for the
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4812,7 +4812,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4878,7 +4878,7 @@
             Specify  the  name  of an alternative tile file to override the
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -4944,7 +4944,7 @@
           greytext,      highlight,      highlighttext,     inactiveborder,
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5010,7 +5010,7 @@
             Force  raw  (non-cbreak)  mode  for  faster  output  and   more
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5076,7 +5076,7 @@
           sion library. While this is not true of any modern  platform,  if
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5142,7 +5142,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5208,7 +5208,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5274,7 +5274,7 @@
             When asked for a location, the key to choose the location,  and
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5340,7 +5340,7 @@
             Prefix key to request menu from some commands.  Default is `m'.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5406,7 +5406,7 @@
           tty, curses, win32tty and win32gui interfaces support this.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5472,7 +5472,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5538,7 +5538,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5604,7 +5604,7 @@
                  ue changes.  This attribute times out after  statushilites
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5670,7 +5670,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5736,7 +5736,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5802,7 +5802,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5868,7 +5868,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -5934,7 +5934,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6000,7 +6000,7 @@
           may want to alter settings via SYMBOLS= and ROGUESYMBOLS= in your
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6066,7 +6066,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6132,7 +6132,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6198,7 +6198,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6264,7 +6264,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6330,7 +6330,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6396,7 +6396,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6462,7 +6462,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6528,7 +6528,7 @@
           dows CE port for 3.4.1.
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6594,7 +6594,7 @@
           beloved community patches. Many bugs were fixed and some code was
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6660,7 +6660,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6726,7 +6726,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
@@ -6792,7 +6792,7 @@
 
 
 
-          NetHack 3.7                                     November 25, 2020
+          NetHack 3.7                                     November 30, 2020
 
 
 
