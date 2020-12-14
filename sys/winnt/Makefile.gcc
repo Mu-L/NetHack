@@ -100,7 +100,7 @@ TARGET_CPU=x86
 #    your machine.
 #
 # ADD_CURSES=Y
-# PDCURSES_TOP=../lib/pdcurses
+# PDCURSES_TOP=../submodules/pdcurses
 
 #4b Qt
 #
@@ -142,8 +142,11 @@ endif
 #    you'll need to specify the correct spot below in order to
 #    successfully build NetHack-3.7.
 #
+# By default we add lua to the build.
+ifndef ADD_LUA
 ADD_LUA=Y
-LUATOP=../lib/lua-$(LUAVER)
+LUATOP=../submodules/lua
+endif
 #
 #==============================================================================
 # This marks the end of the BUILD DECISIONS section.
