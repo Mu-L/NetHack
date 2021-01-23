@@ -1497,6 +1497,11 @@ unsigned trflags;
         int steed_article = ARTICLE_THE;
         int oldumort;
 
+        /* suppress article in various steed messages when using its
+           name (which won't occur when hallucinating) */
+        if (u.usteed && has_mgivenname(u.usteed) && !Hallucination)
+            steed_article = ARTICLE_NONE;
+
         /* KMH -- You can't escape the Sokoban level traps */
         if (!Sokoban && (Levitation || (Flying && !plunged)))
             return 0;
@@ -1764,6 +1769,11 @@ unsigned trflags;
                              || (trflags & FAILEDUNTRAP) != 0);
         boolean viasitting = (trflags & VIASITTING) != 0;
         int steed_article = ARTICLE_THE;
+
+        /* suppress article in various steed messages when using its
+           name (which won't occur when hallucinating) */
+        if (u.usteed && has_mgivenname(u.usteed) && !Hallucination)
+            steed_article = ARTICLE_NONE;
 
         feeltrap(trap);
         if (mu_maybe_destroy_web(&g.youmonst, webmsgok, trap))
@@ -2060,6 +2070,11 @@ unsigned trflags;
         boolean viasitting = (trflags & VIASITTING) != 0;
         int steed_article = ARTICLE_THE;
         char verbbuf[BUFSZ];
+
+        /* suppress article in various steed messages when using its
+           name (which won't occur when hallucinating) */
+        if (u.usteed && has_mgivenname(u.usteed) && !Hallucination)
+            steed_article = ARTICLE_NONE;
 
         seetrap(trap);
         if (viasitting)
@@ -2392,7 +2407,6 @@ unsigned trflags;
             plunged = (trflags & TOOKPLUNGE) != 0,
             conj_pit = conjoined_pits(trap, t_at(u.ux0, u.uy0), TRUE),
             adj_pit = adj_nonconjoined_pit(trap);
-    int steed_article = ARTICLE_THE;
 
     nomul(0);
 
@@ -2428,13 +2442,8 @@ unsigned trflags;
         }
     }
 
-    if (u.usteed) {
+    if (u.usteed)
         u.usteed->mtrapseen |= (1 << (ttype - 1));
-        /* suppress article in various steed messages when using its
-           name (which won't occur when hallucinating) */
-        if (has_mgivenname(u.usteed) && !Hallucination)
-            steed_article = ARTICLE_NONE;
-    }
 
     /*
      * Note:
@@ -3062,8 +3071,7 @@ register struct monst *mtmp;
         }
     } else {
         register int tt = trap->ttyp;
-        boolean in_sight, see_it,
-                inescapable = (g.force_mintrap
+        boolean inescapable = (g.force_mintrap
                                || ((tt == HOLE || tt == PIT)
                                    && Sokoban && !trap->madeby_u));
 
@@ -3083,12 +3091,6 @@ register struct monst *mtmp;
            unreasonable; everybody has their own style. */
         if (trap->madeby_u && rnl(5))
             setmangry(mtmp, TRUE);
-
-        in_sight = canseemon(mtmp);
-        see_it = cansee(mtmp->mx, mtmp->my);
-        /* assume hero can tell what's going on for the steed */
-        if (mtmp == u.usteed)
-            in_sight = TRUE;
 
         return trapeffect_selector(mtmp, trap, 0);
     }
