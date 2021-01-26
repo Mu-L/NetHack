@@ -1,11 +1,11 @@
-/* NetHack 3.7	winstat.c	$NHDT-Date: 1596498375 2020/08/03 23:46:15 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.28 $ */
+/* NetHack 3.7	winstat.c	$NHDT-Date: 1611697183 2021/01/26 21:39:43 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.30 $ */
 /* Copyright (c) Dean Luick, 1992				  */
 /* NetHack may be freely redistributed.  See license for details. */
 
 /*
  * Status window routines.  This file supports both the "traditional"
  * tty status display and a "fancy" status display.  A tty status is
- * made if a popup window is requested, otherewise a fancy status is
+ * made if a popup window is requested, otherwise a fancy status is
  * made.  This code assumes that only one fancy status will ever be made.
  * Currently, only one status window (of any type) is _ever_ made.
  */
@@ -107,7 +107,7 @@ static void FDECL(tt_reset_color, (int, int, unsigned long *));
 static void NDECL(tt_status_fixup);
 static Widget FDECL(create_tty_status_field, (int, int, Widget, Widget));
 static Widget FDECL(create_tty_status, (Widget, Widget));
-static void FDECL(update_fancy_status_field, (int));
+static void FDECL(update_fancy_status_field, (int, int, int));
 static void FDECL(update_fancy_status, (BOOLEAN_P));
 static Widget FDECL(create_fancy_status, (Widget, Widget));
 static void FDECL(destroy_fancy_status, (struct xwindow *));
@@ -170,6 +170,25 @@ static struct tt_condinfo {
     { BL_MASK_LEV, "Lev" },
     { BL_MASK_FLY, "Fly" },
     { BL_MASK_RIDE, "Ride" },
+};
+
+static const char *fancy_status_hilite_colors[] = {
+    "grey15",
+    "red3",
+    "dark green",
+    "saddle brown",
+    "blue",
+    "magenta3",
+    "dark cyan",
+    "web gray",
+    "",	/* NO_COLOR */
+    "orange",
+    "green3",
+    "goldenrod",
+    "royal blue",
+    "magenta",
+    "cyan",
+    "white",
 };
 
 static Widget X11_status_widget;
@@ -811,10 +830,10 @@ unsigned long *colormasks; /* bitmask of highlights for conditions */
 
 /*ARGSUSED*/
 static void
-X11_status_update_fancy(fld, ptr, chg, percent, color, colormasks)
-int fld, chg UNUSED, percent UNUSED, color UNUSED;
+X11_status_update_fancy(fld, ptr, chg, percent, colrattr, colormasks)
+int fld, chg UNUSED, percent UNUSED, colrattr;
 genericptr_t ptr;
-unsigned long *colormasks UNUSED;
+unsigned long *colormasks;
 {
     static const struct bl_to_ff {
         int bl, ff;
@@ -883,13 +902,25 @@ unsigned long *colormasks UNUSED;
         if (changed_bits) {
             for (i = 0; i < SIZE(mask_to_fancyfield); i++)
                 if ((changed_bits & mask_to_fancyfield[i].mask) != 0L)
-                    update_fancy_status_field(mask_to_fancyfield[i].ff);
+                    update_fancy_status_field(mask_to_fancyfield[i].ff,
+                            condcolor(mask_to_fancyfield[i].mask, colormasks),
+                            condattr(mask_to_fancyfield[i].mask, colormasks));
             old_condition_bits = X11_condition_bits; /* remember 'On' bits */
         }
     } else {
+        int colr, attr;
+
+#ifdef TEXTCOLOR
+        if ((colrattr & 0x00ff) >= CLR_MAX)
+            /* for !TEXTCOLOR, the following line is unconditional */
+#endif
+            colrattr = (colrattr & ~0x00ff) | NO_COLOR;
+        colr = colrattr & 0x00ff; /* guaranteed to be >= 0 and < CLR_MAX */
+        attr = (colrattr >> 8) & 0x00ff;
+
         for (i = 0; i < SIZE(bl_to_fancyfield); i++)
             if (bl_to_fancyfield[i].bl == fld) {
-                update_fancy_status_field(bl_to_fancyfield[i].ff);
+                update_fancy_status_field(bl_to_fancyfield[i].ff, colr, attr);
                 break;
             }
     }
@@ -1193,9 +1224,9 @@ struct xwindow *wp;
 
 /*
  * This assumes several things:
- *	+ Status has only 2 lines
- *	+ That both lines are updated in succession in line order.
- *	+ We didn't set stringInPlace on the widget.
+ *      + Status has only 2 lines
+ *      + That both lines are updated in succession in line order.
+ *      + We didn't set stringInPlace on the widget.
  */
 void
 adjust_status_fancy(wp, str)
@@ -1228,8 +1259,6 @@ const char *str;
 extern const char *hu_stat[];  /* from eat.c */
 extern const char *enc_stat[]; /* from botl.c */
 
-static int hilight_time = 1; /* number of turns to hilight a changed value */
-
 struct X_status_value {
     /* we have to cast away 'const' when assigning new names */
     const char *name;   /* text name */
@@ -1239,6 +1268,9 @@ struct X_status_value {
     int turn_count;     /* last time the value changed */
     boolean set;        /* if highlighted */
     boolean after_init; /* don't highlight on first change (init) */
+    boolean inverted_hilite; /* if highlit due to hilite_status inverse rule */
+    Pixel default_fg;   /* what FG color it initialized with */
+    int colr, attr;     /* color and attribute */
 };
 
 /* valid type values */
@@ -1262,6 +1294,9 @@ static const struct f_overload *FDECL(ff_ovld_from_indx, (int));
 static void FDECL(hilight_label, (Widget));
 static void FDECL(update_val, (struct X_status_value *, long));
 static void FDECL(skip_cond_val, (struct X_status_value *));
+static void FDECL(update_color, (struct X_status_value *, int));
+static boolean FDECL(name_widget_has_label, (struct X_status_value *));
+static void FDECL(apply_hilite_attributes, (struct X_status_value *, int));
 static const char *FDECL(width_string, (int));
 static void FDECL(create_widget, (Widget, struct X_status_value *, int));
 static void FDECL(get_widths, (struct X_status_value *, int *, int *));
@@ -1280,53 +1315,67 @@ static Widget FDECL(init_info_form, (Widget, Widget, Widget));
  * - These must be in the same order as the F_foo numbers.
  */
 static struct X_status_value shown_stats[NUM_STATS] = {
-    { "",             SV_NAME,  (Widget) 0,  -1L, 0, FALSE, FALSE }, /* 0 */
-
-    { "Strength",     SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE }, /* 1*/
-    { "Dexterity",    SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Constitution", SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Intelligence", SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Wisdom",       SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE }, /* 5*/
-    { "Charisma",     SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-
-    { "",             SV_LABEL, (Widget) 0,  -1L, 0, FALSE, FALSE }, /*NAME*/
-    { "",             SV_LABEL, (Widget) 0,  -1L, 0, FALSE, FALSE }, /*DLEVEL*/
-    { "Gold",         SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Hit Points",   SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE }, /*10*/
-    { "Max HP",       SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Power",        SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Max Power",    SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Armor Class",  SV_VALUE, (Widget) 0, 256L, 0, FALSE, FALSE },
-    { "Xp Level",     SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE }, /*15*/
-    /*{ "Hit Dice",   SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE }, ==15*/
-    { "Exp Points",   SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Alignment",    SV_VALUE, (Widget) 0,  -2L, 0, FALSE, FALSE },
-    { "Time",         SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE },
-    { "Score",        SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE }, /*19*/
-
-    { "",             SV_NAME,  (Widget) 0,  -1L, 0, FALSE,  TRUE }, /*20 */
-    { "",             SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*ENCMBR*/
-    { "Trapped",      SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Tethered",     SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Levitating",   SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Flying",       SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*25*/
-    { "Riding",       SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-
-    { "Grabbed!",     SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*27*/
-    { "Petrifying",   SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*STONE*/
-    { "Slimed",       SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Strangled",    SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*30*/
-    { "Food Pois",    SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Term Ill",     SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Sinking",      SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*LAVA*/
-
-    { "Held",         SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*34*/
-    { "Holding",      SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*35*/
-    { "Blind",        SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Deaf",         SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Stunned",      SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Confused",     SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE },
-    { "Hallucinat",   SV_NAME,  (Widget) 0,   0L, 0, FALSE,  TRUE }, /*40*/
+    /* 0 */
+    { "",             SV_NAME,  (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* 1 */
+    { "Strength",     SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Dexterity",    SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Constitution", SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Intelligence", SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* 5 */
+    { "Wisdom",       SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Charisma",     SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* F_NAME: 7 */
+    { "",             SV_LABEL, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* F_DLEVEL: 8 */
+    { "",             SV_LABEL, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Gold",         SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* F_HP: 10 */
+    { "Hit Points",   SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Max HP",       SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Power",        SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Max Power",    SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Armor Class",  SV_VALUE, (Widget) 0, 256L, 0, FALSE, FALSE, FALSE, 0 },
+    /* F_XP_LEVL: 15 */
+    { "Xp Level",     SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* also 15 (overloaded field) */
+    /*{ "Hit Dice",   SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0},*/
+    /* F_EXP_PTS: 16 (optionally displayed) */
+    { "Exp Points",   SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    { "Alignment",    SV_VALUE, (Widget) 0,  -2L, 0, FALSE, FALSE, FALSE, 0 },
+    /* 18, optionally displayed */
+    { "Time",         SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* 19, condtionally present, optionally displayed when present */
+    { "Score",        SV_VALUE, (Widget) 0,  -1L, 0, FALSE, FALSE, FALSE, 0 },
+    /* F_HUNGER: 20 (blank if 'normal') */
+    { "",             SV_NAME,  (Widget) 0,  -1L, 0, FALSE, TRUE, FALSE, 0 },
+    /* F_ENCUMBER: 21 (blank if unencumbered) */
+    { "",             SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Trapped",      SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Tethered",     SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Levitating",   SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    /* 25 */
+    { "Flying",       SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Riding",       SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Grabbed!",     SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    /* F_STONE: 28 */
+    { "Petrifying",   SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Slimed",       SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    /* 30 */
+    { "Strangled",    SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Food Pois",    SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Term Ill",     SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    /* F_IN_LAVA: 33 */
+    { "Sinking",      SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Held",         SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    /* 35 */
+    { "Holding",      SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Blind",        SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Deaf",         SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Stunned",      SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    { "Confused",     SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
+    /* F_HALLU: 40 (full spelling truncated due to space limitations) */
+    { "Hallucinat",   SV_NAME,  (Widget) 0,   0L, 0, FALSE, TRUE, FALSE, 0 },
 };
 /*
  * The following are supported by the core but not yet handled here:
@@ -1571,7 +1620,7 @@ long new_value;
             /* core won't call status_update() for Exp when it hasn't changed
                so do so ourselves (to get Exp_shown flag to match display) */
             if (force_update)
-                update_fancy_status_field(F_EXP_PTS);
+                update_fancy_status_field(F_EXP_PTS, NO_COLOR, HL_UNDEF);
         }
 
         if (attr_rec->last_value == new_value && !force_update) /* same */
@@ -1625,22 +1674,25 @@ long new_value;
      * or changing to not-hungry or not-encumbered, there's nothing to
      * highlight because the field becomes blank.
      */
-    if (attr_rec != &shown_stats[F_TIME]) {
-        if (attr_rec->after_init) {
-            /* toggle if not highlighted and just set to nonblank or if
-               already highlighted and just set to blank */
-            if (!attr_rec->set ^ !*buf) {
-                if (attr_rec->type == SV_LABEL || attr_rec->type == SV_NAME)
-                    hilight_label(attr_rec->w);
-                else
+    if (attr_rec->after_init) {
+        /* toggle if not highlighted and just set to nonblank or if
+           already highlighted and just set to blank */
+        if (attr_rec != &shown_stats[F_TIME] && !attr_rec->set ^ !*buf) {
+            /* But don't hilite if inverted from status_hilite since
+               it will already be hilited by apply_hilite_attributes(). */
+            if (!attr_rec->inverted_hilite) {
+                if (attr_rec->type == SV_VALUE)
                     hilight_value(attr_rec->w);
-
-                attr_rec->set = !attr_rec->set;
+                else
+                    hilight_label(attr_rec->w);
             }
-            attr_rec->turn_count = 0;
-        } else {
-            attr_rec->after_init = TRUE;
+            attr_rec->set = !attr_rec->set;
         }
+        attr_rec->turn_count = 0;
+    } else {
+        XtSetArg(args[0], XtNforeground, &attr_rec->default_fg);
+        XtGetValues(attr_rec->w, args, ONE);
+        attr_rec->after_init = TRUE;
     }
 }
 
@@ -1661,6 +1713,76 @@ struct X_status_value *sv;
     }
 }
 
+static void
+update_color(sv, color)
+struct X_status_value *sv;
+int color;
+{
+    Pixel pixel = 0;
+    Arg args[1];
+    XrmValue source;
+    XrmValue dest;
+    Widget w = (sv->type == SV_LABEL || sv->type == SV_NAME) ? sv->w
+               : get_value_widget(sv->w);
+
+    if (color == NO_COLOR) {
+        if (sv->after_init)
+            pixel = sv->default_fg;
+        sv->colr = NO_COLOR;
+    } else {
+        source.addr = (XPointer) fancy_status_hilite_colors[color];
+        source.size = (unsigned int) strlen((const char *) source.addr) + 1;
+        dest.size = (unsigned int) sizeof (Pixel);
+        dest.addr = (XPointer) &pixel;
+        if (XtConvertAndStore(w, XtRString, &source, XtRPixel, &dest))
+            sv->colr = color;
+    }
+    if (pixel != 0) {
+        char *arg_name = (sv->set || sv->inverted_hilite) ? XtNbackground
+                         : XtNforeground;
+
+        XtSetArg(args[0], arg_name, pixel);
+        XtSetValues(w, args, ONE);
+    }
+}
+
+static boolean
+name_widget_has_label(sv)
+struct X_status_value *sv;
+{
+    Arg args[1];
+    const char *label;
+
+    XtSetArg(args[0], XtNlabel, &label);
+    XtGetValues(sv->w, args, ONE);
+    return strlen(label) > 0;
+}
+
+static void
+apply_hilite_attributes(sv, attributes)
+struct X_status_value *sv;
+int attributes;
+{
+    boolean attr_inversion = ((HL_INVERSE & attributes)
+                              && (sv->type != SV_NAME
+                                  || name_widget_has_label(sv)));
+
+    if (sv->inverted_hilite != attr_inversion) {
+        sv->inverted_hilite = attr_inversion;
+        if (!sv->set) {
+            if (sv->type == SV_VALUE)
+                hilight_value(sv->w);
+            else
+                hilight_label(sv->w);
+        }
+    }
+    sv->attr = attributes;
+    /* Could possibly add more attributes here: HL_ATTCLR_DIM,
+       HL_ATTCLR_BLINK, HL_ATTCLR_ULINE, and HL_ATTCLR_BOLD. If so,
+       extract the above into its own function apply_hilite_inverse()
+       and each other attribute into its own to keep the code clean. */
+}
+
 /*
  * Update the displayed status.  The current code in botl.c updates
  * two lines of information.  Both lines are always updated one after
@@ -1679,8 +1801,8 @@ struct X_status_value *sv;
  * [**] HD is shown instead of level and exp if Upolyd.
  */
 static void
-update_fancy_status_field(i)
-int i;
+update_fancy_status_field(i, color, attributes)
+int i, color, attributes;
 {
     struct X_status_value *sv = &shown_stats[i];
     unsigned long condmask = 0L;
@@ -1860,6 +1982,10 @@ int i;
         }
     }
     update_val(sv, val);
+    if (color != sv->colr)
+        update_color(sv, color);
+    if (attributes != sv->attr)
+        apply_hilite_attributes(sv, attributes);
 }
 
 /* fully update status after bl_flush or window resize */
@@ -1883,7 +2009,7 @@ boolean force_update;
            the no longer displayed field; we're a bit more conservative
            than that and do this when toggling on as well as off */
         for (i = 0; i < NUM_STATS; i++)
-            update_fancy_status_field(i);
+            update_fancy_status_field(i, NO_COLOR, HL_UNDEF);
         old_condition_bits = X11_condition_bits;
 
         old_upolyd = Upolyd;
@@ -1906,12 +2032,15 @@ check_turn_events()
         if (!sv->set)
             continue;
 
-        if (sv->turn_count++ >= hilight_time) {
-            /* unhighlights by toggling a highlighted item back off again */
-            if (sv->type == SV_LABEL || sv->type == SV_NAME)
-                hilight_label(sv->w);
-            else
-                hilight_value(sv->w);
+        if (sv->turn_count++ >= iflags.hilite_delta) {
+            /* unhighlights by toggling a highlighted item back off again,
+               unless forced inverted by a status_hilite rule */
+            if (!sv->inverted_hilite) {
+                if (sv->type == SV_VALUE)
+                    hilight_value(sv->w);
+                else
+                    hilight_label(sv->w);
+            }
             sv->set = FALSE;
         }
     }
