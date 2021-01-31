@@ -1,4 +1,4 @@
-NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.437 $ $NHDT-Date: 1611882611 2021/01/29 01:10:11 $
+NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.439 $ $NHDT-Date: 1612055953 2021/01/31 01:19:13 $
 
 General Fixes and Modified Features
 -----------------------------------
@@ -377,6 +377,7 @@ spells that require a target spot rather than a direction (like skilled
 	in the message window while the spell was being performed
 prevent wish request "death wand" from matching Death monster and producing a
 	random wand instead of a wand of death
+grammar bit: "you hear a [AEF] note squeak in the distance" (should be "an")
 
 
 Fixes to 3.7.0-x Problems that Were Exposed Via git Repository
@@ -500,6 +501,8 @@ changes accompanying sorting of discoveries resulted in omitting very last
 	item for '`'/#knownclass on a class where every item was discoverable
 	and had no extra labels (so potions and rings, possibly others, but
 	not scrolls or wands) and every item was actually discovered
+change to can_reach_floor() resulted in hero being unable to reach the floor
+	when held by a lichen
 
 curses: 'msg_window' option wasn't functional for curses unless the binary
 	also included tty support
