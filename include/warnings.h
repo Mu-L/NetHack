@@ -35,6 +35,7 @@
                            _Pragma("clang diagnostic push") \
                            _Pragma("clang diagnostic ignored \"-Wunreachable-code\"")
 #define DISABLE_WARNING_CONDEXPR_IS_CONSTANT
+#define RESTORE_WARNING_CONDEXPR_IS_CONSTANT
 #define RESTORE_WARNINGS _Pragma("clang diagnostic pop")
 #define STDC_Pragma_AVAILABLE
 
@@ -44,6 +45,7 @@
                            _Pragma("GCC diagnostic push") \
                            _Pragma("GCC diagnostic ignored \"-Wunreachable-code\"")
 #define DISABLE_WARNING_CONDEXPR_IS_CONSTANT
+#define RESTORE_WARNING_CONDEXPR_IS_CONSTANT
 #define RESTORE_WARNINGS _Pragma("GCC diagnostic pop")
 #define STDC_Pragma_AVAILABLE
 
@@ -54,6 +56,7 @@
 #define DISABLE_WARNING_CONDEXPR_IS_CONSTANT \
                            _Pragma("warning( push )") \
                            _Pragma("warning( disable : 4127 )")
+#define RESTORE_WARNING_CONDEXPR_IS_CONSTANT _Pragma("warning( pop )")
 #define RESTORE_WARNINGS _Pragma("warning( pop )")
 #define STDC_Pragma_AVAILABLE
 
@@ -68,7 +71,8 @@
 #if !defined(STDC_Pragma_AVAILABLE)
 #define DISABLE_WARNING_UNREACHABLE_CODE
 #define DISABLE_WARNING_CONDEXPR_IS_CONSTANT
-#deifne RESTORE_WARNINGS
+#define RESTORE_WARNING_CONDEXPR_IS_CONSTANT
+#define RESTORE_WARNINGS
 #endif
 
 #endif /* WARNINGS_H */
