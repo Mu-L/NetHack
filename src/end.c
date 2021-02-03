@@ -385,6 +385,9 @@ done_hangup(int sig)
 #endif
 #endif /* NO_SIGNAL */
 
+DISABLE_WARNING_FORMAT_NONLITERAL /* one compiler warns if the format
+                                     string is the result of a ? x : y */
+
 void
 done_in_by(struct monst *mtmp, int how)
 {
@@ -504,6 +507,8 @@ done_in_by(struct monst *mtmp, int how)
     return;
 }
 
+RESTORE_WARNING_FORMAT_NONLITERAL
+
 /* some special cases for overriding while-helpless reason */
 static const struct {
     int why, unmulti;
@@ -544,6 +549,8 @@ fixup_death(int how)
 #if defined(WIN32) && !defined(SYSCF)
 #define NOTIFY_NETHACK_BUGS
 #endif
+
+DISABLE_WARNING_FORMAT_NONLITERAL
 
 /*VARARGS1*/
 void panic
@@ -624,6 +631,8 @@ VA_DECL(const char *, str)
     VA_END();
     really_done(PANICKED);
 }
+
+RESTORE_WARNING_FORMAT_NONLITERAL
 
 static boolean
 should_query_disclose_option(int category, char *defquery)
