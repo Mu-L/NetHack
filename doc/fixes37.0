@@ -1,4 +1,4 @@
-NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.465 $ $NHDT-Date: 1614474790 2021/02/28 01:13:10 $
+NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.467 $ $NHDT-Date: 1614812488 2021/03/03 23:01:28 $
 
 General Fixes and Modified Features
 -----------------------------------
@@ -392,6 +392,8 @@ don't force fake player monks to always be male
 it was theoretically possible to overflow an internal buffer containing
 	inventory letters by carrying more than 52 separate lit candles and
 	using the '(' or '*' commands
+hero would be blinded and stunned by an Archon's radiance (gaze attack) even
+	if the Archon was blind, but monsters would not
 
 
 Fixes to 3.7.0-x Problems that Were Exposed Via git Repository
@@ -520,6 +522,8 @@ change to can_reach_floor() resulted in hero being unable to reach the floor
 panic if lua init fails
 change wizard mode command #wizmgender to wizard mode option 'wizmgender'
 engraving with non-blade dulled the weapon anyway (pr #464)
+'sortdiscoveries:s' had a spurious generic header shown at the start of the
+	last class if there were any artifacts or unique items discovered
 
 curses: 'msg_window' option wasn't functional for curses unless the binary
 	also included tty support
