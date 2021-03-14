@@ -2282,13 +2282,62 @@ update_inventory(void)
         return;
 
     /*
-     * Ought to check (windowprocs.wincap2 & WC2_PERM_INVENT) here....
+     * Ought to check (windowprocs.wincap & WC_PERM_INVENT) here....
      *
      * We currently don't skip this call when iflags.perm_invent is False
      * because curses uses that to disable a previous perm_invent window
      * (after toggle via 'O'; perhaps the options code should handle that).
      */
-    (*windowprocs.win_update_inventory)();
+    (*windowprocs.win_update_inventory)(0);
+}
+
+/* '|' command - call interface's persistent inventory manipulation routine */
+int
+doperminv(void)
+{
+    /*
+     * If persistent inventory window is enabled, interact with it.
+     *
+     * Depending on interface, might accept and execute one scrolling
+     * request (MENU_{FIRST,NEXT,PREVIOUS,LAST}_PAGE) then return,
+     * or might stay and handle multiple requests until user finishes
+     * (typically by typing <return> or <esc> but that's up to interface).
+     */
+
+    if (iflags.debug_fuzzer)
+        return 0;
+#if 0
+    /* [currently this would redraw the persistent inventory window
+       whether that's needed or not, so also reset any previous
+       scrolling; we don't want that if the interface only accepts
+       one scroll command at a time] */
+    update_inventory(); /* make sure that it's up to date */
+#endif
+
+    if ((windowprocs.wincap & WC_PERM_INVENT) == 0) {
+        /* [TODO? perhaps omit "by <interface>" if all the window ports
+           compiled into this binary lack support for perm_invent...] */
+        pline("Persistent inventory display is not supported by '%s'.",
+              windowprocs.name);
+
+    } else if (!iflags.perm_invent) {
+        pline(
+     "Persistent inventory ('perm_invent' option) is not presently enabled.");
+
+    } else if (!g.invent) {
+        /* [should this be left for the interface to decide?] */
+        pline("Persistent inventory display is empty.");
+
+    } else {
+        /* note: we used to request a scrolling key here and pass that to
+           (*win_update_inventory)(key), but that limited the functionality
+           and also cluttered message history with prompt and response so
+           just send non-zero and have the interface be responsible for it */
+        (*windowprocs.win_update_inventory)(1);
+
+    } /* iflags.perm_invent */
+
+    return 0;
 }
 
 /* should of course only be called for things in invent */
