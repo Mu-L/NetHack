@@ -6868,7 +6868,7 @@
 
 
 
-          12.1.  SPECIAL THANKS
+          12.1.  Special Thanks
 
                On behalf of the NetHack community, thank you very much once
           again  to M. Drew Streib and Pasi Kallinen for providing a public
@@ -6876,15 +6876,18 @@
           Andy Thomson for hardfought.org. Thanks to all those unnamed dun-
           geoneers who invest their time and  effort  into  annual  NetHack
           tournaments  such  as Junethack, The November NetHack Tournament,
-          and in days past, devnull.net (gone for now, but not forgotten).
+          and in days past, devnull.net (gone for now, but not  forgotten).
 
-                                 - - - - - - - - - -
 
-               From time to time, some depraved  individual  out  there  in
-          netland  sends a particularly intriguing modification to help out
+
+          12.2.  Dungeoneers
+
+               From  time  to  time,  some depraved individual out there in
+          netland sends a particularly intriguing modification to help  out
           with the game.  The NetHack Development Team sometimes makes note
-          of  the  names of the worst of these miscreants in this, the list
+          of the names of the worst of these miscreants in this,  the  list
           of Dungeoneers:
+
                Adam Aronow           J. Ali Harlow          Mikko Juola
                Alex Kompel             Janet Walz           Nathan Eady
                Alex Smith           Janne Salmijarvi        Norm Meluch
@@ -6918,9 +6921,6 @@
              Eric S. Raymond          Mark Modrall         Steve Linhart
               Erik Andersen         Marvin Bressler      Steve VanDevender
             Fredrik Ljungdahl         Matthew Day           Teemu Suikki
-            Frederick Roeber          Merlyn LeRoy           Tim Lennan
-               Gil Neiger           Michael Allison        Timo Hakulinen
-               Greg Laskin            Michael Feir            Tom Almy
 
 
 
@@ -6934,6 +6934,9 @@
 
 
 
+            Frederick Roeber          Merlyn LeRoy           Tim Lennan
+               Gil Neiger           Michael Allison        Timo Hakulinen
+               Greg Laskin            Michael Feir            Tom Almy
                Greg Olson            Michael Hamel            Tom West
              Gregg Wonderly         Michael Sokolov        Warren Cheung
               Hao-yang Wang           Mike Engber         Warwick Allison
@@ -6941,13 +6944,10 @@
           Irina Rempt-Drijfhout     Mike Passaretti
               Izchak Miller         Mike Stephenson
 
-               Brand and product names are trademarks or registered  trade-
+
+
+               Brand  and product names are trademarks or registered trade-
           marks of their respective holders.
-
-
-
-
-
 
 
 
