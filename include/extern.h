@@ -1,4 +1,4 @@
-/* NetHack 3.7	extern.h	$NHDT-Date: 1624232719 2021/06/20 23:45:19 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.983 $ */
+/* NetHack 3.7	extern.h	$NHDT-Date: 1624322857 2021/06/22 00:47:37 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.985 $ */
 /* Copyright (c) Steve Creps, 1988.				  */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -1502,7 +1502,7 @@ extern boolean big_little_match(int, int);
 extern const char *locomotion(const struct permonst *, const char *);
 extern const char *stagger(const struct permonst *, const char *);
 extern const char *on_fire(struct permonst *, struct attack *);
-extern const char *msummon_environ(struct permonst *);
+extern const char *msummon_environ(struct permonst *, const char **);
 extern const struct permonst *raceptr(struct monst *);
 extern boolean olfaction(struct permonst *);
 unsigned long cvt_adtyp_to_mseenres(uchar);
@@ -2054,7 +2054,7 @@ extern boolean inhistemple(struct monst *);
 extern int pri_move(struct monst *);
 extern void priestini(d_level *, struct mkroom *, int, int, boolean);
 extern aligntyp mon_aligntyp(struct monst *);
-extern char *priestname(struct monst *, char *);
+extern char *priestname(struct monst *, int, char *);
 extern boolean p_coaligned(struct monst *);
 extern struct monst *findpriest(char);
 extern void intemple(int);
