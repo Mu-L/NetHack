@@ -5388,9 +5388,6 @@
             Prefix  key  to  start  a  count, to repeat a command this many
             times.  With number_pad only.  Default is `n'.
 
-          doinv
-            Show inventory.  With number_pad only.  Default is `0'.
-
           fight
             Prefix key to force fight a direction.  Default is `F'.
 
@@ -5403,7 +5400,10 @@
             is `?'.
 
           getdir.self
-            When asked  for  a  direction,  the  key  to  target  yourself.
+            When asked for a direction, the key to  target  yourself.   De-
+            fault is `.'.
+
+
 
 
           NetHack 3.7                                        March 25, 2021
@@ -5415,8 +5415,6 @@
           NetHack Guidebook                                              83
 
 
-
-            Default is `.'.
 
           getdir.self2
             When  asked  for  a direction, the key to target yourself.  De-
@@ -5470,6 +5468,8 @@
           getpos.moveskip
             When asked for a location, and using the shifted movement  keys
             or  meta-digit  keys  to fast-move around, move by skipping the
+            same glyphs instead of by 8 units.  Default is `*'.
+
 
 
           NetHack 3.7                                        March 25, 2021
@@ -5481,8 +5481,6 @@
           NetHack Guidebook                                              84
 
 
-
-            same glyphs instead of by 8 units.  Default is `*'.
 
           getpos.filter
             When asked for a location, change the filtering mode when using
@@ -5536,6 +5534,8 @@
 
           redraw
             Key to redraw the screen.  Default is `^R'.
+
+
 
 
           NetHack 3.7                                        March 25, 2021
