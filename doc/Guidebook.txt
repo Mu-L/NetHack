@@ -5962,6 +5962,10 @@
           (  S_boomright            (boomerang open right)
           `  S_boulder              (boulder)
           -  S_brcorn               (bottom right corner)
+          >  S_brdnladder           (branch ladder down)
+          >  S_brdnstair            (branch staircase down)
+          <  S_brupladder           (branch ladder up)
+          <  S_brupstair            (branch staircase up)
           C  S_centaur              (centaur)
           _  S_chain                (iron chain)
           #  S_cloud                (cloud)
@@ -5993,10 +5997,6 @@
           f  S_feline               (cat or other feline)
           ^  S_fire_trap            (fire trap)
           !  S_flashbeam            (flash beam)
-          %  S_food                 (piece of food)
-          {  S_fountain             (fountain)
-          F  S_fungus               (fungus or mold)
-          *  S_gem                  (gem or rock)
 
 
 
@@ -6010,6 +6010,10 @@
 
 
 
+          %  S_food                 (piece of food)
+          {  S_fountain             (fountain)
+          F  S_fungus               (fungus or mold)
+          *  S_gem                  (gem or rock)
              S_ghost                (ghost)
           H  S_giant                (giant humanoid)
           G  S_gnome                (gnome)
@@ -6059,10 +6063,6 @@
           !  S_potion               (potion)
           P  S_pudding              (pudding or ooze)
           q  S_quadruped            (quadruped)
-          Q  S_quantmech            (quantum mechanic)
-          =  S_ring                 (ring)
-          `  S_rock                 (boulder or statue)
-          r  S_rodent               (rodent)
 
 
 
@@ -6076,6 +6076,10 @@
 
 
 
+          Q  S_quantmech            (quantum mechanic)
+          =  S_ring                 (ring)
+          `  S_rock                 (boulder or statue)
+          r  S_rodent               (rodent)
           ^  S_rolling_boulder_trap (rolling boulder trap)
           .  S_room                 (floor of a room)
           /  S_rslant               (diagonal beam [zap animation])
@@ -6125,10 +6129,6 @@
           |  S_vbeam                (vertical beam [zap animation])
           #  S_vcdbridge            (vertical raised drawbridge)
           +  S_vcdoor               (closed door in vertical wall)
-          .  S_venom                (splash of venom)
-          ^  S_vibrating_square     (vibrating square)
-          .  S_vodbridge            (vertical lowered drawbridge)
-          -  S_vodoor               (open door in vertical wall)
 
 
 
@@ -6142,6 +6142,10 @@
 
 
 
+          .  S_venom                (splash of venom)
+          ^  S_vibrating_square     (vibrating square)
+          .  S_vodbridge            (vertical lowered drawbridge)
+          -  S_vodoor               (open door in vertical wall)
           v  S_vortex               (vortex)
           |  S_vwall                (vertical wall)
           /  S_wand                 (wand)
@@ -6192,10 +6196,6 @@
           These  co-ordinates  are  often useful in giving players a better
           sense of the overall location of items on the screen.
 
-               NetHack can also be compiled with support  for  sending  the
-          game  messages  to  an external program, such as a text-to-speech
-          synthesizer.  If the "#version" extended command shows  "external
-          program  as  a  message  handler", your NetHack has been compiled
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6208,6 +6208,10 @@
 
 
 
+               NetHack can also be compiled with support  for  sending  the
+          game  messages  to  an external program, such as a text-to-speech
+          synthesizer.  If the "#version" extended command shows  "external
+          program  as  a  message  handler", your NetHack has been compiled
           with the capability.  When compiling NetHack from source on Linux
           and  other POSIX systems, define MSGHANDLER to enable it.  To use
           the capability, set the environment  variable  NETHACK_MSGHANDLER
@@ -6257,10 +6261,6 @@
             Give  feedback  messages  when  walking  towards a wall or when
             travel command was interrupted.
 
-          whatis_coord:compass
-            When targeting with cursor, describe the cursor  position  with
-            coordinates relative to your character.
-
 
 
 
@@ -6273,6 +6273,10 @@
           NetHack Guidebook                                              96
 
 
+
+          whatis_coord:compass
+            When targeting with cursor, describe the cursor  position  with
+            coordinates relative to your character.
 
           whatis_filter:area
             When  targeting  with cursor, filter possible locations so only
@@ -6324,10 +6328,6 @@
             BONESFORMAT = A  list of up to two bones file formats separated
             by space.  The first format in the list will written as well as
             read.  The second format will be read only if no bones files in
-            the first format exist.  Valid choices are "historical" for bi-
-            nary writing of entire structs, "lendian" for binary writing of
-            each field in little-endian  order,  "ascii"  for  writing  the
-            bones file content in ascii text.
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6339,6 +6339,11 @@
           NetHack Guidebook                                              97
 
 
+
+            the first format exist.  Valid choices are "historical" for bi-
+            nary writing of entire structs, "lendian" for binary writing of
+            each field in little-endian  order,  "ascii"  for  writing  the
+            bones file content in ascii text.
 
             SUPPORT = A  string explaining how to get local support (no de-
             fault value).
@@ -6389,11 +6394,6 @@
 
             %% - literal `%'
             %v - version (eg. "3.6.3-0")
-            %u - game UID
-            %t - game start time, UNIX timestamp format
-            %T - current time, UNIX timestamp format
-            %d - game start time, YYYYMMDDhhmmss format
-            %D - current time, YYYYMMDDhhmmss format
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6406,6 +6406,11 @@
 
 
 
+            %u - game UID
+            %t - game start time, UNIX timestamp format
+            %T - current time, UNIX timestamp format
+            %d - game start time, YYYYMMDDhhmmss format
+            %D - current time, YYYYMMDDhhmmss format
             %n - player name
             %N - first character of player name
 
@@ -6455,11 +6460,6 @@
 
                Debug mode, also known as wizard mode, is undocumented aside
           from  this  brief  description  and the various "debug mode only"
-          commands listed among the command descriptions.  It  is  intended
-          for tracking down problems within the program rather than to pro-
-          vide god-like powers to your character, and players  who  attempt
-          debugging  are  expected  to figure out how to use it themselves.
-          It is initiated by starting the game  with  the  -D  command-line
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6472,6 +6472,11 @@
 
 
 
+          commands listed among the command descriptions.  It  is  intended
+          for tracking down problems within the program rather than to pro-
+          vide god-like powers to your character, and players  who  attempt
+          debugging  are  expected  to figure out how to use it themselves.
+          It is initiated by starting the game  with  the  -D  command-line
           switch or with the playmode:debug option.
 
                For  some systems, the player must be logged in under a par-
@@ -6521,11 +6526,6 @@
           version  1.4 in 1987.  He then coordinated a cast of thousands in
           enhancing and debugging NetHack 1.4 and released NetHack versions
           2.2  and  2.3.   Like  Hack,  they were released by posting their
-          source code to Usenet where they remained  available  in  various
-          archives  accessible  via  ftp  and  uucp after expiring from the
-          newsgroup.
-
-
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6537,6 +6537,10 @@
           NetHack Guidebook                                             100
 
 
+
+          source code to Usenet where they remained  available  in  various
+          archives  accessible  via  ftp  and  uucp after expiring from the
+          newsgroup.
 
                Later, Mike coordinated a major re-write of the game,  head-
           ing  a  team which included Ken Arromdee, Jean-Christophe Collet,
@@ -6588,10 +6592,6 @@
           3.1 for the Macintosh, porting it for MPW.  Building on their de-
           velopment, Bart House added a Think C port.
 
-               Timo Hakulinen ported NetHack 3.1 to OS/2.  Eric Smith port-
-          ed  NetHack  3.1 to the Atari.  Pat Rankin, with help from Joshua
-          Delahunty, was responsible for the VMS version  of  NetHack  3.1.
-          Michael Allison ported NetHack 3.1 to Windows NT.
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6603,6 +6603,11 @@
           NetHack Guidebook                                             101
 
 
+
+               Timo Hakulinen ported NetHack 3.1 to OS/2.  Eric Smith port-
+          ed  NetHack  3.1 to the Atari.  Pat Rankin, with help from Joshua
+          Delahunty, was responsible for the VMS version  of  NetHack  3.1.
+          Michael Allison ported NetHack 3.1 to Windows NT.
 
                Dean  Luick,  with  help from David Cohrs, developed NetHack
           3.1 for X11.  It drew the map as text rather than graphically but
@@ -6653,11 +6658,6 @@
           that  it  was  a conversion of the C source code to C++.  Working
           independently, Stephen White wrote NetHack Plus.   Tom  Proudfoot
           later merged NetHack Plus and his own NetHack-- to produce SLASH.
-          Larry Stewart-Zerba and Warwick Allison improved the spell  cast-
-          ing  system  with  the Wizard Patch.  Warwick Allison also ported
-          NetHack to use the Qt interface.
-
-
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6669,6 +6669,10 @@
           NetHack Guidebook                                             102
 
 
+
+          Larry Stewart-Zerba and Warwick Allison improved the spell  cast-
+          ing  system  with  the Wizard Patch.  Warwick Allison also ported
+          NetHack to use the Qt interface.
 
                Warren Cheung combined SLASH with the Wizard Patch  to  pro-
           duce  Slash'EM,  and with the help of Kevin Hugo, added more fea-
@@ -6720,10 +6724,6 @@
 
                As with version 3.3, various people contributed to the  game
           as a whole as well as supporting ports on the different platforms
-          that NetHack runs on:
-
-               Pat Rankin maintained 3.4 for VMS.
-
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6735,6 +6735,10 @@
           NetHack Guidebook                                             103
 
 
+
+          that NetHack runs on:
+
+               Pat Rankin maintained 3.4 for VMS.
 
                Michael Allison maintained NetHack 3.4 for the MS-DOS  plat-
           form.  Paul Winner and Yitzhak Sapir provided encouragement.
@@ -6786,10 +6790,6 @@
                In  January  2015,  preparation  began  for  the  release of
           NetHack 3.6.
 
-               At the beginning of development for  what  would  eventually
-          get  released as 3.6.0, the NetHack Development Team consisted of
-          Warwick Allison, Michael  Allison,  Ken  Arromdee,  David  Cohrs,
-          Jessie   Collet,   Ken  Lorber,  Dean  Luick,  Pat  Rankin,  Mike
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6802,9 +6802,13 @@
 
 
 
-          Stephenson, Janet Walz, and Paul Winner.  In early 2015, ahead of
-          the  release  of 3.6.0, new members Sean Hunt, Pasi Kallinen, and
-          Derek S. Ray joined the NetHack Development Team.
+               At the beginning of development for  what  would  eventually
+          get  released as 3.6.0, the NetHack Development Team consisted of
+          Warwick Allison, Michael  Allison,  Ken  Arromdee,  David  Cohrs,
+          Jessie  Collet, Ken Lorber, Dean Luick, Pat Rankin, Mike Stephen-
+          son, Janet Walz, and Paul Winner.  In early 2015,  ahead  of  the
+          release of 3.6.0, new members Sean Hunt, Pasi Kallinen, and Derek
+          S. Ray joined the NetHack Development Team.
 
                Near the end of the development of 3.6.0, one of the signif-
           icant  inspirations  for  many  of  the humorous and fun features
@@ -6852,10 +6856,6 @@
           team participant for decades, joined the NetHack Development Team
           in late May 2019.
 
-               NetHack 3.6.3 was released on December  5,  2019  containing
-          over 190 bug fixes to NetHack 3.6.2.
-
-
 
 
           NetHack 3.7                                         July 21, 2021
@@ -6867,6 +6867,9 @@
           NetHack Guidebook                                             105
 
 
+
+               NetHack 3.6.3 was released on December  5,  2019  containing
+          over 190 bug fixes to NetHack 3.6.2.
 
                NetHack 3.6.4 was released on December 18, 2019 containing a
           security fix and a few bug fixes.
@@ -6918,9 +6921,6 @@
              Bruce Mewborne          Keizo Yamamoto          Rob Menke
               Carl Schelin           Keith Simpson          Robin Bandy
                Chris Russo             Ken Arnold          Robin Johnson
-               David Cohrs            Ken Arromdee       Roderick Schertler
-             David Damerell            Ken Lorber          Roland McGrath
-              David Gentzel          Ken Washikita        Ron Van Iwaarden
 
 
 
@@ -6934,6 +6934,9 @@
 
 
 
+               David Cohrs            Ken Arromdee       Roderick Schertler
+             David Damerell            Ken Lorber          Roland McGrath
+              David Gentzel          Ken Washikita        Ron Van Iwaarden
              David Hairston           Kevin Darcy          Ronnen Miller
                Dean Luick              Kevin Hugo            Ross Brown
                 Del Lamb              Kevin Sitze         Sascha Wostmann
@@ -6961,9 +6964,6 @@
 
                Brand and product names are trademarks or registered  trade-
           marks of their respective holders.
-
-
-
 
 
 
