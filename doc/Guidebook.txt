@@ -805,6 +805,7 @@
                DU  - drop all objects known to be uncursed.
                DC  - drop all objects known to be cursed.
                DX  - drop all objects of unknown B/U/C status.
+               DP  - drop objects picked up last.
                Da  - drop all objects, without asking for confirmation.
                Di  - examine your inventory before dropping anything.
                Du  - drop only unpaid objects (when in a shop).
@@ -851,7 +852,6 @@
                it out); this is often useful to give yourself a breather.
 
 
-
           NetHack 3.7                                       August 26, 2021
 
 
@@ -890,6 +890,7 @@
                IU - list all items known to be uncursed;
                IC - list all items known to be cursed;
                IX - list all items whose bless/curse status is unknown;
+               IP - list items picked up last;
                I$ - count your money.
 
           o    Open a door.
@@ -914,7 +915,6 @@
                (Prior to 3.6.0, `^O' was a debug mode command which  listed
                the placement of all special levels.  Use "#wizwhere" to run
                that command.)
-
 
 
 
