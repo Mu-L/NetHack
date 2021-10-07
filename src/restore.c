@@ -263,7 +263,8 @@ restobjchn(NHFILE* nhfp, boolean frozen)
             otmp2->nobj = otmp;
 
         if (ghostly) {
-            unsigned nid = g.context.ident++;
+            unsigned nid = next_ident();
+
             add_id_mapping(otmp->o_id, nid);
             otmp->o_id = nid;
         }
@@ -404,7 +405,8 @@ restmonchn(NHFILE* nhfp)
             mtmp2->nmon = mtmp;
 
         if (ghostly) {
-            unsigned nid = g.context.ident++;
+            unsigned nid = next_ident();
+
             add_id_mapping(mtmp->m_id, nid);
             mtmp->m_id = nid;
         }
@@ -754,7 +756,9 @@ dorecover(NHFILE* nhfp)
     int rtmp;
     struct obj *otmp;
 
+    /* suppress map display if some part of the code tries to update that */
     g.program_state.restoring = 1;
+
     get_plname_from_file(nhfp, g.plname);
     getlev(nhfp, 0, (xchar) 0);
     if (!restgamestate(nhfp, &stuckid, &steedid)) {
