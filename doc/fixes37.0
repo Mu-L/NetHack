@@ -726,6 +726,7 @@ if a giant carrying a boulder was on ice that melted, it could be killed
 	twice, first by drowning, then by boulder filling the resulting pool
 	when it dropped inventory before being removed from the map
 allow fire-command to automatically use a polearm, if wielding it
+make '$' command also count gold carried inside containers
 
 
 Fixes to 3.7.0-x Problems that Were Exposed Via git Repository
@@ -1423,6 +1424,8 @@ variable attknum was declared without initialization, and was used in
 check for NULL lua_State before calling lua_close() (pr #616 by argrath)
 use %lu, not %d, in format string in timer_sanity_check() (pr #617 by argrath)
 bad cast making sp_lev chameleon light source (pr #625 by entrez)
+add Ray Chason's adaptation of nethack's Qt5 interface to work with Qt6 (issue
+	#525 followup comment by chasonr)
 
 
 Code Cleanup and Reorganization
