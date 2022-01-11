@@ -15,7 +15,7 @@
                          Original version - Eric S. Raymond
              (Edited and expanded for 3.7 by Mike Stephenson and others)
 
-                                  November 16, 2021
+                                  January 11, 2022
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -192,7 +192,7 @@
           you have seen on the current dungeon level; as you  explore  more
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -258,7 +258,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -324,7 +324,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -390,7 +390,7 @@
                you have available for spell casting.  Again,  resting  will
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -456,7 +456,7 @@
           scribe things that are impossible to represent visually.  If  you
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -522,7 +522,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -588,7 +588,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -654,7 +654,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -720,7 +720,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -786,7 +786,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -852,7 +852,7 @@
                it out); this is often useful to give yourself a breather.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -918,7 +918,7 @@
                that command.)
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -984,7 +984,7 @@
                to hold the saved data is deleted.  In  explore  mode,  once
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1050,7 +1050,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1116,7 +1116,7 @@
           (R)UNIX is a registered trademark of The Open Group.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1182,7 +1182,7 @@
                `>',  `|'  by  default).   Some  interfaces   also   support
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1248,7 +1248,7 @@
                that  situation,  moving (no count given) a compatible stack
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1314,7 +1314,7 @@
                Go down a staircase.  Default key is `>'.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1380,7 +1380,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1446,7 +1446,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1512,7 +1512,7 @@
                The `m' prefix forces use of a menu.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1578,7 +1578,7 @@
                key is `C-_'.  See also #travel.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1644,7 +1644,7 @@
                objects and monsters temporarily removed, making it possible
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1710,7 +1710,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1776,7 +1776,7 @@
                Show vision array.  Autocompletes.  Debug mode only.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1842,7 +1842,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1908,7 +1908,7 @@
           combination meta+shift+letter is needed.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -1974,7 +1974,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2040,7 +2040,7 @@
           the door's lock.  Alternatively, you  can  break  a  closed  door
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2106,7 +2106,7 @@
           teleporters send you to a random dungeon level,  the  destination
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2172,7 +2172,7 @@
           activated and stored in a file on disk.  If you're  moving  to  a
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2238,7 +2238,7 @@
           rying any.  The "Ix" command shows an inventory-like  display  of
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2304,7 +2304,7 @@
           when walking on "furniture."  Normally stepping onto stairs or  a
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2370,7 +2370,7 @@
           Beware!  You may suddenly come upon one in a  dark  place.   Some
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2436,7 +2436,7 @@
           Initially, your pet may even be better  at  killing  things  than
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2502,7 +2502,7 @@
           sense--perhaps it is invisible and has just  tapped  you  on  the
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2568,7 +2568,7 @@
           the "#name" command, for the same purpose at any  time,  to  name
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2634,7 +2634,7 @@
           (killing them first).  Without a weapon,  you  do  only  1-2  hit
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2700,7 +2700,7 @@
           "#enhance" (see below).
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2766,7 +2766,7 @@
           spot.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2832,7 +2832,7 @@
           ondary is just an item in your inventory that's  been  designated
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2898,7 +2898,7 @@
           eventually  negative)  but  can also be enchanted.  Shirts are an
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -2964,7 +2964,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3030,7 +3030,7 @@
           mana points from an otherwise spent wand, destroying  it  in  the
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3096,7 +3096,7 @@
           you can end up wasting both the energy and the time  required  in
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3162,7 +3162,7 @@
           challenge which is very difficult to accomplish).
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3228,7 +3228,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3294,7 +3294,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3360,7 +3360,7 @@
           brains while polymorphed into a mind flayer, is considered eating
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3426,7 +3426,7 @@
           can't be bypassed,  such  as  being  unable  to  push  a  boulder
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3492,7 +3492,7 @@
           Soko-Prize - Explored to the top of Sokoban
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3558,7 +3558,7 @@
           NetHack should do things, there are options you can set to change
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3624,7 +3624,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3690,7 +3690,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3756,7 +3756,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3822,7 +3822,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3888,7 +3888,7 @@
             tion controls whether the description includes map coordinates.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -3954,7 +3954,7 @@
             Save game state after each level change, for possible  recovery
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4020,7 +4020,7 @@
             ified categories with omitted prefix implicitly use `+' prefix.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4086,7 +4086,7 @@
             Apples,  oranges,  pears,  bananas, and melons already exist in
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4152,7 +4152,7 @@
             available for TTY and Windows GUI, and only when  statushilites
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4218,7 +4218,7 @@
             jects (in response to the Drop  command,  for  instance).   The
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4284,7 +4284,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4350,7 +4350,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4416,7 +4416,7 @@
                           rather than `y',  also  require  "no"  to  reject
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4482,7 +4482,7 @@
             three, depending upon terminal hardware or  terminal  emulation
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4548,7 +4548,7 @@
             Persistent.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4614,7 +4614,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4680,7 +4680,7 @@
             Controls the sorting behavior for the output of the `\' and ``'
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4746,7 +4746,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4812,7 +4812,7 @@
             The whatis_coord option is also used with the "/m", "/M", "/o",
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4878,7 +4878,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -4944,7 +4944,7 @@
             If NetHack can, it should use a font by the chosen name for the
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5010,7 +5010,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5076,7 +5076,7 @@
             default.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5142,7 +5142,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5208,7 +5208,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5274,7 +5274,7 @@
             not correct the problem, try !color.  Cannot be  set  with  the
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5340,7 +5340,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5406,7 +5406,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5472,7 +5472,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5538,7 +5538,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5604,7 +5604,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5670,7 +5670,7 @@
             specifies  that  any menu line with " blessed " contained in it
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5736,7 +5736,7 @@
           will  cause  the  hitpoints  field to display in the color red if
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5802,7 +5802,7 @@
             ally displayed depending upon your other option settings.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5868,7 +5868,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -5934,7 +5934,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6000,7 +6000,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6066,7 +6066,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6132,7 +6132,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6198,7 +6198,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6264,7 +6264,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6330,7 +6330,7 @@
             read.  The second format will be read only if no bones files in
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6396,7 +6396,7 @@
             %v - version (eg. "3.6.3-0")
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6462,7 +6462,7 @@
           from  this  brief  description  and the various "debug mode only"
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6528,7 +6528,7 @@
           2.2  and  2.3.   Like  Hack,  they were released by posting their
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6594,7 +6594,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6660,7 +6660,7 @@
           later merged NetHack Plus and his own NetHack-- to produce SLASH.
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6726,7 +6726,7 @@
           as a whole as well as supporting ports on the different platforms
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6792,7 +6792,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6858,7 +6858,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6924,7 +6924,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
@@ -6990,7 +6990,7 @@
 
 
 
-          NetHack 3.7                                     November 16, 2021
+          NetHack 3.7                                      January 11, 2022
 
 
 
