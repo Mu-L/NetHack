@@ -107,7 +107,8 @@ NetHackQtBind::NetHackQtBind(int& argc, char** argv) :
 }
 
 // before the game windows have been rendered, display a small, centered
-// window showing a red dragon with caption "Loading..."
+// window showing a flying red dragon ridden by someone wielding a lance,
+// with caption "Loading..."
 void
 NetHackQtBind::qt_Splash()
 {
@@ -121,11 +122,11 @@ NetHackQtBind::qt_Splash()
         vb->addWidget(lsplash);
         lsplash->setAlignment(Qt::AlignCenter);
         lsplash->setPixmap(pm);
+        lsplash->setFixedSize(pm.size());
+        //lsplash->setMask(pm.mask());
         QLabel *capt = new QLabel("Loading...", splash);
         vb->addWidget(capt);
         capt->setAlignment(Qt::AlignCenter);
-        lsplash->setFixedSize(pm.size());
-        lsplash->setMask(QBitmap(pm));
 
 #if QT_VERSION < 0x060000
         QSize screensize = QApplication::desktop()->size();

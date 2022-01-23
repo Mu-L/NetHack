@@ -344,14 +344,9 @@ call_kops(register struct monst* shkp, register boolean nearshop)
 
     {
         coord mm;
-        stairway *stway = g.stairs;
+        xchar sx = 0, sy = 0;
 
-        while (stway) {
-            if (!stway->isladder && !stway->up
-                && stway->tolev.dnum == u.uz.dnum)
-                break;
-            stway = stway->next;
-        }
+        choose_stairs(&sx, &sy, TRUE);
 
         if (nearshop) {
             /* Create swarm around you, if you merely "stepped out" */
@@ -365,9 +360,11 @@ call_kops(register struct monst* shkp, register boolean nearshop)
         if (flags.verbose)
             pline_The("Keystone Kops are after you!");
         /* Create swarm near down staircase (hinders return to level) */
-        mm.x = stway->sx;
-        mm.y = stway->sy;
-        makekops(&mm);
+        if (isok(sx, sy)) {
+            mm.x = sx;
+            mm.y = sy;
+            makekops(&mm);
+        }
         /* Create swarm near shopkeeper (hinders return to shop) */
         mm.x = shkp->mx;
         mm.y = shkp->my;
@@ -388,7 +385,7 @@ inside_shop(register xchar x, register xchar y)
 }
 
 void
-u_left_shop(char* leavestring, boolean newlev)
+u_left_shop(char *leavestring, boolean newlev)
 {
     struct monst *shkp;
     struct eshk *eshkp;
@@ -403,7 +400,7 @@ u_left_shop(char* leavestring, boolean newlev)
     if (!*leavestring && (!levl[u.ux][u.uy].edge || levl[u.ux0][u.uy0].edge))
         return;
 
-    shkp = shop_keeper(*u.ushops0);
+    shkp = shop_keeper(*leavestring ? *leavestring : *u.ushops0);
     if (!shkp || !inhishop(shkp))
         return; /* shk died, teleported, changed levels... */
 
@@ -2423,8 +2420,11 @@ unpaid_cost(
     boolean include_contents)
 {
     struct bill_x *bp = (struct bill_x *) 0;
-    struct monst *shkp;
+    struct monst *shkp = 0;
+    char *shop;
     long amt = 0L;
+
+#if 0   /* if two shops share a wall, this might find wrong shk */
     xchar ox, oy;
 
     if (!get_obj_location(unp_obj, &ox, &oy, BURIED_TOO | CONTAINED_TOO))
@@ -2438,16 +2438,21 @@ unpaid_cost(
             if ((bp = onbill(unp_obj, shkp, TRUE)) != 0)
                 break;
     }
+#endif
+    for (shop = u.ushops; *shop; shop++) {
+        if ((shkp = shop_keeper(*shop))) {
+            if ((bp = onbill(unp_obj, shkp, TRUE)))
+                amt = unp_obj->quan * bp->price;
+            if (include_contents && Has_contents(unp_obj))
+                amt = contained_cost(unp_obj, shkp, amt, FALSE, TRUE);
+            if (bp || (!unp_obj->unpaid && amt))
+                break;
+        }
+    }
 
     /* onbill() gave no message if unexpected problem occurred */
-    if (!shkp || (unp_obj->unpaid && !bp)) {
+    if (!shkp || (unp_obj->unpaid && !bp))
         impossible("unpaid_cost: object wasn't on any bill.");
-    } else {
-        if (bp)
-            amt = unp_obj->quan * bp->price;
-        if (include_contents && Has_contents(unp_obj))
-            amt = contained_cost(unp_obj, shkp, amt, FALSE, TRUE);
-    }
     return amt;
 }
 

@@ -1,4 +1,4 @@
-/* NetHack 3.7	options.c	$NHDT-Date: 1641673953 2022/01/08 20:32:33 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.525 $ */
+/* NetHack 3.7	options.c	$NHDT-Date: 1642630919 2022/01/19 22:21:59 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.528 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2008. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -4225,6 +4225,9 @@ optfn_boolean(int optidx, int req, boolean negated, char *opts, char *op)
         case opt_mention_decor:
             iflags.prev_decor = STONE;
             break;
+        case opt_rest_on_space:
+            update_rest_on_space();
+            break;
         }
 
         /* boolean value has been toggled but some option changes can
@@ -5908,6 +5911,7 @@ initoptions_finish(void)
         }
     }
 #endif
+    update_rest_on_space();
     g.opt_initial = FALSE;
     return;
 }
@@ -7302,10 +7306,42 @@ doset(void) /* changing options via menu by Per Liboriussen */
     anything any;
     menu_item *pick_list;
     int indexoffset, startpass, endpass;
-    boolean setinitial = FALSE, fromfile = FALSE;
+    boolean setinitial = FALSE, fromfile = FALSE,
+            gavehelp = FALSE, skiphelp = !iflags.cmdassist;
 
+    /* if we offer '?' as a choice and it is the only thing chosen,
+       we'll end up coming back here after showing the explanatory text */
+ rerun:
     tmpwin = create_nhwindow(NHW_MENU);
     start_menu(tmpwin, MENU_BEHAVE_STANDARD);
+
+    /* offer novices a chance to request helpful [sic] advice */
+    if (!skiphelp) {
+        static const char *const helpintro[] = {
+            "For a brief explanation of how this works, type '?' to select",
+            "the next menu choice, then press <enter> or <return>.",
+            NULL,
+        }, *const helpepilog[] = {
+            "[To suppress this menu help, toggle off the 'cmdassist' option.]",
+            "",
+            NULL,
+        };
+        any = cg.zeroany;
+        for (i = 0; helpintro[i]; ++i) {
+            Sprintf(buf, "%4s%.75s", "", helpintro[i]);
+            add_menu(tmpwin, &nul_glyphinfo, &any, 0, 0, FALSE,
+                     buf, MENU_ITEMFLAGS_NONE);
+        }
+        any.a_int = '?' + 1; /* processing pick_list will subtract the 1 */
+        add_menu(tmpwin, &nul_glyphinfo, &any, '?', '?', ATR_NONE,
+                 "view help for options menu", MENU_ITEMFLAGS_NONE);
+        any.a_int = 0;
+        for (i = 0; helpepilog[i]; ++i) {
+            Sprintf(buf, "%4s%.75s", "", helpepilog[i]);
+            add_menu(tmpwin, &nul_glyphinfo, &any, 0, 0, FALSE,
+                     buf, MENU_ITEMFLAGS_NONE);
+        }
+    }
 
 #ifdef notyet /* SYSCF */
     /* XXX I think this is still fragile.  Fixing initial/from_file and/or
@@ -7429,6 +7465,11 @@ doset(void) /* changing options via menu by Per Liboriussen */
          */
         for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
             opt_indx = pick_list[pick_idx].item.a_int - 1;
+            if (opt_indx == '?') {
+                display_file(OPTMENUHELP, FALSE);
+                gavehelp = TRUE;
+                continue; /* just handled '?'; there might be more picks */
+            }
             if (opt_indx < -1)
                 opt_indx++; /* -1 offset for select_menu() */
             opt_indx -= indexoffset;
@@ -7468,6 +7509,15 @@ doset(void) /* changing options via menu by Per Liboriussen */
     }
 
     destroy_nhwindow(tmpwin);
+
+    if (pick_cnt == 1 && gavehelp) {
+        /* when '?' is only the thing selected, go back and pick all
+           over again without it as an available choice second time */
+        skiphelp = TRUE;
+        gavehelp = FALSE; /* currently True; reset for second pass */
+        goto rerun;
+    }
+
     if (g.opt_need_glyph_reset) {
         reset_glyphmap(gm_optionchange);
     }
