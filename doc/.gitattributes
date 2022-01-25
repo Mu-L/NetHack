@@ -12,3 +12,7 @@ fixes* NH_header=no
 * NH_filestag=(file%s_for_all_versions)
 Guidebook.tex	NH_DATESUB
 Guidebook.mn	NH_DATESUB
+dlb.6		NH_DATESUB
+makedefs.6	NH_DATESUB
+nethack.6	NH_DATESUB
+recover.6	NH_DATESUB
